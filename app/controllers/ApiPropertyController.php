@@ -15,6 +15,11 @@ class ApiPropertyController extends BaseController {
     public function index() {
         $admin = $this->jwtMiddleware->getCurrentUser();
         
+        if (!$admin) {
+            $this->json(['error' => 'Unauthorized'], 401);
+            return;
+        }
+        
         $page = $_GET['page'] ?? 1;
         $search = $_GET['search'] ?? '';
         $type = $_GET['type'] ?? '';
@@ -42,13 +47,8 @@ class ApiPropertyController extends BaseController {
         
         $whereClause = implode(' AND ', $where);
         
-        // Get properties with unit counts
-        $sql = "SELECT p.*, 
-                       (SELECT COUNT(*) FROM units u WHERE u.property_id = p.id AND u.deleted_at IS NULL) as unit_count,
-                       (SELECT COUNT(*) FROM units u WHERE u.property_id = p.id AND u.status = 'occupied' AND u.deleted_at IS NULL) as occupied_units
-                FROM properties p 
-                WHERE {$whereClause}
-                ORDER BY p.created_at DESC";
+        // Simple query without subqueries for now
+        $sql = "SELECT p.* FROM properties p WHERE {$whereClause} ORDER BY p.created_at DESC";
         
         $result = $this->paginate($sql, $page, 10);
         
@@ -91,6 +91,12 @@ class ApiPropertyController extends BaseController {
 
     public function store() {
         $admin = $this->jwtMiddleware->getCurrentUser();
+        
+        if (!$admin) {
+            $this->json(['error' => 'Unauthorized'], 401);
+            return;
+        }
+        
         $data = $this->getPostData();
         
         // Validate required fields
@@ -99,6 +105,7 @@ class ApiPropertyController extends BaseController {
         
         if (!empty($errors)) {
             $this->json(['errors' => $errors], 422);
+            return;
         }
 
         // Prepare property data

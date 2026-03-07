@@ -143,4 +143,25 @@ class DashboardController extends BaseController {
         
         return $revenueData;
     }
+    
+    public function getActivityIcon($action) {
+        $icons = [
+            'create' => 'plus',
+            'update' => 'edit',
+            'delete' => 'trash',
+            'login' => 'sign-in-alt',
+            'logout' => 'sign-out-alt',
+            'view' => 'eye',
+            'export' => 'download',
+            'upload' => 'upload',
+            'payment' => 'credit-card',
+            'invoice' => 'file-invoice',
+            'tenant' => 'user',
+            'property' => 'home',
+            'unit' => 'building',
+            'maintenance' => 'tools'
+        ];
+        
+        return $icons[$action] ?? 'circle';
+    }
 }

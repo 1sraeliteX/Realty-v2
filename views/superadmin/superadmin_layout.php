@@ -1,4 +1,8 @@
-<?php $title = $title ?? 'Super Admin Dashboard'; ?>
+<?php 
+// Initialize variables with default values to prevent undefined variable errors
+$admin = $admin ?? getCurrentUser() ?? ['name' => 'Admin User', 'email' => 'admin@example.com'];
+$title = $title ?? 'Super Admin Dashboard';
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -7,6 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $title; ?> - Cornerstone Realty Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -108,37 +113,45 @@
                     <i class="fas fa-folder w-5 mr-3"></i>
                     Documents
                 </a>
+                
+                <div class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-4 mt-4 mb-2">
+                    System
+                </div>
+                <a href="/settings" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                    <i class="fas fa-cog w-5 mr-3"></i>
+                    Settings
+                </a>
             </nav>
 
             <!-- User menu -->
             <div class="border-t border-gray-200 dark:border-gray-700 p-4">
-                <div class="flex items-center justify-between mb-3">
+                <div class="flex flex-col items-center mb-3">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
                             <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
                                 <span class="text-white text-sm font-medium">
-                                    <?php echo strtoupper(substr($admin['name'], 0, 1)); ?>
+                                    <?php echo isset($admin['name']) ? strtoupper(substr($admin['name'], 0, 1)) : 'A'; ?>
                                 </span>
                             </div>
                         </div>
-                        <div class="ml-3">
-                            <p class="text-sm font-medium text-gray-700 dark:text-gray-200"><?php echo htmlspecialchars($admin['name']); ?></p>
+                        <div class="ml-3 text-center">
+                            <p class="text-sm font-medium text-gray-700 dark:text-gray-200"><?php echo isset($admin['name']) ? htmlspecialchars($admin['name']) : 'Admin User'; ?></p>
                             <p class="text-xs text-purple-600 dark:text-purple-400 font-medium">Super Admin</p>
                         </div>
                     </div>
                 </div>
                 
-                <div class="flex items-center justify-between">
+                <div class="space-y-3">
                     <!-- Theme toggle -->
-                    <button onclick="toggleDarkMode()" class="flex items-center text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 text-sm">
+                    <button onclick="toggleDarkMode()" class="w-full flex items-center justify-center text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 text-sm py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                         <i class="fas fa-moon dark:hidden mr-2"></i>
                         <i class="fas fa-sun hidden dark:block mr-2"></i>
                         Theme
                     </button>
                     
                     <!-- Logout -->
-                    <form action="/logout" method="POST" class="inline">
-                        <button type="submit" class="flex items-center text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 text-sm">
+                    <form action="/logout" method="POST" class="inline w-full">
+                        <button type="submit" class="w-full flex items-center justify-center text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 text-sm py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                             <i class="fas fa-sign-out-alt mr-2"></i>
                             Logout
                         </button>
@@ -170,17 +183,92 @@
                         <div class="flex items-center space-x-2">
                             <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
                                 <span class="text-white text-sm font-medium">
-                                    <?php echo strtoupper(substr($admin['name'], 0, 1)); ?>
+                                    <?php echo isset($admin['name']) ? strtoupper(substr($admin['name'], 0, 1)) : 'A'; ?>
                                 </span>
                             </div>
                             <div class="hidden md:block">
-                                <p class="text-sm font-medium text-gray-700 dark:text-gray-200"><?php echo htmlspecialchars($admin['name']); ?></p>
+                                <p class="text-sm font-medium text-gray-700 dark:text-gray-200"><?php echo isset($admin['name']) ? htmlspecialchars($admin['name']) : 'Admin User'; ?></p>
                                 <p class="text-xs text-purple-600 dark:text-purple-400">Super Admin</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </header>
+
+            <!-- Breadcrumb Navigation -->
+            <nav class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-3">
+                <ol class="flex items-center space-x-2 text-sm">
+                    <li>
+                        <a href="/superadmin" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors">
+                            <i class="fas fa-tachometer-alt mr-1"></i>Super Admin
+                        </a>
+                    </li>
+                    <?php
+                    // Generate breadcrumb based on current page
+                    $requestUri = $_SERVER['REQUEST_URI'] ?? '';
+                    $path = parse_url($requestUri, PHP_URL_PATH);
+                    $path = rtrim($path, '/');
+                    
+                    $breadcrumbItems = [];
+                    
+                    if ($path === '/superadmin') {
+                        // Super Admin is already shown as home
+                    } elseif (strpos($path, '/properties') === 0) {
+                        $breadcrumbItems[] = ['name' => 'Properties', 'url' => '/properties'];
+                        
+                        if ($path === '/properties/create') {
+                            $breadcrumbItems[] = ['name' => 'Add Property', 'url' => null];
+                        } elseif (preg_match('/\/properties\/(\d+)(\/edit)?/', $path, $matches)) {
+                            $breadcrumbItems[] = ['name' => 'Property Details', 'url' => '/properties/' . $matches[1]];
+                            if (isset($matches[2])) {
+                                $breadcrumbItems[] = ['name' => 'Edit', 'url' => null];
+                            }
+                        }
+                    } elseif (strpos($path, '/tenants') === 0) {
+                        $breadcrumbItems[] = ['name' => 'Tenants & Occupants', 'url' => '/tenants'];
+                        if ($path === '/tenants/create') {
+                            $breadcrumbItems[] = ['name' => 'Add Tenant', 'url' => null];
+                        }
+                    } elseif (strpos($path, '/units') === 0) {
+                        $breadcrumbItems[] = ['name' => 'Units', 'url' => '/units'];
+                    } elseif (strpos($path, '/payments') === 0) {
+                        $breadcrumbItems[] = ['name' => 'Finances', 'url' => '/payments'];
+                    } elseif (strpos($path, '/invoices') === 0) {
+                        $breadcrumbItems[] = ['name' => 'Invoices', 'url' => '/invoices'];
+                    } elseif (strpos($path, '/maintenance') === 0) {
+                        $breadcrumbItems[] = ['name' => 'Maintenance', 'url' => '/maintenance'];
+                    } elseif (strpos($path, '/reports') === 0) {
+                        $breadcrumbItems[] = ['name' => 'Reports', 'url' => '/reports'];
+                    } elseif (strpos($path, '/communications') === 0) {
+                        $breadcrumbItems[] = ['name' => 'Communications', 'url' => '/communications'];
+                    } elseif (strpos($path, '/documents') === 0) {
+                        $breadcrumbItems[] = ['name' => 'Documents', 'url' => '/documents'];
+                    } elseif ($path === '/settings') {
+                        $breadcrumbItems[] = ['name' => 'Settings', 'url' => null];
+                    } elseif (strpos($path, '/superadmin/admins') === 0) {
+                        $breadcrumbItems[] = ['name' => 'Admin Management', 'url' => '/superadmin/admins'];
+                    }
+                    
+                    foreach ($breadcrumbItems as $index => $item):
+                        if ($index < count($breadcrumbItems) - 1):
+                    ?>
+                        <li class="flex items-center">
+                            <i class="fas fa-chevron-right text-gray-400 mx-2 text-xs"></i>
+                            <a href="<?php echo $item['url']; ?>" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors">
+                                <?php echo htmlspecialchars($item['name']); ?>
+                            </a>
+                        </li>
+                        <?php else: ?>
+                        <li class="flex items-center">
+                            <i class="fas fa-chevron-right text-gray-400 mx-2 text-xs"></i>
+                            <span class="text-gray-900 dark:text-white font-medium">
+                                <?php echo htmlspecialchars($item['name']); ?>
+                            </span>
+                        </li>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                </ol>
+            </nav>
 
             <!-- Page content -->
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 dark:bg-gray-900 p-6">
@@ -251,6 +339,44 @@
         function toggleSidebar() {
             const sidebar = document.querySelector('aside');
             sidebar.classList.toggle('hidden');
+        }
+
+        // API request helper
+        async function apiRequest(endpoint, options = {}) {
+            const defaultOptions = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            };
+
+            const token = localStorage.getItem('jwt_token');
+            if (token) {
+                defaultOptions.headers.Authorization = `Bearer ${token}`;
+            }
+
+            const finalOptions = {
+                ...defaultOptions,
+                ...options,
+                headers: {
+                    ...defaultOptions.headers,
+                    ...options.headers
+                }
+            };
+
+            try {
+                const response = await fetch(endpoint, finalOptions);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Request failed');
+                }
+
+                return data;
+            } catch (error) {
+                showToast(error.message, 'error');
+                throw error;
+            }
         }
 
         // Show PHP session messages as toasts

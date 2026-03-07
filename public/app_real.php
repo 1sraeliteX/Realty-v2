@@ -39,9 +39,6 @@ spl_autoload_register(function ($class) {
     }
 });
 
-// Manually require ConfigSimple since it might not be autoloaded
-require_once __DIR__ . '/../config/config_simple.php';
-
 // Simple router that uses the actual MVC controllers
 class ApplicationRouter {
     private $webRoutes;
@@ -97,10 +94,6 @@ class ApplicationRouter {
         http_response_code(404);
         echo "<h1>404 - Page Not Found</h1>";
         echo "<p>Route: $routeKey</p>";
-        echo "<p>Available routes:</p>";
-        echo "<pre>";
-        print_r(array_keys($this->webRoutes));
-        echo "</pre>";
     }
 
     private function handleApiRoute($method, $uri) {
@@ -114,7 +107,7 @@ class ApplicationRouter {
         // API route not found
         http_response_code(404);
         header('Content-Type: application/json');
-        echo json_encode(['error' => 'API endpoint not found', 'route' => $routeKey]);
+        echo json_encode(['error' => 'API endpoint not found']);
     }
 
     private function matchesPattern($pattern, $routeKey, &$params) {
@@ -148,8 +141,6 @@ class ApplicationRouter {
             
             call_user_func_array([$controller, $method], $params);
         } catch (Exception $e) {
-            error_log("Route execution error: " . $e->getMessage());
-            
             if (strpos($_SERVER['REQUEST_URI'], '/api') === 0) {
                 http_response_code(500);
                 header('Content-Type: application/json');

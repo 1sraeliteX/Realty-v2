@@ -2,42 +2,40 @@
 
 namespace Config;
 
-use Dotenv\Dotenv;
-
 class Config {
     private static $instance = null;
     private $data = [];
 
     private function __construct() {
-        $dotenv = Dotenv::createImmutable(__DIR__ . '/..');
-        $dotenv->load();
+        // $dotenv = Dotenv::createImmutable(__DIR__ . '/..');
+        // $dotenv->load();
         
         $this->data = [
             'database' => [
-                'host' => $_ENV['DB_HOST'] ?? 'localhost',
-                'name' => $_ENV['DB_NAME'] ?? 'real_estate_db',
-                'user' => $_ENV['DB_USER'] ?? 'root',
-                'password' => $_ENV['DB_PASSWORD'] ?? ''
+                'host' => 'localhost',
+                'name' => 'real_estate_db',
+                'user' => 'root',
+                'password' => ''
             ],
             'jwt' => [
-                'secret' => $_ENV['JWT_SECRET'] ?? 'default-secret',
-                'expire' => $_ENV['JWT_EXPIRE'] ?? 86400
+                'secret' => 'your-secret-key-change-in-production',
+                'expire' => 86400
             ],
             'app' => [
-                'url' => $_ENV['APP_URL'] ?? 'http://localhost',
-                'env' => $_ENV['APP_ENV'] ?? 'development',
-                'debug' => filter_var($_ENV['APP_DEBUG'] ?? false, FILTER_VALIDATE_BOOLEAN)
+                'url' => 'http://localhost',
+                'env' => 'development',
+                'debug' => true
             ],
             'mail' => [
-                'host' => $_ENV['MAIL_HOST'] ?? '',
-                'port' => $_ENV['MAIL_PORT'] ?? 587,
-                'username' => $_ENV['MAIL_USERNAME'] ?? '',
-                'password' => $_ENV['MAIL_PASSWORD'] ?? '',
-                'encryption' => $_ENV['MAIL_ENCRYPTION'] ?? 'tls'
+                'host' => '',
+                'port' => 587,
+                'username' => '',
+                'password' => '',
+                'encryption' => 'tls'
             ],
             'upload' => [
-                'max_size' => $_ENV['UPLOAD_MAX_SIZE'] ?? 5242880,
-                'allowed_types' => explode(',', $_ENV['UPLOAD_ALLOWED_TYPES'] ?? 'jpg,jpeg,png,pdf')
+                'max_size' => 5242880,
+                'allowed_types' => ['jpg', 'jpeg', 'png', 'pdf']
             ]
         ];
     }

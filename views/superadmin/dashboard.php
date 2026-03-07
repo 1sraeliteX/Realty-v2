@@ -1,6 +1,18 @@
 <?php
 $title = 'Super Admin Dashboard';
 $pageTitle = 'Platform Overview';
+
+// Initialize variables with default values to prevent undefined variable errors
+$stats = $stats ?? [
+    'total_admins' => 0,
+    'total_properties' => 0,
+    'active_subscriptions' => 0,
+    'platform_revenue' => 0
+];
+
+$recentAdmins = $recentAdmins ?? [];
+$recentActivities = $recentActivities ?? [];
+
 $content = ob_start();
 ?>
 
@@ -55,13 +67,59 @@ $content = ob_start();
             </div>
             <div class="ml-4">
                 <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Platform Revenue</p>
-                <p class="text-2xl font-bold text-gray-900 dark:text-white">$<?php echo number_format($stats['platform_revenue'], 2); ?></p>
+                <p class="text-2xl font-bold text-gray-900 dark:text-white" data-currency data-value="<?php echo $stats['platform_revenue']; ?>"><?php echo '$' . number_format($stats['platform_revenue'], 2); ?></p>
             </div>
         </div>
     </div>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+    <!-- Currency Settings -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Currency Settings</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Change the default currency for the platform</p>
+        
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Select Currency</label>
+                <select id="currency-select" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                    <option value="USD">USD - US Dollar ($)</option>
+                    <option value="NGN">NGN - Nigerian Naira (₦)</option>
+                    <option value="EUR">EUR - Euro (€)</option>
+                    <option value="GBP">GBP - British Pound (£)</option>
+                    <option value="JPY">JPY - Japanese Yen (¥)</option>
+                    <option value="CNY">CNY - Chinese Yuan (¥)</option>
+                    <option value="INR">INR - Indian Rupee (₹)</option>
+                    <option value="CAD">CAD - Canadian Dollar (C$)</option>
+                    <option value="AUD">AUD - Australian Dollar (A$)</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Currency Symbol Position</label>
+                <div class="flex space-x-4">
+                    <label class="flex items-center">
+                        <input type="radio" name="symbol_position" value="before" class="mr-2">
+                        <span class="text-sm text-gray-700 dark:text-gray-300">Before (₦100)</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="symbol_position" value="after" checked class="mr-2">
+                        <span class="text-sm text-gray-700 dark:text-gray-300">After (100₦)</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="flex items-center justify-between">
+                <div class="text-sm text-gray-600 dark:text-gray-400">
+                    Current: <span id="current-currency" class="font-medium text-gray-900 dark:text-white">USD</span>
+                </div>
+                <button onclick="saveCurrencySettings()" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+                    <i class="fas fa-save mr-2"></i>Save Settings
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Export Data Section -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Export Data</h3>
@@ -85,6 +143,31 @@ $content = ob_start();
             <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
             <span class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">Enable Assistant</span>
         </label>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+    <!-- Revenue Chart -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Revenue Overview</h3>
+            <select id="revenue-period" class="text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                <option value="12">Last 12 months</option>
+                <option value="6">Last 6 months</option>
+                <option value="3">Last 3 months</option>
+            </select>
+        </div>
+        <div class="h-64">
+            <canvas id="revenueChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Occupancy Chart -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Occupancy Status</h3>
+        <div class="h-64">
+            <canvas id="occupancyChart"></canvas>
+        </div>
     </div>
 </div>
 
@@ -174,16 +257,193 @@ include 'superadmin_layout.php';
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // DotBot Assistant Toggle
-    const dotbotToggle = document.getElementById('dotbot-toggle');
-    dotbotToggle.addEventListener('change', function() {
-        if (this.checked) {
-            showToast('DotBot Assistant enabled', 'success');
-            // Here you would typically initialize the floating assistant
-        } else {
-            showToast('DotBot Assistant disabled', 'info');
-            // Here you would remove the floating assistant
+    // Revenue Chart
+    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+    const revenueData = <?php echo json_encode($revenueData ?? []); ?>;
+    const revenueLabels = Object.keys(revenueData);
+    const revenueValues = Object.values(revenueData);
+
+    new Chart(revenueCtx, {
+        type: 'line',
+        data: {
+            labels: revenueLabels.map(date => {
+                const d = new Date(date + '-01');
+                return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+            }),
+            datasets: [{
+                label: 'Revenue',
+                data: revenueValues,
+                borderColor: 'rgb(59, 130, 246)',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return '$' + value.toLocaleString();
+                        }
+                    }
+                }
+            }
         }
     });
+
+    // Occupancy Chart
+    const occupancyCtx = document.getElementById('occupancyChart').getContext('2d');
+    const occupiedUnits = <?php echo $stats['occupied_units'] ?? 0; ?>;
+    const totalUnits = <?php echo $stats['total_units'] ?? 0; ?>;
+    const vacantUnits = totalUnits - occupiedUnits;
+
+    new Chart(occupancyCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Occupied', 'Vacant'],
+            datasets: [{
+                data: [occupiedUnits, vacantUnits],
+                backgroundColor: [
+                    'rgb(34, 197, 94)',
+                    'rgb(239, 68, 68)'
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+
+    // Revenue period change
+    document.getElementById('revenue-period').addEventListener('change', function() {
+        const months = this.value;
+        // Reload chart data for selected period
+        apiRequest(`/api/dashboard/revenue?months=${months}`)
+            .then(data => {
+                // Update chart with new data
+                const chart = Chart.getChart('revenueChart');
+                const labels = data.map(item => {
+                    const d = new Date(item.month + '-01');
+                    return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                });
+                const values = data.map(item => item.revenue);
+                
+                chart.data.labels = labels;
+                chart.data.datasets[0].data = values;
+                chart.update();
+            });
+    });
+
+    // DotBot Assistant Toggle
+    const dotbotToggle = document.getElementById('dotbot-toggle');
+    if (dotbotToggle) {
+        dotbotToggle.addEventListener('change', function() {
+            if (this.checked) {
+                showToast('DotBot Assistant enabled', 'success');
+                // Here you would typically initialize the floating assistant
+            } else {
+                showToast('DotBot Assistant disabled', 'info');
+                // Here you would remove the floating assistant
+            }
+        });
+    }
+
+    // Currency Management
+    const currencySettings = {
+        currencies: {
+            'USD': { symbol: '$', name: 'US Dollar', position: 'before' },
+            'NGN': { symbol: '₦', name: 'Nigerian Naira', position: 'before' },
+            'EUR': { symbol: '€', name: 'Euro', position: 'before' },
+            'GBP': { symbol: '£', name: 'British Pound', position: 'before' },
+            'JPY': { symbol: '¥', name: 'Japanese Yen', position: 'before' },
+            'CNY': { symbol: '¥', name: 'Chinese Yuan', position: 'before' },
+            'INR': { symbol: '₹', name: 'Indian Rupee', position: 'before' },
+            'CAD': { symbol: 'C$', name: 'Canadian Dollar', position: 'before' },
+            'AUD': { symbol: 'A$', name: 'Australian Dollar', position: 'before' }
+        },
+        currentCurrency: localStorage.getItem('app_currency') || 'USD',
+        symbolPosition: localStorage.getItem('symbol_position') || 'after'
+    };
+
+    function initializeCurrencySettings() {
+        document.getElementById('currency-select').value = currencySettings.currentCurrency;
+        document.getElementById('current-currency').textContent = currencySettings.currentCurrency;
+        
+        // Set radio button for symbol position
+        const radios = document.querySelectorAll('input[name="symbol_position"]');
+        radios.forEach(radio => {
+            radio.checked = radio.value === currencySettings.symbolPosition;
+        });
+        
+        updateCurrencyDisplay();
+    }
+
+    function saveCurrencySettings() {
+        const selectedCurrency = document.getElementById('currency-select').value;
+        const selectedPosition = document.querySelector('input[name="symbol_position"]:checked').value;
+        
+        localStorage.setItem('app_currency', selectedCurrency);
+        localStorage.setItem('symbol_position', selectedPosition);
+        
+        currencySettings.currentCurrency = selectedCurrency;
+        currencySettings.symbolPosition = selectedPosition;
+        
+        updateCurrencyDisplay();
+        showToast(`Currency changed to ${currencySettings.currencies[selectedCurrency].name}`, 'success');
+    }
+
+    function updateCurrencyDisplay() {
+        const currency = currencySettings.currencies[currencySettings.currentCurrency];
+        document.getElementById('current-currency').textContent = `${currencySettings.currentCurrency} - ${currency.name}`;
+        
+        // Update all currency displays on the page
+        updateAllCurrencySymbols();
+    }
+
+    function updateAllCurrencySymbols() {
+        const currency = currencySettings.currencies[currencySettings.currentCurrency];
+        const symbol = currency.symbol;
+        const position = currencySettings.symbolPosition;
+        
+        // Update revenue displays
+        const revenueElements = document.querySelectorAll('[data-currency]');
+        revenueElements.forEach(element => {
+            const value = element.getAttribute('data-value') || element.textContent;
+            const formattedValue = position === 'before' ? `${symbol}${value}` : `${value}${symbol}`;
+            element.textContent = formattedValue;
+        });
+    }
+
+    function formatCurrency(amount, currencyCode = null) {
+        const code = currencyCode || currencySettings.currentCurrency;
+        const currency = currencySettings.currencies[code];
+        const symbol = currency.symbol;
+        const position = currencySettings.symbolPosition;
+        
+        const formattedAmount = new Intl.NumberFormat('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(amount);
+        
+        return position === 'before' ? `${symbol}${formattedAmount}` : `${formattedAmount}${symbol}`;
+    }
+
+    // Initialize currency settings on page load
+    initializeCurrencySettings();
 });
 </script>

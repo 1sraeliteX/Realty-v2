@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 use Config\Database;
-use Config\Config;
+use Config\ConfigSimple;
 
 class BaseController {
     protected $db;
@@ -11,7 +11,7 @@ class BaseController {
 
     public function __construct() {
         $this->db = Database::getInstance();
-        $this->config = Config::getInstance();
+        $this->config = ConfigSimple::getInstance();
     }
 
     protected function view($view, $data = []) {
@@ -37,6 +37,23 @@ class BaseController {
         } else {
             echo $content;
         }
+    }
+
+    protected function renderView($view, $data = []) {
+        // Extract data to make variables available in view
+        extract($data);
+        
+        // Build view path
+        $viewPath = __DIR__ . '/../../views/' . str_replace('.', '/', $view) . '.php';
+        
+        if (!file_exists($viewPath)) {
+            throw new \Exception("View {$view} not found");
+        }
+        
+        // Start output buffering and return content
+        ob_start();
+        include $viewPath;
+        return ob_get_clean();
     }
 
     protected function json($data, $statusCode = 200) {
@@ -111,8 +128,24 @@ class BaseController {
     }
 
     protected function getPostData() {
+        // Check if this is JSON input
         $json = file_get_contents('php://input');
-        return !empty($json) ? json_decode($json, true) : $_POST;
+        if (!empty($json)) {
+            $decoded = json_decode($json, true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                return $decoded;
+            }
+        }
+        
+        // Parse form data (application/x-www-form-urlencoded)
+        $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+        if (strpos($contentType, 'application/x-www-form-urlencoded') !== false) {
+            parse_str($json, $formData);
+            return $formData;
+        }
+        
+        // Default to $_POST
+        return $_POST;
     }
 
     protected function uploadFile($file, $destination, $allowedTypes = null) {

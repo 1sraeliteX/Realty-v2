@@ -65,7 +65,7 @@ class ApiAuthController extends BaseController {
         $this->logActivity($adminId, 'register', 'New admin registered via API');
 
         // Generate JWT token
-        $token = $this->jwtMiddleware->generateToken(['admin_id' => $adminId]);
+        $token = $this->jwtMiddleware->generateToken(['id' => $adminId, 'email' => $data['email'], 'role' => 'admin']);
 
         $this->json([
             'message' => 'Registration successful',
@@ -106,7 +106,7 @@ class ApiAuthController extends BaseController {
         $this->logActivity($admin['id'], 'login', 'Admin logged in via API');
 
         // Generate JWT token
-        $token = $this->jwtMiddleware->generateToken(['admin_id' => $admin['id']]);
+        $token = $this->jwtMiddleware->generateToken(['id' => $admin['id'], 'email' => $admin['email'], 'role' => $admin['role']]);
         
         $this->json([
             'token' => $token,

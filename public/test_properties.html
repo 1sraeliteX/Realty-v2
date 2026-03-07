@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Functionality Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        input, textarea { width: 100%; padding: 8px; margin: 5px 0; }
+        .result { background: #f5f5f5; padding: 10px; margin: 10px 0; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <h1>Property Functionality Test</h1>
+    
+    <div class="section">
+        <h2>1. Authentication Test</h2>
+        <button onclick="testLogin()">Test Login</button>
+        <div id="loginResult" class="result"></div>
+    </div>
+    
+    <div class="section">
+        <h2>2. Property Creation Test</h2>
+        <input type="text" id="propertyName" placeholder="Property Name" value="Test Property from Web">
+        <textarea id="propertyAddress" placeholder="Address" rows="3">123 Web Test Street</textarea>
+        <select id="propertyType">
+            <option value="residential">Residential</option>
+            <option value="commercial">Commercial</option>
+            <option value="mixed">Mixed</option>
+        </select>
+        <input type="number" id="rentPrice" placeholder="Rent Price" value="1500">
+        <button onclick="testPropertyCreation()">Create Property</button>
+        <div id="propertyResult" class="result"></div>
+    </div>
+    
+    <div class="section">
+        <h2>3. Property Listing Test</h2>
+        <button onclick="testPropertyListing()">List Properties</button>
+        <div id="listingResult" class="result"></div>
+    </div>
+    
+    <script>
+        let authToken = '';
+        
+        async function testLogin() {
+            const resultDiv = document.getElementById('loginResult');
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: 'admin@test.com',
+                        password: 'admin123'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    authToken = data.token;
+                    localStorage.setItem('jwt_token', authToken);
+                    resultDiv.innerHTML = `<div class="success">✓ Login successful! Token stored.</div>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">✗ Login failed: ${data.error}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">✗ Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function testPropertyCreation() {
+            const resultDiv = document.getElementById('propertyResult');
+            
+            if (!authToken) {
+                authToken = localStorage.getItem('jwt_token');
+            }
+            
+            if (!authToken) {
+                resultDiv.innerHTML = '<div class="error">✗ Please login first!</div>';
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('name', document.getElementById('propertyName').value);
+            formData.append('address', document.getElementById('propertyAddress').value);
+            formData.append('type', document.getElementById('propertyType').value);
+            formData.append('rent_price', document.getElementById('rentPrice').value);
+            formData.append('bedrooms', '3');
+            formData.append('bathrooms', '2');
+            formData.append('description', 'Test property created from web interface');
+            
+            try {
+                const response = await fetch('/api/properties', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `<div class="success">✓ Property created successfully!</div>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">✗ Property creation failed: ${data.error || 'Unknown error'}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">✗ Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function testPropertyListing() {
+            const resultDiv = document.getElementById('listingResult');
+            
+            if (!authToken) {
+                authToken = localStorage.getItem('jwt_token');
+            }
+            
+            if (!authToken) {
+                resultDiv.innerHTML = '<div class="error">✗ Please login first!</div>';
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/properties', {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    let html = `<div class="success">✓ Found ${data.length || data.data?.length || 0} properties</div>`;
+                    if (data.data) {
+                        html += '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                    } else {
+                        html += '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                    }
+                    resultDiv.innerHTML = html;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">✗ Failed to list properties: ${data.error || 'Unknown error'}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">✗ Error: ${error.message}</div>`;
+            }
+        }
+        
+        // Auto-login on page load
+        window.onload = function() {
+            const savedToken = localStorage.getItem('jwt_token');
+            if (savedToken) {
+                authToken = savedToken;
+                document.getElementById('loginResult').innerHTML = '<div class="success">✓ Using saved token</div>';
+            }
+        };
+    </script>
+</body>
+</html>

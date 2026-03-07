@@ -1,23 +1,26 @@
 <?php $title = 'Register - Real Estate Management'; ?>
 
 <div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8">
-        <div>
-            <div class="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-primary-100 dark:bg-primary-900">
+    <!-- Main Card Container -->
+    <div class="w-full max-w-md bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+        <!-- Header Section -->
+        <div class="text-center mb-8">
+            <div class="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-primary-100 dark:bg-primary-900 mb-4">
                 <i class="fas fa-user-plus text-primary-600 dark:text-primary-400 text-xl"></i>
             </div>
-            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
+            <h2 class="text-2xl font-extrabold text-gray-900 dark:text-white mb-2">
                 Create your account
             </h2>
-            <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
+            <p class="text-sm text-gray-600 dark:text-gray-400">
                 Join Real Estate Management System
             </p>
         </div>
         
-        <form class="mt-8 space-y-6" action="/register" method="POST">
+        <!-- Form Section -->
+        <form class="space-y-6" action="/register" method="POST">
             <div class="space-y-4">
                 <div>
-                    <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Full Name <span class="text-red-500">*</span>
                     </label>
                     <input 
@@ -26,14 +29,14 @@
                         type="text" 
                         autocomplete="name" 
                         required 
-                        class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-800 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm" 
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent sm:text-sm" 
                         placeholder="John Doe"
                         value="<?php echo $_SESSION['old']['name'] ?? ''; ?>"
                     >
                 </div>
 
                 <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Email Address <span class="text-red-500">*</span>
                     </label>
                     <input 
@@ -42,14 +45,14 @@
                         type="email" 
                         autocomplete="email" 
                         required 
-                        class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-800 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm" 
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent sm:text-sm" 
                         placeholder="john@example.com"
                         value="<?php echo $_SESSION['old']['email'] ?? ''; ?>"
                     >
                 </div>
 
                 <div>
-                    <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Phone Number
                     </label>
                     <input 
@@ -57,14 +60,14 @@
                         name="phone" 
                         type="tel" 
                         autocomplete="tel" 
-                        class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-800 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm" 
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent sm:text-sm" 
                         placeholder="+1 (555) 123-4567"
                         value="<?php echo $_SESSION['old']['phone'] ?? ''; ?>"
                     >
                 </div>
 
                 <div>
-                    <label for="business_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label for="business_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Business Name
                     </label>
                     <input 
@@ -72,21 +75,21 @@
                         name="business_name" 
                         type="text" 
                         autocomplete="organization" 
-                        class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-800 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm" 
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent sm:text-sm" 
                         placeholder="ABC Properties"
                         value="<?php echo $_SESSION['old']['business_name'] ?? ''; ?>"
                     >
                 </div>
 
                 <div>
-                    <label for="role" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label for="role" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Account Type <span class="text-red-500">*</span>
                     </label>
                     <select 
                         id="role" 
                         name="role" 
                         required 
-                        class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-800 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent sm:text-sm"
                     >
                         <option value="">Select account type</option>
                         <option value="admin" <?php echo (($_SESSION['old']['role'] ?? '') === 'admin') ? 'selected' : ''; ?>>
@@ -102,18 +105,18 @@
                 </div>
 
                 <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Password <span class="text-red-500">*</span>
                     </label>
-                    <div class="mt-1 relative">
+                    <div class="relative">
                         <input 
                             id="password" 
                             name="password" 
                             type="password" 
                             autocomplete="new-password" 
                             required 
-                            class="appearance-none relative block w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-800 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm" 
-                            placeholder="••••••••"
+                            class="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent sm:text-sm" 
+                            placeholder="•••••••••"
                         >
                         <button 
                             type="button" 
@@ -129,18 +132,18 @@
                 </div>
 
                 <div>
-                    <label for="password_confirmation" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label for="password_confirmation" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Confirm Password <span class="text-red-500">*</span>
                     </label>
-                    <div class="mt-1 relative">
+                    <div class="relative">
                         <input 
                             id="password_confirmation" 
                             name="password_confirmation" 
                             type="password" 
                             autocomplete="new-password" 
                             required 
-                            class="appearance-none relative block w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-800 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm" 
-                            placeholder="••••••••"
+                            class="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent sm:text-sm" 
+                            placeholder="•••••••••"
                         >
                         <button 
                             type="button" 
@@ -172,7 +175,7 @@
             <div>
                 <button 
                     type="submit" 
-                    class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    class="w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     id="register-btn"
                 >
                     <span class="absolute left-0 inset-y-0 flex items-center pl-3">
@@ -185,7 +188,8 @@
                 </button>
             </div>
 
-            <div class="text-center">
+            <!-- Sign In Link -->
+            <div class="text-center pt-4 border-t border-gray-200 dark:border-gray-700">
                 <span class="text-sm text-gray-600 dark:text-gray-400">
                     Already have an account? 
                 </span>

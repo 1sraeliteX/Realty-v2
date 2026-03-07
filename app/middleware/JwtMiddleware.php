@@ -2,78 +2,109 @@
 
 namespace App\Middleware;
 
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
 use Config\Config;
 
 class JwtMiddleware {
     private $secret;
-
+    
     public function __construct() {
-        $this->secret = Config::getInstance()->get('jwt.secret');
+        $config = Config::getInstance();
+        $this->secret = $config->get('jwt.secret');
     }
-
-    public function generateToken($payload) {
-        $payload['iat'] = time();
-        $payload['exp'] = time() + Config::getInstance()->get('jwt.expire');
+    
+    public function generateToken($user) {
+        $header = json_encode(['typ' => 'JWT', 'alg' => 'HS256']);
+        $payload = json_encode([
+            'id' => $user['id'],
+            'email' => $user['email'],
+            'role' => $user['role'],
+            'iat' => time(),
+            'exp' => time() + 86400 // 24 hours
+        ]);
         
-        return JWT::encode($payload, $this->secret, 'HS256');
+        $base64UrlHeader = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($header));
+        $base64UrlPayload = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($payload));
+        
+        $signature = hash_hmac('sha256', $base64UrlHeader . "." . $base64UrlPayload, $this->secret, true);
+        $base64UrlSignature = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($signature));
+        
+        return $base64UrlHeader . "." . $base64UrlPayload . "." . $base64UrlSignature;
     }
-
+    
     public function validateToken($token) {
-        try {
-            $decoded = JWT::decode($token, new Key($this->secret, 'HS256'));
-            return (array) $decoded;
-        } catch (\Exception $e) {
-            return false;
+        if (empty($token)) {
+            return null;
         }
-    }
-
-    public function extractTokenFromHeader() {
-        $headers = getallheaders();
-        $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? null;
         
-        if ($authHeader && preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
-            return $matches[1];
+        $parts = explode('.', $token);
+        if (count($parts) !== 3) {
+            return null;
+        }
+        
+        $header = base64_decode(str_replace(['-', '_'], ['+', '/'], $parts[0]));
+        $payload = base64_decode(str_replace(['-', '_'], ['+', '/'], $parts[1]));
+        $signature = $parts[2];
+        
+        // Verify signature
+        $base64UrlHeader = $parts[0];
+        $base64UrlPayload = $parts[1];
+        
+        $expectedSignature = hash_hmac('sha256', $base64UrlHeader . "." . $base64UrlPayload, $this->secret, true);
+        $base64UrlExpectedSignature = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($expectedSignature));
+        
+        if (!hash_equals($signature, $base64UrlExpectedSignature)) {
+            return null;
+        }
+        
+        $payloadData = json_decode($payload, true);
+        
+        // Check expiration
+        if (isset($payloadData['exp']) && $payloadData['exp'] < time()) {
+            return null;
+        }
+        
+        return $payloadData;
+    }
+    
+    public function getCurrentUser() {
+        $headers = [];
+        
+        // Try to get headers from web server
+        if (function_exists('getallheaders')) {
+            $headers = getallheaders();
+        } else {
+            // Fallback for CLI testing
+            $headers = $_SERVER['HTTP_AUTHORIZATION'] ? ['Authorization' => $_SERVER['HTTP_AUTHORIZATION']] : [];
+        }
+        
+        $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? '';
+        
+        if (strpos($authHeader, 'Bearer ') === 0) {
+            $token = substr($authHeader, 7);
+            $payload = $this->validateToken($token);
+            
+            if ($payload) {
+                // Get user from database
+                $db = \Config\Database::getInstance();
+                $user = $db->fetch("SELECT id, name, email, role FROM admins WHERE id = ? AND deleted_at IS NULL", [$payload['user_id']]);
+                
+                if ($user) {
+                    return $user;
+                }
+            }
         }
         
         return null;
     }
-
-    public function requireAuth() {
-        $token = $this->extractTokenFromHeader();
-        
-        if (!$token) {
-            http_response_code(401);
-            echo json_encode(['error' => 'Authorization token required']);
-            exit;
-        }
-
-        $payload = $this->validateToken($token);
-        
-        if (!$payload) {
-            http_response_code(401);
-            echo json_encode(['error' => 'Invalid or expired token']);
-            exit;
-        }
-
-        return $payload;
-    }
-
-    public function getCurrentUser() {
-        $payload = $this->requireAuth();
-        
-        // Get user from database
-        $db = \Config\Database::getInstance();
-        $sql = "SELECT * FROM admins WHERE id = ? AND deleted_at IS NULL";
-        $user = $db->fetch($sql, [$payload['admin_id']]);
-        
+    
+    public function authenticate() {
+        $user = $this->getCurrentUser();
         if (!$user) {
+            header('Content-Type: application/json');
             http_response_code(401);
-            echo json_encode(['error' => 'User not found']);
+            echo json_encode(['error' => 'Unauthorized']);
             exit;
         }
-
         return $user;
     }
 }

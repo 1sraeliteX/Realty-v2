@@ -4,7 +4,7 @@
 return [
     // Authentication endpoints
     'POST /api/auth/register' => 'ApiAuthController@register',
-    'POST /api/auth/login' => 'ApiAuthController@login',
+    'POST /api/auth/login' => 'AuthController@login',
     'POST /api/auth/logout' => 'ApiAuthController@logout',
     'GET /api/auth/me' => 'ApiAuthController@me',
 
