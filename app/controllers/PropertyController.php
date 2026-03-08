@@ -41,7 +41,7 @@ class PropertyController extends BaseController {
                 WHERE {$whereClause}
                 ORDER BY p.created_at DESC";
         
-        $result = $this->paginate($sql, $page, 10);
+        $result = $this->paginate($sql, $page, 10, $params);
         
         $this->view('dashboard.layout', [
             'admin' => $admin,

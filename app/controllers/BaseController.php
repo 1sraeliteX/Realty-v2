@@ -229,16 +229,17 @@ class BaseController {
         $this->db->insert('activities', $activityData);
     }
 
-    protected function paginate($query, $page = 1, $limit = 10) {
+    protected function paginate($query, $page = 1, $limit = 10, $params = []) {
         $offset = ($page - 1) * $limit;
         
-        // Get total count
-        $countQuery = preg_replace('/SELECT.*?FROM/s', 'SELECT COUNT(*) FROM', $query);
-        $total = $this->db->fetch($countQuery)['COUNT(*)'];
+        // Get total count - extract main query before ORDER BY
+        $mainQuery = preg_replace('/\s+ORDER\s+BY\s+.*$/i', '', $query);
+        $countQuery = "SELECT COUNT(*) FROM ({$mainQuery}) as count_table";
+        $total = $this->db->fetch($countQuery, $params)['COUNT(*)'];
         
         // Get paginated results
         $paginatedQuery = $query . " LIMIT {$limit} OFFSET {$offset}";
-        $results = $this->db->fetchAll($paginatedQuery);
+        $results = $this->db->fetchAll($paginatedQuery, $params);
         
         return [
             'data' => $results,

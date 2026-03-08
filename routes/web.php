@@ -24,6 +24,11 @@ return [
     'GET /superadmin/admins' => 'SuperAdminController@admins',
     'GET /superadmin/export' => 'SuperAdminController@exportData',
 
+    // Public Property routes
+    'GET /properties' => 'PropertyController@index',
+    'GET /properties/create' => 'PropertyController@create',
+    'POST /properties' => 'PropertyController@store',
+
     // Admin Property routes
     'GET /admin/properties' => 'PropertyController@index',
     'GET /admin/properties/create' => 'PropertyController@create',

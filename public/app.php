@@ -3,12 +3,16 @@
 // Start session
 session_start();
 
-// Load Composer autoloader
-require_once __DIR__ . '/../vendor/autoload.php';
-
-// Load environment variables
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
-$dotenv->load();
+// Load Composer autoloader if available, otherwise continue
+if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
+    require_once __DIR__ . '/../vendor/autoload.php';
+    
+    // Load environment variables
+    if (class_exists('Dotenv\Dotenv')) {
+        $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
+        $dotenv->load();
+    }
+}
 
 // Simple router that uses the actual MVC controllers
 class ApplicationRouter {
@@ -16,6 +20,13 @@ class ApplicationRouter {
     private $container = [];
 
     public function __construct() {
+        // Load required config files
+        require_once __DIR__ . '/../config/config.php';
+        require_once __DIR__ . '/../config/database.php';
+        
+        // Load base controller first
+        require_once __DIR__ . '/../app/controllers/BaseController.php';
+        
         // Load routes from web.php
         $this->routes = require __DIR__ . '/../routes/web.php';
         
@@ -80,9 +91,16 @@ class ApplicationRouter {
         // Build controller class name
         $controllerClass = "App\\Controllers\\{$controllerName}";
         
+        // Load controller file if it exists
+        $controllerFile = __DIR__ . "/../app/controllers/{$controllerName}.php";
+        if (file_exists($controllerFile)) {
+            require_once $controllerFile;
+        }
+        
         if (!class_exists($controllerClass)) {
             echo "<h1>Controller Not Found</h1>";
             echo "<p>Controller: $controllerClass</p>";
+            echo "<p>File: $controllerFile</p>";
             return;
         }
         
