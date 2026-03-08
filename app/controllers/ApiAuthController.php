@@ -2,7 +2,11 @@
 
 namespace App\Controllers;
 
+// Manually require the SupabaseClient to ensure it's loaded
+require_once __DIR__ . '/../../config/supabase.php';
+
 use App\Middleware\JwtMiddleware;
+use Config\SupabaseClient;
 
 class ApiAuthController extends BaseController {
     private $jwtMiddleware;
@@ -37,8 +41,7 @@ class ApiAuthController extends BaseController {
 
         // Check if email already exists
         if (isset($data['email'])) {
-            $sql = "SELECT id FROM admins WHERE email = ? AND deleted_at IS NULL";
-            $existing = $this->db->fetch($sql, [$data['email']]);
+            $existing = $this->supabase->select('admins', 'id', ['email' => $data['email']]);
             if ($existing) {
                 $errors['email'] = 'Email already registered';
             }
@@ -52,7 +55,7 @@ class ApiAuthController extends BaseController {
         $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
 
         // Insert new admin
-        $adminId = $this->db->insert('admins', [
+        $adminId = $this->supabase->insert('admins', [
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => $hashedPassword,
@@ -95,12 +98,13 @@ class ApiAuthController extends BaseController {
         }
 
         // Find admin by email
-        $sql = "SELECT * FROM admins WHERE email = ? AND deleted_at IS NULL";
-        $admin = $this->db->fetch($sql, [$data['email']]);
-
-        if (!$admin || !password_verify($data['password'], $admin['password'])) {
+        $admin = $this->supabase->select('admins', '*', ['email' => $data['email']]);
+        
+        if (!$admin || !password_verify($data['password'], $admin[0]['password'])) {
             $this->json(['error' => 'Invalid credentials'], 401);
         }
+        
+        $admin = $admin[0]; // Get first result
 
         // Log activity
         $this->logActivity($admin['id'], 'login', 'Admin logged in via API');

@@ -2,65 +2,84 @@
 
 // Web Routes - Frontend pages
 return [
-    // Authentication routes
-    'GET /' => 'AuthController@showLogin',
-    'GET /login' => 'AuthController@showLogin',
-    'POST /login' => 'AuthController@login',
-    'GET /register' => 'AuthController@showRegister',
-    'POST /register' => 'AuthController@register',
-    'POST /logout' => 'AuthController@logout',
+    // Admin Authentication routes
+    'GET /admin' => 'AdminAuthController@showLogin',
+    'GET /admin/login' => 'AdminAuthController@showLogin',
+    'POST /admin/login' => 'AdminAuthController@login',
+    'GET /admin/register' => 'AdminAuthController@showRegister',
+    'POST /admin/register' => 'AdminAuthController@register',
+    'POST /admin/logout' => 'AdminAuthController@logout',
 
-    // Dashboard routes
-    'GET /dashboard' => 'DashboardController@index',
+    // Super Admin Authentication routes
+    'GET /superadmin' => 'SuperAdminAuthController@showLogin',
+    'GET /superadmin/login' => 'SuperAdminAuthController@showLogin',
+    'POST /superadmin/login' => 'SuperAdminAuthController@login',
+    'POST /superadmin/logout' => 'SuperAdminAuthController@logout',
 
-    // Super Admin routes
-    'GET /superadmin' => 'SuperAdminController@index',
+    // Admin Dashboard routes
+    'GET /admin/dashboard' => 'AdminDashboardController@index',
+
+    // Super Admin Dashboard routes
+    'GET /superadmin/dashboard' => 'SuperAdminController@index',
     'GET /superadmin/admins' => 'SuperAdminController@admins',
     'GET /superadmin/export' => 'SuperAdminController@exportData',
 
-    // Property routes
-    'GET /properties' => 'PropertyController@index',
-    'GET /properties/create' => 'PropertyController@create',
-    'POST /properties' => 'PropertyController@store',
-    'GET /properties/{id}' => 'PropertyController@show',
-    'GET /properties/{id}/edit' => 'PropertyController@edit',
-    'POST /properties/{id}' => 'PropertyController@update',
-    'POST /properties/{id}/delete' => 'PropertyController@delete',
+    // Admin Property routes
+    'GET /admin/properties' => 'PropertyController@index',
+    'GET /admin/properties/create' => 'PropertyController@create',
+    'POST /admin/properties' => 'PropertyController@store',
+    'GET /admin/properties/{id}' => 'PropertyController@show',
+    'GET /admin/properties/{id}/edit' => 'PropertyController@edit',
+    'POST /admin/properties/{id}' => 'PropertyController@update',
+    'POST /admin/properties/{id}/delete' => 'PropertyController@delete',
 
-    // Unit routes
-    'GET /units' => 'UnitController@index',
-    'POST /units' => 'UnitController@store',
-    'GET /units/{id}/edit' => 'UnitController@edit',
-    'POST /units/{id}' => 'UnitController@update',
-    'POST /units/{id}/delete' => 'UnitController@delete',
+    // Admin Unit routes
+    'GET /admin/units' => 'UnitController@index',
+    'POST /admin/units' => 'UnitController@store',
+    'GET /admin/units/{id}/edit' => 'UnitController@edit',
+    'POST /admin/units/{id}' => 'UnitController@update',
+    'POST /admin/units/{id}/delete' => 'UnitController@delete',
 
-    // Tenant routes
-    'GET /tenants' => 'TenantController@index',
-    'GET /tenants/create' => 'TenantController@create',
-    'POST /tenants' => 'TenantController@store',
-    'GET /tenants/{id}' => 'TenantController@show',
-    'GET /tenants/{id}/edit' => 'TenantController@edit',
-    'POST /tenants/{id}' => 'TenantController@update',
-    'POST /tenants/{id}/delete' => 'TenantController@delete',
+    // Admin Tenant routes
+    'GET /admin/tenants' => 'TenantController@index',
+    'GET /admin/tenants/create' => 'TenantController@create',
+    'POST /admin/tenants' => 'TenantController@store',
+    'GET /admin/tenants/{id}' => 'TenantController@show',
+    'GET /admin/tenants/{id}/edit' => 'TenantController@edit',
+    'POST /admin/tenants/{id}' => 'TenantController@update',
+    'POST /admin/tenants/{id}/delete' => 'TenantController@delete',
 
-    // Payment routes
-    'GET /payments' => 'PaymentController@index',
-    'GET /payments/create' => 'PaymentController@create',
-    'POST /payments' => 'PaymentController@store',
-    'GET /payments/{id}/edit' => 'PaymentController@edit',
-    'POST /payments/{id}' => 'PaymentController@update',
-    'POST /payments/{id}/delete' => 'PaymentController@delete',
+    // Admin Payment routes
+    'GET /admin/payments' => 'PaymentController@index',
+    'GET /admin/payments/create' => 'PaymentController@create',
+    'POST /admin/payments' => 'PaymentController@store',
+    'GET /admin/payments/{id}/edit' => 'PaymentController@edit',
+    'POST /admin/payments/{id}' => 'PaymentController@update',
+    'POST /admin/payments/{id}/delete' => 'PaymentController@delete',
 
-    // Invoice routes
-    'GET /invoices' => 'InvoiceController@index',
-    'GET /invoices/create' => 'InvoiceController@create',
-    'POST /invoices' => 'InvoiceController@store',
-    'GET /invoices/{id}' => 'InvoiceController@show',
-    'GET /invoices/{id}/edit' => 'InvoiceController@edit',
-    'POST /invoices/{id}' => 'InvoiceController@update',
-    'POST /invoices/{id}/delete' => 'InvoiceController@delete',
+    // Admin Invoice routes
+    'GET /admin/invoices' => 'InvoiceController@index',
+    'GET /admin/invoices/create' => 'InvoiceController@create',
+    'POST /admin/invoices' => 'InvoiceController@store',
+    'GET /admin/invoices/{id}' => 'InvoiceController@show',
+    'GET /admin/invoices/{id}/edit' => 'InvoiceController@edit',
+    'POST /admin/invoices/{id}' => 'InvoiceController@update',
+    'POST /admin/invoices/{id}/delete' => 'InvoiceController@delete',
 
-    // Profile routes
-    'GET /profile' => 'ProfileController@index',
-    'POST /profile' => 'ProfileController@update',
+    // Admin Profile routes
+    'GET /admin/profile' => 'ProfileController@index',
+    'POST /admin/profile' => 'ProfileController@update',
+
+    // Direct access routes (for development/testing)
+    'GET /admin-direct' => 'AdminDashboardController@index',
+    'GET /superadmin-direct' => 'SuperAdminController@index',
+
+    // Legacy routes - redirect to new admin routes
+    'GET /' => 'LegacyController@redirectToAdminLogin',
+    'GET /login' => 'LegacyController@redirectToAdminLogin',
+    'POST /login' => 'AdminAuthController@login',
+    'GET /register' => 'LegacyController@redirectToAdminRegister',
+    'POST /register' => 'AdminAuthController@register',
+    'POST /logout' => 'AdminAuthController@logout',
+    'GET /dashboard' => 'LegacyController@redirectToAdminDashboard',
 ];

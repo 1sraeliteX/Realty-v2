@@ -8,7 +8,7 @@ require_once __DIR__ . '/../../config/database.php';
 use App\Middleware\JwtMiddleware;
 use Config\Database;
 
-class AuthController extends BaseController {
+class SuperAdminAuthController extends BaseController {
     private $jwtMiddleware;
     
     public function __construct() {
@@ -18,36 +18,18 @@ class AuthController extends BaseController {
     }
     
     public function showLogin() {
-        // TEMPORARILY DISABLED - Allow direct access without login check
-        /*
-        // Check if user is already logged in
-        if (isset($_SESSION['admin_id'])) {
-            header('Location: /dashboard');
+        // Check if super admin is already logged in
+        if (isset($_SESSION['admin_id']) && $_SESSION['admin_role'] === 'super_admin') {
+            header('Location: /superadmin/dashboard');
             exit;
         }
-        */
         
-        // Show login form for web requests
-        $this->view('auth/login');
-    }
-    
-    public function showRegister() {
-        // TEMPORARILY DISABLED - Allow direct access without login check
-        /*
-        // Check if user is already logged in
-        if (isset($_SESSION['admin_id'])) {
-            header('Location: /dashboard');
-            exit;
-        }
-        */
-        
-        // Show registration form for web requests
-        $this->view('auth/register');
-    }
-    
-    public function register() {
-        // Handle registration logic here
-        $this->json(['message' => 'Registration not implemented yet'], 501);
+        // Show login form for super admin
+        $this->view('auth.login', [
+            'userType' => 'superadmin',
+            'loginAction' => '/superadmin/login',
+            'title' => 'Super Admin Login'
+        ]);
     }
     
     public function login() {
@@ -62,14 +44,14 @@ class AuthController extends BaseController {
                     $this->json(['error' => 'Email and password are required'], 400);
                 } else {
                     $_SESSION['error'] = 'Email and password are required';
-                    header('Location: /login');
+                    header('Location: /superadmin/login');
                     exit;
                 }
                 return;
             }
             
-            // Find user using MySQL database
-            $stmt = $this->db->getConnection()->prepare("SELECT * FROM admins WHERE email = ? AND deleted_at IS NULL");
+            // Find super admin user with role 'super_admin' only
+            $stmt = $this->db->getConnection()->prepare("SELECT * FROM admins WHERE email = ? AND role = 'super_admin' AND deleted_at IS NULL");
             $stmt->execute([$email]);
             $user = $stmt->fetch();
             
@@ -78,13 +60,13 @@ class AuthController extends BaseController {
                     $this->json(['error' => 'Invalid credentials'], 401);
                 } else {
                     $_SESSION['error'] = 'Invalid credentials';
-                    header('Location: /login');
+                    header('Location: /superadmin/login');
                     exit;
                 }
                 return;
             }
             
-            // Set session for web routes
+            // Set session for super admin
             $_SESSION['admin_id'] = $user['id'];
             $_SESSION['admin_name'] = $user['name'];
             $_SESSION['admin_email'] = $user['email'];
@@ -110,17 +92,12 @@ class AuthController extends BaseController {
                     ]
                 ]);
             } else {
-                // Redirect to appropriate dashboard for web
-                if ($user['role'] === 'super_admin') {
-                    header('Location: /superadmin');
-                } else {
-                    header('Location: /dashboard');
-                }
+                // Redirect to super admin dashboard
+                header('Location: /superadmin/dashboard');
                 exit;
             }
         } else {
-            // Show login form
-            $this->view('auth/login');
+            $this->showLogin();
         }
     }
     
@@ -129,14 +106,14 @@ class AuthController extends BaseController {
         if ($this->isApiRequest()) {
             $this->json(['message' => 'Logged out successfully']);
         } else {
-            header('Location: /login');
+            header('Location: /superadmin/login');
             exit;
         }
     }
     
     public function me() {
         $user = $this->jwtMiddleware->getCurrentUser();
-        if ($user) {
+        if ($user && $user['role'] === 'super_admin') {
             $this->json($user);
         } else {
             $this->json(['error' => 'Unauthorized'], 401);

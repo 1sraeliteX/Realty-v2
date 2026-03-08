@@ -7,9 +7,16 @@ require_once __DIR__ . '/../../config/database.php';
 
 use Config\Database;
 
-class DashboardController extends BaseController {
+class AdminDashboardController extends BaseController {
     public function index() {
         $admin = $this->requireAuth();
+        
+        // Ensure this is an admin, not super admin
+        if ($admin['role'] !== 'admin') {
+            $_SESSION['error'] = 'Access denied. Admin area only.';
+            header('Location: /superadmin/dashboard');
+            exit;
+        }
         
         // Get dashboard statistics
         $stats = $this->getDashboardStats($admin['id']);

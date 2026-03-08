@@ -2,23 +2,24 @@
 require_once __DIR__ . '/../../components/SearchableDropdown.php';
 require_once __DIR__ . '/../../config/property_types.php';
 
-$title = 'Add Property';
-$pageTitle = 'Add New Property';
-
-// Check if we're editing an existing property
-$isEditing = isset($property) && $property;
-if ($isEditing) {
-    $title = 'Edit Property';
-    $pageTitle = 'Edit Property';
-}
+$title = 'Edit Property';
+$pageTitle = 'Edit Property';
 
 // Get property types configuration
 $propertyTypes = include __DIR__ . '/../../config/property_types.php';
+
+// Check if we're editing an existing property
+$isEditing = isset($property) && $property;
+if (!$isEditing) {
+    // Redirect to create page if no property data
+    header('Location: /admin/properties/create');
+    exit;
+}
 ?>
 
 <!-- Back Navigation -->
 <div class="mb-6">
-    <a href="/properties" class="inline-flex items-center text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors">
+    <a href="/admin/properties" class="inline-flex items-center text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors">
         <i class="fas fa-arrow-left mr-2"></i>
         Back to Properties
     </a>
@@ -30,7 +31,9 @@ $propertyTypes = include __DIR__ . '/../../config/property_types.php';
 </div>
 
 <!-- Main Form Container -->
-<form id="property-form" class="space-y-8" method="POST" action="/properties" enctype="multipart/form-data">
+<form id="property-form" class="space-y-8" method="POST" action="/admin/properties/<?php echo $property['id']; ?>" enctype="multipart/form-data">
+    <!-- Hidden field for editing -->
+    <input type="hidden" name="_method" value="PUT">
     
     <!-- Section 1: Basic Information -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
@@ -100,6 +103,7 @@ $propertyTypes = include __DIR__ . '/../../config/property_types.php';
                     required
                     min="0"
                     step="0.01"
+                    value="<?php echo htmlspecialchars($property['rent_price'] ?? ''); ?>"
                     class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" 
                     placeholder="0.00"
                 >
@@ -118,6 +122,7 @@ $propertyTypes = include __DIR__ . '/../../config/property_types.php';
                     required
                     min="1900"
                     max="<?php echo date('Y'); ?>"
+                    value="<?php echo htmlspecialchars($property['year_built'] ?? ''); ?>"
                     class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" 
                     placeholder="2023"
                 >
@@ -142,6 +147,7 @@ $propertyTypes = include __DIR__ . '/../../config/property_types.php';
                     name="rooms" 
                     required
                     min="0"
+                    value="<?php echo htmlspecialchars($property['bedrooms'] ?? ''); ?>"
                     class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" 
                     placeholder="0"
                 >
@@ -159,6 +165,7 @@ $propertyTypes = include __DIR__ . '/../../config/property_types.php';
                     name="kitchens" 
                     required
                     min="0"
+                    value="<?php echo htmlspecialchars($property['kitchens'] ?? ''); ?>"
                     class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" 
                     placeholder="0"
                 >
@@ -177,6 +184,7 @@ $propertyTypes = include __DIR__ . '/../../config/property_types.php';
                     required
                     min="0"
                     step="0.5"
+                    value="<?php echo htmlspecialchars($property['bathrooms'] ?? ''); ?>"
                     class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" 
                     placeholder="0"
                 >
@@ -195,10 +203,10 @@ $propertyTypes = include __DIR__ . '/../../config/property_types.php';
                     class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 >
                     <option value="">Select option</option>
-                    <option value="in_building">In Building</option>
-                    <option value="borehole">Borehole</option>
-                    <option value="water_tank">Water Tank</option>
-                    <option value="none">None</option>
+                    <option value="in_building" <?php echo ($property['water_availability'] ?? '') === 'in_building' ? 'selected' : ''; ?>>In Building</option>
+                    <option value="borehole" <?php echo ($property['water_availability'] ?? '') === 'borehole' ? 'selected' : ''; ?>>Borehole</option>
+                    <option value="water_tank" <?php echo ($property['water_availability'] ?? '') === 'water_tank' ? 'selected' : ''; ?>>Water Tank</option>
+                    <option value="none" <?php echo ($property['water_availability'] ?? '') === 'none' ? 'selected' : ''; ?>>None</option>
                 </select>
                 <span class="text-red-500 text-sm mt-1 hidden" id="water_availability_error">Water availability is required</span>
             </div>
@@ -215,9 +223,9 @@ $propertyTypes = include __DIR__ . '/../../config/property_types.php';
                     class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 >
                     <option value="">Select option</option>
-                    <option value="yes">Yes</option>
-                    <option value="no">No</option>
-                    <option value="limited">Limited</option>
+                    <option value="yes" <?php echo ($property['parking'] ?? '') === 'yes' ? 'selected' : ''; ?>>Yes</option>
+                    <option value="no" <?php echo ($property['parking'] ?? '') === 'no' ? 'selected' : ''; ?>>No</option>
+                    <option value="limited" <?php echo ($property['parking'] ?? '') === 'limited' ? 'selected' : ''; ?>>Limited</option>
                 </select>
                 <span class="text-red-500 text-sm mt-1 hidden" id="parking_error">Parking option is required</span>
             </div>
@@ -233,76 +241,19 @@ $propertyTypes = include __DIR__ . '/../../config/property_types.php';
                     rows="4"
                     class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none" 
                     placeholder="Enter property description..."
-                ></textarea>
-            </div>
-        </div>
-    </div>
-
-    <!-- Section 3: Property Images -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-6">Property Images</h2>
-        
-        <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8">
-            <div class="text-center mb-6">
-                <div class="flex justify-center space-x-4">
-                    <!-- Upload from Device -->
-                    <button type="button" onclick="document.getElementById('image-upload').click()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                        <i class="fas fa-upload mr-2"></i>Upload from Device
-                    </button>
-                    
-                    <!-- Take Photo -->
-                    <button type="button" onclick="takePhoto()" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
-                        <i class="fas fa-camera mr-2"></i>Take Photo
-                    </button>
-                </div>
-                
-                <input type="file" id="image-upload" class="hidden" accept="image/*" multiple onchange="handleImageSelect(event)">
-                
-                <p class="text-sm text-gray-500 dark:text-gray-400 mt-4">
-                    Supported formats: JPG, PNG, GIF. Maximum file size: 5MB per image.
-                </p>
-            </div>
-            
-            <!-- Image Preview Grid -->
-            <div id="image-preview" class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <!-- Image previews will be dynamically added here -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Section 4: Amenities -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-6">Amenities</h2>
-        
-        <div class="space-y-4">
-            <!-- Amenity Input -->
-            <div class="flex gap-4">
-                <input 
-                    type="text" 
-                    id="amenity-input" 
-                    class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" 
-                    placeholder="Security, Generator, Water Tank"
-                >
-                <button type="button" onclick="addAmenity()" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
-                    <i class="fas fa-plus mr-2"></i>Add
-                </button>
-            </div>
-            
-            <!-- Amenities List -->
-            <div id="amenities-list" class="flex flex-wrap gap-2">
-                <!-- Amenities will be dynamically added here -->
+                ><?php echo htmlspecialchars($property['description'] ?? ''); ?></textarea>
             </div>
         </div>
     </div>
 
     <!-- Action Buttons -->
     <div class="flex justify-end space-x-4">
-        <button type="button" onclick="window.location.href='/properties'" class="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+        <button type="button" onclick="window.location.href='/admin/properties'" class="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
             Cancel
         </button>
         <button type="submit" id="submit-btn" class="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 flex items-center">
-            <i class="fas fa-<?php echo $isEditing ? 'save' : 'plus'; ?> mr-2"></i>
-            <span id="submit-text"><?php echo $isEditing ? 'Update Property' : 'Add Property'; ?></span>
+            <i class="fas fa-save mr-2"></i>
+            <span id="submit-text">Update Property</span>
             <div id="submit-loading" class="hidden ml-2">
                 <i class="fas fa-spinner fa-spin"></i>
             </div>
@@ -311,159 +262,6 @@ $propertyTypes = include __DIR__ . '/../../config/property_types.php';
 </form>
 
 <script>
-let selectedImages = [];
-let amenities = [];
-
-// Image Upload Functions
-function handleImageSelect(event) {
-    const files = event.target.files;
-    const preview = document.getElementById('image-preview');
-    
-    for (let file of files) {
-        if (file.type.startsWith('image/')) {
-            if (file.size > 5 * 1024 * 1024) { // 5MB limit
-                showToast('File size must be less than 5MB', 'error');
-                continue;
-            }
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const imageContainer = document.createElement('div');
-                imageContainer.className = 'relative group';
-                imageContainer.innerHTML = `
-                    <img src="${e.target.result}" class="w-full h-32 object-cover rounded-lg">
-                    <button type="button" onclick="removeImage(${selectedImages.length})" class="absolute top-2 right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <i class="fas fa-times text-xs"></i>
-                    </button>
-                `;
-                preview.appendChild(imageContainer);
-                selectedImages.push(file);
-            };
-            reader.readAsDataURL(file);
-        } else {
-            showToast('Please select only image files', 'error');
-        }
-    }
-}
-
-function removeImage(index) {
-    selectedImages.splice(index, 1);
-    updateImagePreview();
-}
-
-function updateImagePreview() {
-    const preview = document.getElementById('image-preview');
-    preview.innerHTML = '';
-    selectedImages.forEach((file, index) => {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const imageContainer = document.createElement('div');
-            imageContainer.className = 'relative group';
-            imageContainer.innerHTML = `
-                <img src="${e.target.result}" class="w-full h-32 object-cover rounded-lg">
-                <button type="button" onclick="removeImage(${index})" class="absolute top-2 right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <i class="fas fa-times text-xs"></i>
-                </button>
-            `;
-            preview.appendChild(imageContainer);
-        };
-        reader.readAsDataURL(file);
-    });
-}
-
-function takePhoto() {
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(function(stream) {
-                const modal = document.createElement('div');
-                modal.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50';
-                modal.innerHTML = `
-                    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl">
-                        <video id="camera-video" class="w-full rounded-lg mb-4" autoplay></video>
-                        <div class="flex justify-center space-x-4">
-                            <button type="button" onclick="capturePhoto()" class="px-4 py-2 bg-green-600 text-white rounded-lg">
-                                <i class="fas fa-camera mr-2"></i>Capture
-                            </button>
-                            <button type="button" onclick="closeCamera()" class="px-4 py-2 bg-gray-600 text-white rounded-lg">
-                                Cancel
-                            </button>
-                        </div>
-                    </div>
-                `;
-                document.body.appendChild(modal);
-                
-                const video = document.getElementById('camera-video');
-                video.srcObject = stream;
-                window.currentStream = stream;
-            })
-            .catch(function(err) {
-                showToast('Camera access denied or not available', 'error');
-            });
-    } else {
-        showToast('Camera not available on this device', 'error');
-    }
-}
-
-function capturePhoto() {
-    const video = document.getElementById('camera-video');
-    const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(video, 0, 0);
-    
-    canvas.toBlob(function(blob) {
-        const file = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
-        selectedImages.push(file);
-        updateImagePreview();
-        closeCamera();
-        showToast('Photo captured successfully', 'success');
-    }, 'image/jpeg');
-}
-
-function closeCamera() {
-    if (window.currentStream) {
-        window.currentStream.getTracks().forEach(track => track.stop());
-    }
-    const modal = document.querySelector('.fixed.inset-0');
-    if (modal) {
-        modal.remove();
-    }
-}
-
-// Amenity Functions
-function addAmenity() {
-    const input = document.getElementById('amenity-input');
-    const value = input.value.trim();
-    
-    if (value) {
-        if (amenities.includes(value)) {
-            showToast('Amenity already added', 'warning');
-            return;
-        }
-        amenities.push(value);
-        updateAmenitiesList();
-        input.value = '';
-    }
-}
-
-function updateAmenitiesList() {
-    const list = document.getElementById('amenities-list');
-    list.innerHTML = amenities.map((amenity, index) => `
-        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-            ${amenity}
-            <button type="button" onclick="removeAmenity(${index})" class="ml-2 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200">
-                <i class="fas fa-times"></i>
-            </button>
-        </span>
-    `).join('');
-}
-
-function removeAmenity(index) {
-    amenities.splice(index, 1);
-    updateAmenitiesList();
-}
-
 // Form Submission
 document.getElementById('property-form').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -477,70 +275,25 @@ document.getElementById('property-form').addEventListener('submit', function(e) 
     const submitBtn = document.getElementById('submit-btn');
     const submitText = document.getElementById('submit-text');
     const submitLoading = document.getElementById('submit-loading');
-    const isEditing = <?php echo $isEditing ? 'true' : 'false'; ?>;
     
     submitBtn.disabled = true;
-    submitText.textContent = isEditing ? 'Updating Property...' : 'Adding Property...';
+    submitText.textContent = 'Updating Property...';
     submitLoading.classList.remove('hidden');
     
     // Collect form data
     const formData = new FormData(this);
     
-    // Add images
-    selectedImages.forEach((image, index) => {
-        formData.append(`images[${index}]`, image);
-    });
+    // Add method override for PUT
+    formData.append('_method', 'PUT');
     
-    // Add amenities as JSON string
-    formData.append('amenities', JSON.stringify(amenities));
-    
-    // Get authentication token (for API requests)
-    const token = localStorage.getItem('jwt_token') || getCookie('jwt_token');
-    
-    // If no token, we need to handle this differently for web requests
-    const isWebRequest = !token;
-    
-    // Map form fields to API field names
-    const apiFormData = new FormData();
-    apiFormData.append('name', formData.get('property_name'));
-    apiFormData.append('address', formData.get('address'));
-    apiFormData.append('type', formData.get('property_type'));
-    apiFormData.append('rent_price', formData.get('yearly_rent'));
-    apiFormData.append('year_built', formData.get('year_built'));
-    apiFormData.append('bedrooms', formData.get('rooms'));
-    apiFormData.append('bathrooms', formData.get('bathrooms'));
-    apiFormData.append('kitchens', formData.get('kitchens'));
-    apiFormData.append('parking', formData.get('parking'));
-    apiFormData.append('description', formData.get('description'));
-    
-    // Parse amenities JSON and re-encode for API
-    try {
-        const amenitiesData = JSON.parse(formData.get('amenities'));
-        apiFormData.append('amenities', JSON.stringify(amenitiesData));
-    } catch (e) {
-        apiFormData.append('amenities', '[]');
-    }
-    
-    // Add images
-    selectedImages.forEach((image, index) => {
-        apiFormData.append(`images[${index}]`, image);
-    });
-    
-    // Submit form using fetch to web endpoint
-    const requestOptions = {
+    // Submit form using fetch
+    fetch('/admin/properties/<?php echo $property['id']; ?>', {
         method: 'POST',
-        body: apiFormData,
+        body: formData,
         headers: {
             'X-Requested-With': 'XMLHttpRequest'
         }
-    };
-    
-    // Add Authorization header only if we have a token
-    if (token) {
-        requestOptions.headers.Authorization = `Bearer ${token}`;
-    }
-    
-    fetch('/properties', requestOptions)
+    })
     .then(response => {
         if (response.ok) {
             return response.json();
@@ -553,11 +306,11 @@ document.getElementById('property-form').addEventListener('submit', function(e) 
         }
     })
     .then(data => {
-        showToast(isEditing ? 'Property updated successfully!' : 'Property added successfully!', 'success');
+        showToast('Property updated successfully!', 'success');
         
         // Redirect to properties list
         setTimeout(() => {
-            window.location.href = '/properties';
+            window.location.href = '/admin/properties';
         }, 1500);
     })
     .catch(error => {
@@ -568,22 +321,14 @@ document.getElementById('property-form').addEventListener('submit', function(e) 
             const errorMessages = Object.values(error.errors).flat().join(', ');
             showToast(`Validation errors: ${errorMessages}`, 'error');
         } else {
-            showToast('Error saving property. Please try again.', 'error');
+            showToast('Error updating property. Please try again.', 'error');
         }
         
         // Reset button state
         submitBtn.disabled = false;
-        submitText.textContent = isEditing ? 'Update Property' : 'Add Property';
+        submitText.textContent = 'Update Property';
         submitLoading.classList.add('hidden');
     });
-});
-
-// Allow Enter key to add amenities
-document.getElementById('amenity-input').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        e.preventDefault();
-        addAmenity();
-    }
 });
 
 // Initialize when DOM is ready
@@ -600,7 +345,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Update form validation
+// Form validation
 function validateForm() {
     let isValid = true;
     const requiredFields = [

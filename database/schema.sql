@@ -54,7 +54,7 @@ CREATE TABLE `properties` (
   `admin_id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `address` text NOT NULL,
-  `type` enum('residential','commercial','mixed') NOT NULL DEFAULT 'residential',
+  `type` varchar(100) NOT NULL DEFAULT 'apartment',
   `category` varchar(100) DEFAULT NULL,
   `description` text DEFAULT NULL,
   `year_built` int(4) DEFAULT NULL,

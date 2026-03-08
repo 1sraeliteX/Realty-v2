@@ -1,222 +1,106 @@
-You are working inside an existing production real estate management codebase.
+Prompt
 
-Your task is to **add a comprehensive list of property types to the property creation/edit forms** and **upgrade all large dropdown fields to include a searchable dropdown with a built-in search bar** so users can easily find options without scrolling.
+Act as a senior backend engineer and debug the following database error in my PHP MVC real estate management system.
 
-Follow the **existing architecture, components, styling system, and form handling already used in the project**.
-Do not introduce new libraries unless the project already uses them.
+Error:
 
----
+SQLSTATE[42S02]: Base table or view not found: 1146 Table 'real_estate_db.payments' doesn't exist
 
-# Objective
+Stack trace shows the issue originates from:
 
-1. Add the full list of property types below to the **Property Type dropdown** used when creating or editing properties.
-2. Upgrade the dropdown so users can **search inside the dropdown instead of scrolling through a long list**.
-3. Ensure the same dropdown component is reused anywhere **property type selection appears**.
-4. Ensure this works in **Admin and Super Admin dashboards**.
+app/controllers/SuperAdminController.php
 
----
+Specifically inside:
 
-# Property Types List
+getPlatformStats()
 
-Add the following property types as selectable options:
+which executes a query similar to:
 
-Apartment
-Flat
-Studio Apartment
-Duplex
-Triplex
-Quadplex
-Detached House
-Semi-Detached House
-Bungalow
-Terrace House
-Townhouse
-Condominium
-Penthouse
-Loft
-Cottage
-Villa
-Mansion
-Mobile Home
-Tiny Home
-Serviced Apartment
-Student Housing
-Co-Living Space
-Lodge
-Self Contain
-Mini Flat
-Room and Parlor
-Apartment Building
-Residential Complex
-Block of Flats
-Hostel
-Dormitory
-Boarding House
-Office Building
-Office Space
-Office Suite
-Co-Working Space
-Retail Shop
-Shop
-Shopping Mall
-Strip Mall
-Supermarket
-Restaurant
-Cafe
-Bar
-Lounge
-Hotel
-Motel
-Guest House
-Event Center
-Cinema
-Bank Building
-Clinic
-Hospital
-Pharmacy
-School
-Training Center
-Warehouse
-Factory
-Manufacturing Plant
-Distribution Center
-Cold Storage Facility
-Assembly Plant
-Industrial Yard
-Residential Land
-Commercial Land
-Industrial Land
-Agricultural Land
-Farm Land
-Ranch Land
-Undeveloped Land
-Development Site
-Estate Plot
-Church
-Mosque
-Temple
-Cemetery
-Government Building
-Military Facility
-Prison
-Stadium
-Sports Complex
-Convention Center
-Library
-Museum
-Mixed Use Building
-Shop and Apartment
-Office and Retail Building
-Mixed Use Tower
+SELECT SUM(amount) FROM payments
 
----
+Project details:
 
-# Searchable Dropdown Requirement
+PHP MVC architecture
 
-The Property Type dropdown must include:
+MySQL database
 
-* A **search input inside the dropdown**
-* Instant filtering as the user types
-* Keyboard navigation support
-* Scrollable result list
-* Ability to clear selection
+PDO for database access
 
-Behavior example:
+Running on XAMPP
 
-User clicks Property Type field → dropdown opens
-At the top of the dropdown:
+Database name: real_estate_db
 
-```
-Search property type...
-```
+Tasks to perform:
 
-Typing:
+Trace the query source
 
-```
-hos
-```
+Inspect SuperAdminController.php around line 75 where the payments table is queried.
 
-Filters results to:
+Identify all queries referencing payments.
 
-```
-Hostel
-Hospital
-Hotel
-```
+Verify database schema
 
----
+Check whether the payments table actually exists in real_estate_db.
 
-# Reusable Component
+If it does not exist, determine whether:
 
-Create a **reusable searchable dropdown component** so it can be reused for other large dropdowns in the future.
+The table name is incorrect (e.g., tenant_payments, rent_payments, transactions, invoices).
 
-The component should support:
+The table migration or SQL file was never executed.
 
-* label
-* placeholder
-* search input
-* selectable list
-* keyboard navigation
-* controlled form value
-* validation support
-* disabled state
+If the table is missing
 
-This component should replace the existing dropdown only where large lists exist.
+Create a proper SQL schema for a payments table compatible with a real estate system.
 
----
+Include fields such as:
 
-# Performance Considerations
+id
+tenant_id
+property_id
+unit_id
+amount
+payment_method
+payment_status
+reference
+paid_at
+created_at
+updated_at
 
-* Do not render unnecessary items during filtering
-* Debounce search input if needed
-* Ensure dropdown remains responsive even with long lists
+Provide the full SQL:
 
----
+CREATE TABLE payments (...)
 
-# UX Improvements
+If another table already stores payments
 
-The dropdown should include:
+Update the query in getPlatformStats() to use the correct table.
 
-* highlighted selected item
-* hover states
-* empty state when search returns no result
+Ensure the query safely handles empty results:
 
 Example:
 
-```
-No property type found
-```
+$stmt = $this->db->prepare("SELECT COALESCE(SUM(amount),0) as total_revenue FROM payments");
+$stmt->execute();
+$totalRevenue = $stmt->fetch(PDO::FETCH_ASSOC)['total_revenue'];
 
----
+Add defensive checks
 
-# Form Integration
+Prevent dashboard crashes if the table is missing.
 
-Ensure the selected property type:
+Implement try/catch around the query and log errors instead of breaking the dashboard.
 
-* correctly updates the form state
-* validates as a required field
-* is submitted with the property creation request
-* is saved in the database correctly
+Verify related dependencies
 
----
+Check if other controllers, models, or services reference the payments table.
 
-# Code Quality
+Ensure consistency across the system.
 
-Follow existing project conventions:
+Return
 
-* reuse existing UI primitives
-* maintain consistent styling
-* avoid duplicating logic
-* keep the dropdown component modular and reusable
+The corrected getPlatformStats() function
 
----
+The SQL schema if the table must be created
 
-# Expected Output
+Any other files that must be updated
 
-Implement:
-
-1. A reusable **SearchableDropdown component**
-2. Property Type list integration
-3. Updated Property form using the new dropdown
-4. Proper filtering behavior
-5. Full compatibility with Admin and Super Admin dashboards
+Goal:
+Ensure the Super Admin dashboard loads correctly and retrieves platform revenue statistics without database errors.

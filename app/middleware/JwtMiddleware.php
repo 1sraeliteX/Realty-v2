@@ -86,7 +86,7 @@ class JwtMiddleware {
             if ($payload) {
                 // Get user from database
                 $db = \Config\Database::getInstance();
-                $user = $db->fetch("SELECT id, name, email, role FROM admins WHERE id = ? AND deleted_at IS NULL", [$payload['user_id']]);
+                $user = $db->fetch("SELECT id, name, email, role FROM admins WHERE id = ? AND deleted_at IS NULL", [$payload['id']]);
                 
                 if ($user) {
                     return $user;

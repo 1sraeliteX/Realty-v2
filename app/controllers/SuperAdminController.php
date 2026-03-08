@@ -2,6 +2,11 @@
 
 namespace App\Controllers;
 
+// Manually require database configuration
+require_once __DIR__ . '/../../config/database.php';
+
+use Config\Database;
+
 class SuperAdminController extends BaseController {
     public function index() {
         $admin = $this->requireSuperAdmin();
@@ -49,66 +54,63 @@ class SuperAdminController extends BaseController {
 
     private function getPlatformStats() {
         $stats = [];
+        $pdo = $this->db->getConnection();
         
         // Total admins
-        $sql = "SELECT COUNT(*) as total FROM admins WHERE deleted_at IS NULL";
-        $result = $this->db->fetch($sql);
-        $stats['total_admins'] = $result['total'];
+        $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM admins WHERE deleted_at IS NULL");
+        $stmt->execute();
+        $stats['total_admins'] = $stmt->fetchColumn();
         
         // Total properties
-        $sql = "SELECT COUNT(*) as total FROM properties WHERE deleted_at IS NULL";
-        $result = $this->db->fetch($sql);
-        $stats['total_properties'] = $result['total'];
+        $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM properties");
+        $stmt->execute();
+        $stats['total_properties'] = $stmt->fetchColumn();
         
         // Active subscriptions (assuming admins with recent activity)
-        $sql = "SELECT COUNT(DISTINCT admin_id) as total FROM properties 
-                WHERE deleted_at IS NULL AND created_at >= DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)";
-        $result = $this->db->fetch($sql);
-        $stats['active_subscriptions'] = $result['total'];
+        $stmt = $pdo->prepare("SELECT COUNT(DISTINCT admin_id) as count FROM properties WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)");
+        $stmt->execute();
+        $stats['active_subscriptions'] = $stmt->fetchColumn();
         
-        // Platform revenue (sum of all payments)
-        $sql = "SELECT COALESCE(SUM(amount), 0) as total FROM payments 
-                WHERE status = 'paid' AND deleted_at IS NULL";
-        $result = $this->db->fetch($sql);
-        $stats['platform_revenue'] = $result['total'];
+        // Platform revenue (sum of all paid payments)
+        $stmt = $pdo->prepare("SELECT SUM(amount) as total FROM payments WHERE status = ?");
+        $stmt->execute(['paid']);
+        $stats['platform_revenue'] = $stmt->fetchColumn() ?: 0;
         
         return $stats;
     }
 
     private function getRecentAdmins($limit = 5) {
-        $sql = "SELECT id, name, email, business_name, role, created_at 
-                FROM admins 
-                WHERE deleted_at IS NULL 
-                ORDER BY created_at DESC 
-                LIMIT ?";
-        
-        return $this->db->fetchAll($sql, [$limit]);
+        $pdo = $this->db->getConnection();
+        $stmt = $pdo->prepare("SELECT id, name, email, business_name, role, created_at FROM admins WHERE deleted_at IS NULL ORDER BY created_at DESC LIMIT ?");
+        $stmt->execute([$limit]);
+        return $stmt->fetchAll();
     }
 
     private function getPlatformActivities($limit = 10) {
-        // For now, return recent admin registrations
-        $sql = "SELECT 'admin_registered' as action, name as description, created_at 
-                FROM admins 
-                WHERE deleted_at IS NULL 
-                ORDER BY created_at DESC 
-                LIMIT ?";
-        
-        return $this->db->fetchAll($sql, [$limit]);
+        $pdo = $this->db->getConnection();
+        $stmt = $pdo->prepare("SELECT action, description, created_at FROM activities ORDER BY created_at DESC LIMIT ?");
+        $stmt->execute([$limit]);
+        return $stmt->fetchAll();
     }
 
     private function getAllAdmins() {
-        $sql = "SELECT id, name, email, business_name, phone, role, created_at 
-                FROM admins 
-                WHERE deleted_at IS NULL 
-                ORDER BY created_at DESC";
-        
-        return $this->db->fetchAll($sql);
+        $pdo = $this->db->getConnection();
+        $stmt = $pdo->prepare("SELECT id, name, email, business_name, phone, role, created_at FROM admins WHERE deleted_at IS NULL ORDER BY created_at DESC");
+        $stmt->execute();
+        return $stmt->fetchAll();
     }
 
     private function getPlatformExportData() {
+        $pdo = $this->db->getConnection();
+        
+        // Get all properties
+        $stmt = $pdo->prepare("SELECT * FROM properties");
+        $stmt->execute();
+        $properties = $stmt->fetchAll();
+        
         return [
             'admins' => $this->getAllAdmins(),
-            'properties' => $this->db->fetchAll("SELECT * FROM properties WHERE deleted_at IS NULL"),
+            'properties' => $properties,
             'stats' => $this->getPlatformStats(),
             'export_date' => date('Y-m-d H:i:s')
         ];

@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $title ?? 'Real Estate Management'; ?></title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -91,6 +94,14 @@
                 <?php unset($_SESSION['errors']); ?>
             <?php endif; ?>
         });
+
+        // Helper function to get cookies
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+            return null;
+        }
 
         // CSRF token for AJAX requests
         function getCsrfToken() {

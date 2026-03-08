@@ -2,27 +2,31 @@
 
 namespace Config;
 
-use Supabase\Supabase;
-
 class SupabaseClient {
     private static $instance = null;
-    private $client;
     private $url;
     private $key;
     private $serviceKey;
 
     private function __construct() {
-        $config = Config::getInstance();
-        
-        $this->url = $config->get('supabase.url');
-        $this->key = $config->get('supabase.anon_key');
-        $this->serviceKey = $config->get('supabase.service_key');
-
-        if (!$this->url || !$this->key) {
-            throw new \Exception('Supabase configuration missing. Please check your .env file.');
+        // Load configuration directly from .env.supabase
+        $configFile = __DIR__ . '/../.env.supabase';
+        if (file_exists($configFile)) {
+            $lines = file($configFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            foreach ($lines as $line) {
+                if (strpos($line, 'SUPABASE_URL=') === 0) {
+                    $this->url = trim(substr($line, 13));
+                } elseif (strpos($line, 'SUPABASE_ANON_KEY=') === 0) {
+                    $this->key = trim(substr($line, 18));
+                } elseif (strpos($line, 'SUPABASE_SERVICE_KEY=') === 0) {
+                    $this->serviceKey = trim(substr($line, 21));
+                }
+            }
         }
 
-        $this->client = new Supabase($this->url, $this->key);
+        if (!$this->url || !$this->key) {
+            throw new \Exception('Supabase configuration missing. Please check your .env.supabase file.');
+        }
     }
 
     public static function getInstance() {
@@ -32,168 +36,155 @@ class SupabaseClient {
         return self::$instance;
     }
 
-    public function getClient() {
-        return $this->client;
-    }
-
-    public function getServiceClient() {
-        return new Supabase($this->url, $this->serviceKey);
-    }
-
     // Database operations
-    public function select($table, $columns = '*', $filters = []) {
+    public function select($table, $columns = '*', $filters = [], $options = []) {
         try {
-            $query = $this->client->from($table)->select($columns);
+            $url = $this->url . "/rest/v1/$table?select=$columns";
             
+            // Add filters
             foreach ($filters as $column => $value) {
-                $query = $query->eq($column, $value);
+                if (is_array($value)) {
+                    // Handle operators like ['gte' => '2024-01-01']
+                    foreach ($value as $op => $val) {
+                        $url .= "&$column=$op.$val";
+                    }
+                } else {
+                    $url .= "&$column=eq.$value";
+                }
             }
             
-            $result = $query->execute();
-            return $result['data'] ?? [];
-        } catch (\Exception $e) {
-            if (Config::getInstance()->get('app.debug')) {
-                throw new \Exception('Supabase query failed: ' . $e->getMessage());
-            } else {
-                throw new \Exception('Database query failed.');
+            // Add options like order and limit
+            if (isset($options['order'])) {
+                $url .= "&order=" . $options['order'];
             }
+            if (isset($options['limit'])) {
+                $url .= "&limit=" . $options['limit'];
+            }
+            
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'apikey: ' . $this->serviceKey,
+                'Authorization: Bearer ' . $this->serviceKey
+            ]);
+            
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+            
+            if ($httpCode === 200) {
+                return json_decode($response, true) ?? [];
+            } else {
+                return [];
+            }
+        } catch (\Exception $e) {
+            throw new \Exception('Supabase select failed: ' . $e->getMessage());
         }
     }
 
     public function insert($table, $data) {
         try {
-            $result = $this->client->from($table)->insert($data)->execute();
-            return $result['data'][0] ?? null;
-        } catch (\Exception $e) {
-            if (Config::getInstance()->get('app.debug')) {
-                throw new \Exception('Supabase insert failed: ' . $e->getMessage());
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $this->url . "/rest/v1/$table");
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'apikey: ' . $this->serviceKey,
+                'Authorization: Bearer ' . $this->serviceKey,
+                'Content-Type: application/json',
+                'Prefer: return=minimal'
+            ]);
+            
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+            
+            if ($httpCode === 201) {
+                // Return the ID if possible
+                $responseData = json_decode($response, true);
+                return $responseData[0]['id'] ?? null;
             } else {
-                throw new \Exception('Database insert failed.');
+                throw new \Exception("Insert failed with HTTP $httpCode: $response");
             }
+        } catch (\Exception $e) {
+            throw new \Exception('Supabase insert failed: ' . $e->getMessage());
         }
     }
 
     public function update($table, $data, $filters = []) {
         try {
-            $query = $this->client->from($table)->update($data);
+            $url = $this->url . "/rest/v1/$table";
             
+            // Add filters to URL
+            $filterStrings = [];
             foreach ($filters as $column => $value) {
-                $query = $query->eq($column, $value);
+                $filterStrings[] = "$column=eq.$value";
+            }
+            if (!empty($filterStrings)) {
+                $url .= "?" . implode('&', $filterStrings);
             }
             
-            $result = $query->execute();
-            return $result['data'][0] ?? null;
-        } catch (\Exception $e) {
-            if (Config::getInstance()->get('app.debug')) {
-                throw new \Exception('Supabase update failed: ' . $e->getMessage());
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'apikey: ' . $this->serviceKey,
+                'Authorization: Bearer ' . $this->serviceKey,
+                'Content-Type: application/json',
+                'Prefer: return=minimal'
+            ]);
+            
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+            
+            if ($httpCode === 204 || $httpCode === 200) {
+                return true;
             } else {
-                throw new \Exception('Database update failed.');
+                throw new \Exception("Update failed with HTTP $httpCode: $response");
             }
+        } catch (\Exception $e) {
+            throw new \Exception('Supabase update failed: ' . $e->getMessage());
         }
     }
 
     public function delete($table, $filters = []) {
         try {
-            $query = $this->client->from($table)->delete();
+            $url = $this->url . "/rest/v1/$table";
             
+            // Add filters to URL
+            $filterStrings = [];
             foreach ($filters as $column => $value) {
-                $query = $query->eq($column, $value);
+                $filterStrings[] = "$column=eq.$value";
+            }
+            if (!empty($filterStrings)) {
+                $url .= "?" . implode('&', $filterStrings);
             }
             
-            $result = $query->execute();
-            return $result['data'] ?? [];
-        } catch (\Exception $e) {
-            if (Config::getInstance()->get('app.debug')) {
-                throw new \Exception('Supabase delete failed: ' . $e->getMessage());
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'apikey: ' . $this->serviceKey,
+                'Authorization: Bearer ' . $this->serviceKey
+            ]);
+            
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+            
+            if ($httpCode === 204 || $httpCode === 200) {
+                return true;
             } else {
-                throw new \Exception('Database delete failed.');
+                throw new \Exception("Delete failed with HTTP $httpCode: $response");
             }
-        }
-    }
-
-    // Authentication operations
-    public function signUp($email, $password, $metadata = []) {
-        try {
-            $result = $this->client->auth->signUp([
-                'email' => $email,
-                'password' => $password,
-                'options' => [
-                    'data' => $metadata
-                ]
-            ]);
-            
-            return $result;
         } catch (\Exception $e) {
-            throw new \Exception('Registration failed: ' . $e->getMessage());
-        }
-    }
-
-    public function signIn($email, $password) {
-        try {
-            $result = $this->client->auth->signInWithPassword([
-                'email' => $email,
-                'password' => $password
-            ]);
-            
-            return $result;
-        } catch (\Exception $e) {
-            throw new \Exception('Login failed: ' . $e->getMessage());
-        }
-    }
-
-    public function signOut() {
-        try {
-            $this->client->auth->signOut();
-            return true;
-        } catch (\Exception $e) {
-            throw new \Exception('Logout failed: ' . $e->getMessage());
-        }
-    }
-
-    public function getUser() {
-        try {
-            return $this->client->auth->getUser();
-        } catch (\Exception $e) {
-            return null;
-        }
-    }
-
-    public function getSession() {
-        try {
-            return $this->client->auth->getSession();
-        } catch (\Exception $e) {
-            return null;
-        }
-    }
-
-    // Storage operations
-    public function uploadFile($bucket, $path, $file) {
-        try {
-            $serviceClient = $this->getServiceClient();
-            $result = $serviceClient->storage->from($bucket)->upload($path, $file);
-            return $result;
-        } catch (\Exception $e) {
-            throw new \Exception('File upload failed: ' . $e->getMessage());
-        }
-    }
-
-    public function getPublicUrl($bucket, $path) {
-        try {
-            $serviceClient = $this->getServiceClient();
-            $result = $serviceClient->storage->from($bucket)->getPublicUrl($path);
-            return $result['publicUrl'];
-        } catch (\Exception $e) {
-            throw new \Exception('Failed to get public URL: ' . $e->getMessage());
-        }
-    }
-
-    public function deleteFile($bucket, $path) {
-        try {
-            $serviceClient = $this->getServiceClient();
-            $result = $serviceClient->storage->from($bucket)->remove([$path]);
-            return $result;
-        } catch (\Exception $e) {
-            throw new \Exception('File deletion failed: ' . $e->getMessage());
+            throw new \Exception('Supabase delete failed: ' . $e->getMessage());
         }
     }
 }
