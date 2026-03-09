@@ -1,5 +1,4 @@
 <?php
-require_once __DIR__ . '/../../components/SearchableDropdown.php';
 require_once __DIR__ . '/../../config/property_types.php';
 
 $title = 'Add Property';
@@ -73,19 +72,41 @@ $propertyTypes = include __DIR__ . '/../../config/property_types.php';
             
             <!-- Property Type -->
             <div>
-                <?php
-                echo renderSearchableDropdown(
-                    $propertyTypes,
-                    'property_type',
-                    'property_type',
-                    'Property Type',
-                    'Search or select property type...',
-                    $property['type'] ?? '',
-                    true,
-                    false,
-                    ''
-                );
-                ?>
+                <label for="property_type" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Property Type <span class="text-red-500">*</span>
+                </label>
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        id="property_type_search" 
+                        name="property_type_search" 
+                        required
+                        value="<?php 
+                            $selectedType = $property['type'] ?? '';
+                            if ($selectedType) {
+                                foreach ($propertyTypes as $type) {
+                                    if ($type['value'] === $selectedType) {
+                                        echo htmlspecialchars($type['label']);
+                                        break;
+                                    }
+                                }
+                            }
+                        ?>"
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" 
+                        placeholder="Search or select property type..."
+                        autocomplete="off"
+                    >
+                    <input type="hidden" id="property_type" name="property_type" required value="<?php echo htmlspecialchars($property['type'] ?? ''); ?>">
+                    <button type="button" id="property_type_toggle" class="absolute right-2 top-2.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    
+                    <!-- Custom Dropdown -->
+                    <div id="property_type_dropdown" class="absolute z-[100] w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-xl max-h-80 overflow-y-auto hidden">
+                        <!-- Categories will be dynamically populated -->
+                    </div>
+                </div>
+                <span class="text-red-500 text-sm mt-1 hidden" id="property_type_error">Property type is required</span>
             </div>
             
             <!-- Yearly Rent -->
@@ -313,6 +334,61 @@ $propertyTypes = include __DIR__ . '/../../config/property_types.php';
 <script>
 let selectedImages = [];
 let amenities = [];
+
+// Toast notification function
+function showToast(message, type = 'info') {
+    // Create toast container if it doesn't exist
+    let toastContainer = document.getElementById('toast-container');
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.id = 'toast-container';
+        toastContainer.className = 'fixed top-4 right-4 z-50 space-y-2';
+        document.body.appendChild(toastContainer);
+    }
+    
+    // Create toast element
+    const toast = document.createElement('div');
+    
+    // Set styles based on type
+    const typeStyles = {
+        success: 'bg-green-500 text-white',
+        error: 'bg-red-500 text-white',
+        warning: 'bg-yellow-500 text-black',
+        info: 'bg-blue-500 text-white'
+    };
+    
+    const icons = {
+        success: 'fa-check-circle',
+        error: 'fa-exclamation-circle',
+        warning: 'fa-exclamation-triangle',
+        info: 'fa-info-circle'
+    };
+    
+    toast.className = `${typeStyles[type]} px-6 py-4 rounded-lg shadow-lg flex items-center space-x-3 min-w-[300px] transform transition-all duration-300 translate-x-full`;
+    toast.innerHTML = `
+        <i class="fas ${icons[type]}"></i>
+        <span>${message}</span>
+    `;
+    
+    // Add to container
+    toastContainer.appendChild(toast);
+    
+    // Animate in
+    setTimeout(() => {
+        toast.classList.remove('translate-x-full');
+        toast.classList.add('translate-x-0');
+    }, 100);
+    
+    // Remove after 5 seconds
+    setTimeout(() => {
+        toast.classList.add('translate-x-full');
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 300);
+    }, 5000);
+}
 
 // Image Upload Functions
 function handleImageSelect(event) {
@@ -543,14 +619,32 @@ document.getElementById('property-form').addEventListener('submit', function(e) 
     
     fetch('/properties', requestOptions)
     .then(response => {
-        if (response.ok) {
-            return response.json();
-        } else if (response.status === 422) {
+        // Check if response is JSON
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
             return response.json().then(data => {
-                throw { type: 'validation', errors: data.errors };
+                if (!response.ok) {
+                    throw { type: 'validation', errors: data.errors || data.message || 'Form submission failed' };
+                }
+                return data;
             });
         } else {
-            throw { type: 'server', message: 'Form submission failed' };
+            // Handle HTML response (likely an error page)
+            return response.text().then(html => {
+                if (!response.ok) {
+                    throw { type: 'server', message: 'Server returned HTML response instead of JSON', html: html };
+                }
+                // Try to extract JSON from HTML if possible
+                try {
+                    const jsonMatch = html.match(/<script[^>]*>.*?window\.__INITIAL_STATE__\s*=\s*({.*?});/s);
+                    if (jsonMatch) {
+                        return JSON.parse(jsonMatch[1]);
+                    }
+                } catch (e) {
+                    // Fallback to success
+                }
+                return { message: 'Property saved successfully' };
+            });
         }
     })
     .then(data => {
@@ -566,10 +660,17 @@ document.getElementById('property-form').addEventListener('submit', function(e) 
         
         if (error.type === 'validation') {
             // Show specific validation errors
-            const errorMessages = Object.values(error.errors).flat().join(', ');
+            const errorMessages = Array.isArray(error.errors) ? error.errors.join(', ') : 
+                                 typeof error.errors === 'object' ? Object.values(error.errors).flat().join(', ') : 
+                                 error.errors;
             showToast(`Validation errors: ${errorMessages}`, 'error');
         } else {
             showToast('Error saving property. Please try again.', 'error');
+            
+            // If we have HTML response, log it for debugging
+            if (error.html) {
+                console.log('Server HTML response:', error.html);
+            }
         }
         
         // Reset button state
@@ -625,4 +726,227 @@ function validateForm() {
     
     return isValid;
 }
+
+// Property Type Dropdown Functionality
+(function() {
+    const propertyTypes = <?php echo json_encode($propertyTypes); ?>;
+    const searchInput = document.getElementById('property_type_search');
+    const hiddenInput = document.getElementById('property_type');
+    const dropdown = document.getElementById('property_type_dropdown');
+    const dropdownToggle = document.getElementById('property_type_toggle');
+    const errorElement = document.getElementById('property_type_error');
+    
+    if (!searchInput || !hiddenInput || !dropdown || !dropdownToggle) {
+        console.error('Property type dropdown elements not found');
+        return;
+    }
+    
+    // Get categories from property_type_helper
+    const categories = {
+        'residential': {
+            label: 'Residential',
+            types: ['apartment', 'flat', 'studio_apartment', 'duplex', 'triplex', 'quadplex', 'detached_house', 'semi_detached_house', 'bungalow', 'terrace_house', 'townhouse', 'condominium', 'penthouse', 'loft', 'cottage', 'villa', 'mansion', 'mobile_home', 'tiny_home', 'serviced_apartment', 'student_housing', 'co_living_space', 'lodge', 'self_contain', 'mini_flat', 'room_and_parlor', 'apartment_building', 'residential_complex', 'block_of_flats', 'hostel', 'dormitory', 'boarding_house']
+        },
+        'commercial': {
+            label: 'Commercial',
+            types: ['office_building', 'office_space', 'office_suite', 'co_working_space', 'retail_shop', 'shop', 'shopping_mall', 'strip_mall', 'supermarket', 'restaurant', 'cafe', 'bar', 'lounge', 'hotel', 'motel', 'guest_house', 'event_center', 'cinema', 'bank_building', 'clinic', 'hospital', 'pharmacy', 'school', 'training_center']
+        },
+        'industrial': {
+            label: 'Industrial',
+            types: ['warehouse', 'factory', 'manufacturing_plant', 'distribution_center', 'cold_storage_facility', 'assembly_plant', 'industrial_yard']
+        },
+        'land': {
+            label: 'Land',
+            types: ['residential_land', 'commercial_land', 'industrial_land', 'agricultural_land', 'farm_land', 'ranch_land', 'undeveloped_land', 'development_site', 'estate_plot']
+        },
+        'special': {
+            label: 'Special',
+            types: ['church', 'mosque', 'temple', 'cemetery', 'government_building', 'military_facility', 'prison', 'stadium', 'sports_complex', 'convention_center', 'library', 'museum']
+        },
+        'mixed': {
+            label: 'Mixed Use',
+            types: ['mixed_use_building', 'shop_and_apartment', 'office_and_retail_building', 'mixed_use_tower']
+        }
+    };
+    
+    let isDropdownOpen = false;
+    let searchTimeout;
+    
+    // Initialize dropdown
+    renderCategories(propertyTypes);
+    
+    function renderCategories(types) {
+        dropdown.innerHTML = '';
+        
+        Object.entries(categories).forEach(([categoryKey, categoryData]) => {
+            const categoryTypes = types.filter(type => categoryData.types.includes(type.value));
+            
+            if (categoryTypes.length > 0) {
+                const categorySection = document.createElement('div');
+                categorySection.className = 'mb-2';
+                categorySection.innerHTML = `
+                    <div class="px-3 py-2 bg-gray-50 dark:bg-gray-700 text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                        ${categoryData.label}
+                    </div>
+                    <div class="category-types">
+                        ${categoryTypes.map(type => `
+                            <div class="property-type-option px-3 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 rounded" 
+                                 data-value="${type.value}" data-label="${type.label}">
+                                <div class="font-medium text-gray-900 dark:text-white">${type.label}</div>
+                                ${type.description ? `<div class="text-sm text-gray-500 dark:text-gray-400">${type.description}</div>` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                dropdown.appendChild(categorySection);
+            }
+        });
+        
+        // Add click handlers to all options
+        dropdown.querySelectorAll('.property-type-option').forEach(option => {
+            option.addEventListener('click', function() {
+                selectPropertyType(this.dataset.value, this.dataset.label);
+            });
+        });
+    }
+    
+    function filterPropertyTypes(searchTerm) {
+        const allOptions = dropdown.querySelectorAll('.property-type-option');
+        const categorySections = dropdown.querySelectorAll('.category-types');
+        
+        if (!searchTerm) {
+            // Show all
+            allOptions.forEach(option => option.classList.remove('hidden'));
+            categorySections.forEach(section => section.classList.remove('hidden'));
+            
+            // Hide empty categories
+            dropdown.querySelectorAll('.mb-2').forEach(categorySection => {
+                const visibleOptions = categorySection.querySelectorAll('.property-type-option:not(.hidden)');
+                const categoryHeader = categorySection.querySelector('.bg-gray-50, .dark\\:bg-gray-700');
+                const categoryTypes = categorySection.querySelector('.category-types');
+                
+                if (visibleOptions.length === 0) {
+                    categoryHeader.classList.add('hidden');
+                    categoryTypes.classList.add('hidden');
+                } else {
+                    categoryHeader.classList.remove('hidden');
+                    categoryTypes.classList.remove('hidden');
+                }
+            });
+            return;
+        }
+        
+        // Filter options
+        allOptions.forEach(option => {
+            const label = option.dataset.label.toLowerCase();
+            const description = option.querySelector('.text-gray-500, .dark\\:text-gray-400')?.textContent.toLowerCase() || '';
+            
+            if (label.includes(searchTerm.toLowerCase()) || description.includes(searchTerm.toLowerCase())) {
+                option.classList.remove('hidden');
+            } else {
+                option.classList.add('hidden');
+            }
+        });
+        
+        // Hide empty categories
+        dropdown.querySelectorAll('.mb-2').forEach(categorySection => {
+            const visibleOptions = categorySection.querySelectorAll('.property-type-option:not(.hidden)');
+            const categoryHeader = categorySection.querySelector('.bg-gray-50, .dark\\:bg-gray-700');
+            const categoryTypes = categorySection.querySelector('.category-types');
+            
+            if (visibleOptions.length === 0) {
+                categoryHeader.classList.add('hidden');
+                categoryTypes.classList.add('hidden');
+            } else {
+                categoryHeader.classList.remove('hidden');
+                categoryTypes.classList.remove('hidden');
+            }
+        });
+    }
+    
+    function toggleDropdown() {
+        isDropdownOpen = !isDropdownOpen;
+        if (isDropdownOpen) {
+            dropdown.classList.remove('hidden');
+            filterPropertyTypes(searchInput.value);
+        } else {
+            dropdown.classList.add('hidden');
+        }
+        dropdownToggle.innerHTML = isDropdownOpen ? '<i class="fas fa-chevron-up"></i>' : '<i class="fas fa-chevron-down"></i>';
+    }
+    
+    function selectPropertyType(value, label) {
+        hiddenInput.value = value;
+        searchInput.value = label;
+        isDropdownOpen = false;
+        dropdown.classList.add('hidden');
+        dropdownToggle.innerHTML = '<i class="fas fa-chevron-down"></i>';
+        
+        // Clear validation error
+        if (errorElement) {
+            errorElement.classList.add('hidden');
+            searchInput.classList.remove('border-red-500');
+        }
+    }
+    
+    // Event listeners
+    dropdownToggle.addEventListener('click', toggleDropdown);
+    
+    searchInput.addEventListener('focus', () => {
+        if (!isDropdownOpen) {
+            toggleDropdown();
+        }
+    });
+    
+    searchInput.addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            filterPropertyTypes(e.target.value);
+        }, 150);
+        
+        // Clear hidden input if search doesn't match selected value
+        if (hiddenInput.value && e.target.value !== searchInput.defaultValue) {
+            hiddenInput.value = '';
+        }
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.relative')) {
+            isDropdownOpen = false;
+            dropdown.classList.add('hidden');
+            dropdownToggle.innerHTML = '<i class="fas fa-chevron-down"></i>';
+        }
+    });
+    
+    // Keyboard navigation
+    searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            isDropdownOpen = false;
+            dropdown.classList.add('hidden');
+            searchInput.blur();
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            const firstVisible = dropdown.querySelector('.property-type-option:not(.hidden)');
+            if (firstVisible) {
+                selectPropertyType(firstVisible.dataset.value, firstVisible.dataset.label);
+            }
+        } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+            e.preventDefault();
+            const visibleOptions = Array.from(dropdown.querySelectorAll('.property-type-option:not(.hidden)'));
+            const currentIndex = visibleOptions.findIndex(opt => opt.classList.contains('bg-primary-50'));
+            
+            let nextIndex;
+            if (e.key === 'ArrowDown') {
+                nextIndex = currentIndex < visibleOptions.length - 1 ? currentIndex + 1 : 0;
+            } else {
+                nextIndex = currentIndex > 0 ? currentIndex - 1 : visibleOptions.length - 1;
+            }
+            
+            visibleOptions.forEach(opt => opt.classList.remove('bg-primary-50', 'dark:bg-primary-900'));
+            visibleOptions[nextIndex].classList.add('bg-primary-50', 'dark:bg-primary-900');
+            visibleOptions[nextIndex].scrollIntoView({ block: 'nearest' });
+        }
+    });
+})();
 </script>

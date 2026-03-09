@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Property Form Debug</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .error { color: red; }
+        .success { color: green; }
+        .debug { background: #f0f0f0; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Property Form Debug</h1>
+    
+    <div id="debug-info" class="debug">
+        <h3>Debug Information:</h3>
+        <p>Checking form access...</p>
+    </div>
+    
+    <iframe id="form-frame" src="/properties/create" width="100%" height="600" style="border: 1px solid #ccc;"></iframe>
+    
+    <script>
+        const debugDiv = document.getElementById('debug-info');
+        
+        // Monitor iframe loading
+        const iframe = document.getElementById('form-frame');
+        
+        iframe.onload = function() {
+            try {
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                
+                // Check if form loaded
+                const form = iframeDoc.getElementById('property-form');
+                if (form) {
+                    debugDiv.innerHTML += '<p class="success">✓ Form found in iframe</p>';
+                    
+                    // Check if property type dropdown exists
+                    const dropdown = iframeDoc.getElementById('property_type_search');
+                    if (dropdown) {
+                        debugDiv.innerHTML += '<p class="success">✓ Property type dropdown found</p>';
+                    } else {
+                        debugDiv.innerHTML += '<p class="error">✗ Property type dropdown not found</p>';
+                    }
+                    
+                    // Check for JavaScript errors
+                    const scripts = iframeDoc.getElementsByTagName('script');
+                    debugDiv.innerHTML += `<p>Found ${scripts.length} script tags</p>`;
+                    
+                } else {
+                    debugDiv.innerHTML += '<p class="error">✗ Form not found in iframe</p>';
+                }
+                
+                // Check for error messages
+                const bodyText = iframeDoc.body.innerText;
+                if (bodyText.includes('Error') || bodyText.includes('Warning') || bodyText.includes('Fatal')) {
+                    debugDiv.innerHTML += '<p class="error">✗ Error messages found in page</p>';
+                    debugDiv.innerHTML += '<div class="debug">' + bodyText.substring(0, 500) + '...</div>';
+                }
+                
+            } catch (e) {
+                debugDiv.innerHTML += '<p class="error">✗ Cannot access iframe content (CORS issue)</p>';
+                debugDiv.innerHTML += '<p>This is normal, testing form directly...</p>';
+            }
+        };
+        
+        iframe.onerror = function() {
+            debugDiv.innerHTML += '<p class="error">✗ Failed to load iframe</p>';
+        };
+        
+        // Test direct fetch to the form
+        fetch('/properties/create')
+            .then(response => {
+                debugDiv.innerHTML += `<p>Form page status: ${response.status}</p>`;
+                return response.text();
+            })
+            .then(html => {
+                if (html.includes('property-form')) {
+                    debugDiv.innerHTML += '<p class="success">✓ Form page loads correctly</p>';
+                } else {
+                    debugDiv.innerHTML += '<p class="error">✗ Form not found in page</p>';
+                }
+                
+                if (html.includes('Error') || html.includes('Warning') || html.includes('Fatal')) {
+                    debugDiv.innerHTML += '<p class="error">✗ PHP errors in page</p>';
+                }
+            })
+            .catch(error => {
+                debugDiv.innerHTML += `<p class="error">✗ Fetch error: ${error.message}</p>`;
+            });
+    </script>
+</body>
+</html>

@@ -14,7 +14,7 @@ class Database {
     private $password;
 
     private function __construct() {
-        $config = Config::getInstance();
+        $config = ConfigSimple::getInstance();
         
         $this->host = $config->get('database.host');
         $this->dbname = $config->get('database.name');

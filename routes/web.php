@@ -40,6 +40,7 @@ return [
 
     // Admin Unit routes
     'GET /admin/units' => 'UnitController@index',
+    'GET /admin/units/create' => 'UnitController@create',
     'POST /admin/units' => 'UnitController@store',
     'GET /admin/units/{id}/edit' => 'UnitController@edit',
     'POST /admin/units/{id}' => 'UnitController@update',

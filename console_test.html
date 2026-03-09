@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Console Error Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .console-log { background: #f0f0f0; padding: 10px; margin: 10px 0; border-left: 4px solid #007cba; }
+        .error { border-left-color: #d32f2f; background: #ffebee; }
+        .warning { border-left-color: #f57c00; background: #fff3e0; }
+        .success { border-left-color: #388e3c; background: #e8f5e8; }
+    </style>
+</head>
+<body>
+    <h1>Browser Console Error Detection</h1>
+    
+    <div id="console-output"></div>
+    
+    <h2>Test Steps:</h2>
+    <ol>
+        <li>Open browser developer tools (F12)</li>
+        <li>Go to Console tab</li>
+        <li>Click the button below to test the property form</li>
+        <li>Watch for any red error messages</li>
+    </ol>
+    
+    <button onclick="testPropertyForm()" style="padding: 10px 20px; background: #007cba; color: white; border: none; cursor: pointer; margin: 10px 0;">
+        Test Property Form
+    </button>
+    
+    <div id="test-result"></div>
+    
+    <script>
+        // Override console methods to capture errors
+        const originalConsole = {
+            log: console.log,
+            error: console.error,
+            warn: console.warn,
+            info: console.info
+        };
+        
+        const consoleOutput = document.getElementById('console-output');
+        
+        function addConsoleMessage(type, ...args) {
+            const div = document.createElement('div');
+            div.className = `console-log ${type}`;
+            div.innerHTML = `<strong>${type.toUpperCase()}:</strong> ${args.map(arg => 
+                typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+            ).join(' ')}`;
+            consoleOutput.appendChild(div);
+            
+            // Also call original console method
+            originalConsole[type](...args);
+        }
+        
+        console.log = (...args) => addConsoleMessage('log', ...args);
+        console.error = (...args) => addConsoleMessage('error', ...args);
+        console.warn = (...args) => addConsoleMessage('warning', ...args);
+        console.info = (...args) => addConsoleMessage('info', ...args);
+        
+        // Capture unhandled errors
+        window.addEventListener('error', function(event) {
+            addConsoleMessage('error', `Unhandled Error: ${event.message} at ${event.filename}:${event.lineno}`);
+        });
+        
+        window.addEventListener('unhandledrejection', function(event) {
+            addConsoleMessage('error', `Unhandled Promise Rejection: ${event.reason}`);
+        });
+        
+        console.log('Console error detection started');
+        
+        async function testPropertyForm() {
+            const resultDiv = document.getElementById('test-result');
+            resultDiv.innerHTML = '<div class="console-log">Testing property form...</div>';
+            
+            try {
+                // Test the form endpoint
+                console.log('Testing GET /properties/create');
+                const formResponse = await fetch('/properties/create');
+                console.log('Form page status:', formResponse.status);
+                
+                if (formResponse.ok) {
+                    console.log('✓ Form page loads successfully');
+                    
+                    // Test form submission
+                    console.log('Testing POST /properties');
+                    
+                    const formData = new FormData();
+                    formData.append('property_name', 'Test Property');
+                    formData.append('address', '123 Test Street');
+                    formData.append('property_type', 'apartment');
+                    formData.append('yearly_rent', '12000');
+                    formData.append('year_built', '2020');
+                    formData.append('rooms', '2');
+                    formData.append('kitchens', '1');
+                    formData.append('bathrooms', '1');
+                    formData.append('water_availability', 'in_building');
+                    formData.append('parking', 'yes');
+                    formData.append('description', 'Test description');
+                    
+                    const submitResponse = await fetch('/properties', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        }
+                    });
+                    
+                    console.log('Submit status:', submitResponse.status);
+                    console.log('Content-Type:', submitResponse.headers.get('content-type'));
+                    
+                    if (submitResponse.ok) {
+                        const data = await submitResponse.json();
+                        console.log('✓ Property created successfully:', data);
+                        resultDiv.innerHTML += '<div class="console-log success">✓ SUCCESS: Property form works perfectly!</div>';
+                    } else {
+                        const errorData = await submitResponse.text();
+                        console.log('✗ Submission failed:', errorData);
+                        resultDiv.innerHTML += '<div class="console-log error">✗ Form submission failed</div>';
+                    }
+                } else {
+                    console.log('✗ Form page failed to load');
+                    resultDiv.innerHTML += '<div class="console-log error">✗ Form page failed to load</div>';
+                }
+                
+            } catch (error) {
+                console.log('✗ Test failed:', error);
+                resultDiv.innerHTML += `<div class="console-log error">✗ Test failed: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>

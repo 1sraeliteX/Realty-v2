@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Properties List Debug</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .debug { background: #f0f0f0; padding: 10px; margin: 10px 0; }
+        .success { background: #e8f5e8; color: #2e7d32; }
+        .error { background: #ffebee; color: #c62828; }
+        iframe { width: 100%; height: 600px; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+    <h1>Properties List Debug</h1>
+    
+    <div class="debug">
+        <h3>Quick Test:</h3>
+        <p>Testing if properties are accessible via different URLs...</p>
+        
+        <button onclick="testUrls()" style="padding: 10px 20px; background: #007cba; color: white; border: none; cursor: pointer;">
+            Test Property URLs
+        </button>
+        
+        <div id="url-results"></div>
+    </div>
+    
+    <h2>Properties Page (Direct):</h2>
+    <iframe src="/properties" id="properties-frame"></iframe>
+    
+    <script>
+        async function testUrls() {
+            const results = document.getElementById('url-results');
+            results.innerHTML = '<div class="debug">Testing URLs...</div>';
+            
+            const urls = [
+                '/properties',
+                '/admin/properties',
+                'http://localhost:8001/properties',
+                'http://127.0.0.1:8001/properties'
+            ];
+            
+            for (const url of urls) {
+                try {
+                    const response = await fetch(url, {
+                        headers: {
+                            'Accept': 'text/html'
+                        }
+                    });
+                    
+                    const text = await response.text();
+                    const hasProperties = text.includes('Test Property 13:17:24') || 
+                                       text.includes('Test Property') ||
+                                       !text.includes('No Properties Found');
+                    
+                    results.innerHTML += `
+                        <div class="debug ${hasProperties ? 'success' : 'error'}">
+                            <strong>${url}</strong>: ${response.status} - 
+                            ${hasProperties ? '✓ Properties found' : '✗ No properties found'}
+                        </div>
+                    `;
+                } catch (error) {
+                    results.innerHTML += `
+                        <div class="debug error">
+                            <strong>${url}</strong>: ✗ Error - ${error.message}
+                        </div>
+                    `;
+                }
+            }
+        }
+        
+        // Auto-test on page load
+        window.addEventListener('load', testUrls);
+        
+        // Monitor iframe load
+        document.getElementById('properties-frame').onload = function() {
+            try {
+                const iframeDoc = this.contentDocument || this.contentWindow.document;
+                const content = iframeDoc.body.innerText;
+                
+                if (content.includes('No Properties Found')) {
+                    console.log('⚠ Iframe shows no properties');
+                } else if (content.includes('Test Property')) {
+                    console.log('✓ Iframe shows properties');
+                }
+            } catch (e) {
+                console.log('Cannot access iframe content (CORS)');
+            }
+        };
+    </script>
+</body>
+</html>

@@ -120,7 +120,7 @@ class BaseController {
         
         // Return a mock admin for testing
         return [
-            'id' => 3,
+            'id' => 1, // Use consistent admin ID
             'name' => 'Test Admin',
             'email' => 'admin@cornerstone.com',
             'role' => 'admin',
@@ -153,7 +153,25 @@ class BaseController {
     }
 
     protected function isApiRequest() {
-        return strpos($_SERVER['REQUEST_URI'], '/api/') === 0;
+        // Check for API route prefix
+        $requestUri = $_SERVER['REQUEST_URI'] ?? '';
+        if (strpos($requestUri, '/api/') === 0) {
+            return true;
+        }
+        
+        // Check for AJAX requests with specific headers
+        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+            return true;
+        }
+        
+        // Check for Accept header expecting JSON
+        if (isset($_SERVER['HTTP_ACCEPT']) && 
+            strpos(strtolower($_SERVER['HTTP_ACCEPT']), 'application/json') !== false) {
+            return true;
+        }
+        
+        return false;
     }
 
     protected function getPostData() {

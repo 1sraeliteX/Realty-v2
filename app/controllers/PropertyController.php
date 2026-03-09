@@ -54,9 +54,11 @@ class PropertyController extends BaseController {
         
         $result = $this->paginate($sql, $page, 10, $params);
         
+        // Always use dashboard layout for properties
         $this->view('dashboard.layout', [
             'admin' => $admin,
-            'pageTitle' => 'Properties',
+            'title' => 'Properties',
+            'pageTitle' => 'Properties Management',
             'content' => $this->renderView('properties.index', [
                 'properties' => $result['data'],
                 'pagination' => $result['pagination'],
@@ -71,9 +73,11 @@ class PropertyController extends BaseController {
     public function create() {
         $admin = $this->requireAuth();
         
+        // Always use dashboard layout for properties
         $this->view('dashboard.layout', [
             'admin' => $admin,
-            'pageTitle' => 'Add Property',
+            'title' => 'Add Property',
+            'pageTitle' => 'Add New Property',
             'content' => $this->renderView('properties.create')
         ]);
     }
