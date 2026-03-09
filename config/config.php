@@ -15,7 +15,10 @@ class Config {
                 'host' => 'localhost',
                 'name' => 'real_estate_db',
                 'user' => 'root',
-                'password' => ''
+                'password' => '',
+                'use_supabase' => true, // Enable Supabase for production
+                'supabase_url' => 'https://ducwcodegciekralkrqd.supabase.co',
+                'supabase_key' => 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR1Y3djb2RlZ2NpZWtyYWxrcnFkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MjgzNjczNiwiZXhwIjoyMDg4NDEyNzM2fQ.VKZUKgEtkrJWhE1UlHzHNm_fIZe4gdrOGYfFyHlQ22Y'
             ],
             'jwt' => [
                 'secret' => 'your-secret-key-change-in-production',

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Icon Test</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .icon-test { margin: 10px 0; font-size: 24px; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Font Awesome Icon Test</h1>
+    
+    <div class="icon-test">
+        <i class="fas fa-building"></i> Building Icon
+    </div>
+    
+    <div class="icon-test">
+        <i class="fas fa-home"></i> Home Icon
+    </div>
+    
+    <div class="icon-test">
+        <i class="fas fa-users"></i> Users Icon
+    </div>
+    
+    <div class="icon-test">
+        <i class="fas fa-cog"></i> Cog Icon
+    </div>
+    
+    <script>
+        // Test if Font Awesome loaded
+        setTimeout(() => {
+            const icons = document.querySelectorAll('.fas');
+            let loaded = 0;
+            icons.forEach(icon => {
+                const styles = window.getComputedStyle(icon);
+                if (styles.fontFamily.includes('Font Awesome')) {
+                    loaded++;
+                }
+            });
+            
+            const result = document.createElement('div');
+            result.className = loaded === icons.length ? 'success' : 'error';
+            result.innerHTML = `<h2>${loaded === icons.length ? '✅ Font Awesome loaded successfully!' : '❌ Font Awesome failed to load'}</h2>`;
+            document.body.appendChild(result);
+        }, 1000);
+    </script>
+</body>
+</html>

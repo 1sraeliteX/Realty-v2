@@ -2,13 +2,13 @@
 
 namespace App\Middleware;
 
-use Config\Config;
+use Config\ConfigSimple;
 
 class JwtMiddleware {
     private $secret;
     
     public function __construct() {
-        $config = Config::getInstance();
+        $config = ConfigSimple::getInstance();
         $this->secret = $config->get('jwt.secret');
     }
     

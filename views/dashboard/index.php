@@ -335,7 +335,7 @@ $content = ob_start();
                                 <p class="text-sm text-gray-900 dark:text-white">
                                     <?php echo htmlspecialchars($activity['description']); ?>
                                 </p>
-                                <?php if ($activity['property_name']): ?>
+                                <?php if (isset($activity['property_name']) && $activity['property_name']): ?>
                                     <p class="text-xs text-gray-500 dark:text-gray-400">
                                         Property: <?php echo htmlspecialchars($activity['property_name']); ?>
                                     </p>

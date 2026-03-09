@@ -1,0 +1,292 @@
+<?php
+// Include UI Components
+require_once __DIR__ . '/../components/UIComponents.php';
+
+$title = 'Cornerstone Realty - Complete Property Management Solution';
+$content = ob_start();
+?>
+
+<!-- Hero Section -->
+<section class="relative bg-gradient-to-br from-primary-600 to-primary-800 text-white">
+    <div class="absolute inset-0 bg-black opacity-20"></div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-6xl font-bold mb-6">
+                Complete Property Management
+                <span class="block text-primary-200">Simplified</span>
+            </h1>
+            <p class="text-xl md:text-2xl text-primary-100 mb-8 max-w-3xl mx-auto">
+                Streamline your real estate operations with our comprehensive property management platform. 
+                Manage properties, tenants, payments, and maintenance all in one place.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="/admin/login" class="inline-flex items-center px-8 py-3 bg-white text-primary-600 font-semibold rounded-lg hover:bg-primary-50 transition-colors">
+                    <i class="fas fa-sign-in-alt mr-2"></i>
+                    Admin Login
+                </a>
+                <a href="/admin/properties/create" class="inline-flex items-center px-8 py-3 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors">
+                    <i class="fas fa-rocket mr-2"></i>
+                    Get Started
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Decorative elements -->
+    <div class="absolute bottom-0 left-0 right-0">
+        <svg class="w-full h-24 text-gray-50 dark:text-gray-900" preserveAspectRatio="none" viewBox="0 0 1440 54" fill="currentColor">
+            <path d="M0 22L120 16.7C240 11 480 1.7 720 0.8C960 0 1200 7 1320 10.7L1440 14V54H1320C1200 54 960 54 720 54C480 54 240 54 120 54H0V22Z"></path>
+        </svg>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="py-20 bg-gray-50 dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                Everything You Need to Manage Properties
+            </h2>
+            <p class="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+                Powerful features designed to make property management efficient and hassle-free
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Property Management -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow">
+                <div class="w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-lg flex items-center justify-center mb-6">
+                    <i class="fas fa-building text-primary-600 dark:text-primary-400 text-xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Property Management</h3>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">
+                    Manage unlimited properties with detailed information, photos, and documentation. 
+                    Track property status, occupancy, and performance metrics.
+                </p>
+                <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Unlimited properties</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Photo galleries</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Document storage</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Performance analytics</li>
+                </ul>
+            </div>
+
+            <!-- Tenant Management -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow">
+                <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-6">
+                    <i class="fas fa-users text-green-600 dark:text-green-400 text-xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Tenant Management</h3>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">
+                    Complete tenant database with lease management, communication tools, 
+                    and rental payment tracking.
+                </p>
+                <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Tenant profiles</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Lease agreements</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Communication logs</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Background checks</li>
+                </ul>
+            </div>
+
+            <!-- Financial Management -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow">
+                <div class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900 rounded-lg flex items-center justify-center mb-6">
+                    <i class="fas fa-dollar-sign text-yellow-600 dark:text-yellow-400 text-xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Financial Management</h3>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">
+                    Automated rent collection, expense tracking, and comprehensive financial 
+                    reporting with real-time insights.
+                </p>
+                <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Online payments</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Invoice generation</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Expense tracking</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Financial reports</li>
+                </ul>
+            </div>
+
+            <!-- Maintenance Management -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow">
+                <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mb-6">
+                    <i class="fas fa-tools text-purple-600 dark:text-purple-400 text-xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Maintenance Tracking</h3>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">
+                    Streamlined maintenance request system with automated workflows, 
+                    vendor management, and cost tracking.
+                </p>
+                <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Request tracking</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Vendor management</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Cost tracking</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Automated alerts</li>
+                </ul>
+            </div>
+
+            <!-- Reporting & Analytics -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow">
+                <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-6">
+                    <i class="fas fa-chart-line text-blue-600 dark:text-blue-400 text-xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Analytics & Reports</h3>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">
+                    Comprehensive dashboards and custom reports to track performance, 
+                    occupancy rates, and financial metrics.
+                </p>
+                <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Real-time dashboards</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Custom reports</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Data export</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Trend analysis</li>
+                </ul>
+            </div>
+
+            <!-- Communication Tools -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow">
+                <div class="w-12 h-12 bg-red-100 dark:bg-red-900 rounded-lg flex items-center justify-center mb-6">
+                    <i class="fas fa-envelope text-red-600 dark:text-red-400 text-xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Communication Hub</h3>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">
+                    Built-in messaging system, email templates, and notification center 
+                    for seamless tenant communication.
+                </p>
+                <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Messaging system</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Email templates</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Notifications</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Broadcast messages</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="py-20 bg-primary-600 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4">Trusted by Property Managers</h2>
+            <p class="text-xl text-primary-100">Join thousands of professionals managing their properties efficiently</p>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div>
+                <div class="text-4xl md:text-5xl font-bold mb-2">10K+</div>
+                <div class="text-primary-100">Properties Managed</div>
+            </div>
+            <div>
+                <div class="text-4xl md:text-5xl font-bold mb-2">50K+</div>
+                <div class="text-primary-100">Happy Tenants</div>
+            </div>
+            <div>
+                <div class="text-4xl md:text-5xl font-bold mb-2">$2M+</div>
+                <div class="text-primary-100">Monthly Rent Processed</div>
+            </div>
+            <div>
+                <div class="text-4xl md:text-5xl font-bold mb-2">99.9%</div>
+                <div class="text-primary-100">Uptime</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-20 bg-gray-50 dark:bg-gray-900">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            Ready to Transform Your Property Management?
+        </h2>
+        <p class="text-xl text-gray-600 dark:text-gray-400 mb-8">
+            Get started today and experience the difference of a truly comprehensive property management solution.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="/admin/login" class="inline-flex items-center px-8 py-3 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors">
+                <i class="fas fa-rocket mr-2"></i>
+                Start Free Trial
+            </a>
+            <a href="#demo" class="inline-flex items-center px-8 py-3 bg-white text-primary-600 font-semibold rounded-lg border border-primary-600 hover:bg-primary-50 transition-colors">
+                <i class="fas fa-play mr-2"></i>
+                Request Demo
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-gray-900 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Cornerstone Realty</h3>
+                <p class="text-gray-400">
+                    Your complete property management solution for efficient operations and maximum ROI.
+                </p>
+            </div>
+            <div>
+                <h4 class="text-lg font-semibold mb-4">Product</h4>
+                <ul class="space-y-2 text-gray-400">
+                    <li><a href="#features" class="hover:text-white">Features</a></li>
+                    <li><a href="#pricing" class="hover:text-white">Pricing</a></li>
+                    <li><a href="#demo" class="hover:text-white">Demo</a></li>
+                    <li><a href="#integrations" class="hover:text-white">Integrations</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-lg font-semibold mb-4">Support</h4>
+                <ul class="space-y-2 text-gray-400">
+                    <li><a href="#help" class="hover:text-white">Help Center</a></li>
+                    <li><a href="#contact" class="hover:text-white">Contact</a></li>
+                    <li><a href="#api" class="hover:text-white">API Docs</a></li>
+                    <li><a href="#status" class="hover:text-white">Status</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-lg font-semibold mb-4">Company</h4>
+                <ul class="space-y-2 text-gray-400">
+                    <li><a href="#about" class="hover:text-white">About</a></li>
+                    <li><a href="#blog" class="hover:text-white">Blog</a></li>
+                    <li><a href="#careers" class="hover:text-white">Careers</a></li>
+                    <li><a href="#privacy" class="hover:text-white">Privacy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+            <p>&copy; 2024 Cornerstone Realty. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+// Smooth scroll for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    });
+});
+
+// Dark mode toggle
+function toggleDarkMode() {
+    document.documentElement.classList.toggle('dark');
+    localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
+}
+
+// Initialize dark mode
+if (localStorage.getItem('darkMode') === 'true' || (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    document.documentElement.classList.add('dark');
+}
+</script>
+
+<?php
+$content = ob_get_clean();
+include 'layout.php';
+?>

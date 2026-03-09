@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -32,14 +32,78 @@
         }
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Prevent theme flickering and ensure smooth transitions */
+        html {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        /* Hide content briefly to prevent flash */
+        .no-js {
+            visibility: hidden;
+        }
+        
+        /* Ensure theme transitions are smooth */
+        * {
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+        }
+    </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900">
+    <script>
+        // Remove no-js class immediately
+        document.documentElement.classList.remove('no-js');
+    </script>
     <?php echo $content; ?>
 
     <!-- Toast Container -->
     <div id="toast-container" class="fixed top-4 right-4 z-50"></div>
 
     <script>
+        // Initialize dark mode immediately to prevent flickering
+        (function() {
+            const darkMode = localStorage.getItem('darkMode');
+            const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (darkMode === 'true' || (!darkMode && systemDark)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+
+        // Theme synchronization across page navigation
+        window.addEventListener('themechange', (e) => {
+            // Ensure all iframes and components get the theme update
+            const iframes = document.querySelectorAll('iframe');
+            iframes.forEach(iframe => {
+                try {
+                    iframe.contentWindow.postMessage({
+                        type: 'themechange',
+                        isDark: e.detail.isDark
+                    }, '*');
+                } catch (err) {
+                    // Ignore cross-origin errors
+                }
+            });
+        });
+
+        // Listen for theme changes from parent (if in iframe)
+        window.addEventListener('message', (e) => {
+            if (e.data.type === 'themechange') {
+                document.documentElement.classList.toggle('dark', e.data.isDark);
+            }
+        });
+
+        // Prevent theme flickering on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Double-check theme is applied after DOM loads
+            const darkMode = localStorage.getItem('darkMode');
+            const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const shouldBeDark = darkMode === 'true' || (!darkMode && systemDark);
+            
+            if (shouldBeDark !== document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.toggle('dark', shouldBeDark);
+            }
+        });
+
         // Toast notification function
         function showToast(message, type = 'success') {
             const toast = document.createElement('div');

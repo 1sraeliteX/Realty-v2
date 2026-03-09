@@ -5,17 +5,26 @@ namespace App\Controllers;
 // Manually require required classes
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../config/config_simple.php';
+require_once __DIR__ . '/../../config/database_factory.php';
+require_once __DIR__ . '/../../config/supabase_database.php';
+require_once __DIR__ . '/../../config/security.php';
 
 use Config\ConfigSimple;
-use Config\Database;
+use Config\DatabaseFactory;
+use Config\Security;
 
 class BaseController {
     protected $config;
     protected $db;
+    protected $security;
 
     public function __construct() {
         $this->config = ConfigSimple::getInstance();
-        $this->db = Database::getInstance();
+        $this->db = DatabaseFactory::create();
+        $this->security = Security::getInstance();
+        
+        // Apply security measures
+        $this->security->setSecurityHeaders();
     }
 
     protected function view($view, $data = []) {
@@ -85,14 +94,47 @@ class BaseController {
     }
 
     protected function validateEmail($email) {
-        return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+        return $this->security->validateEmail($email);
     }
 
     protected function sanitize($input) {
-        if (is_array($input)) {
-            return array_map([$this, 'sanitize'], $input);
+        return $this->security->sanitizeInput($input);
+    }
+
+    protected function getCSRFToken() {
+        return $this->security->generateCSRFToken();
+    }
+
+    protected function validateCSRFToken($token) {
+        if (!$this->security->validateCSRFToken($token)) {
+            if ($this->isApiRequest()) {
+                $this->json(['error' => 'Invalid CSRF token'], 403);
+            } else {
+                $this->security->logSecurityEvent('CSRF_TOKEN_INVALID', [
+                    'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+                    'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
+                ]);
+                $_SESSION['error'] = 'Security token expired. Please try again.';
+                $this->redirect('/admin/login');
+            }
         }
-        return htmlspecialchars(trim($input), ENT_QUOTES, 'UTF-8');
+    }
+
+    protected function checkRateLimit($identifier = null) {
+        $identifier = $identifier ?? ($_SERVER['REMOTE_ADDR'] ?? 'unknown');
+        
+        if (!$this->security->checkRateLimit($identifier)) {
+            if ($this->isApiRequest()) {
+                $this->json(['error' => 'Too many requests. Please try again later.'], 429);
+            } else {
+                $this->security->logSecurityEvent('RATE_LIMIT_EXCEEDED', [
+                    'ip' => $identifier,
+                    'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
+                ]);
+                $_SESSION['error'] = 'Too many attempts. Please try again later.';
+                $this->redirect('/admin/login');
+            }
+        }
     }
 
     protected function getCurrentAdmin() {
@@ -105,51 +147,27 @@ class BaseController {
     }
 
     protected function requireAuth() {
-        // TEMPORARILY DISABLED - Allow direct access without authentication
-        /*
         $admin = $this->getCurrentAdmin();
         if (!$admin) {
             if ($this->isApiRequest()) {
                 $this->json(['error' => 'Unauthorized'], 401);
             } else {
-                $this->redirect('/login');
+                $this->redirect('/admin/login');
             }
         }
         return $admin;
-        */
-        
-        // Return a mock admin for testing
-        return [
-            'id' => 1, // Use consistent admin ID
-            'name' => 'Test Admin',
-            'email' => 'admin@cornerstone.com',
-            'role' => 'admin',
-            'business_name' => 'Test Properties'
-        ];
     }
 
     protected function requireSuperAdmin() {
-        // TEMPORARILY DISABLED - Allow direct access without authentication
-        /*
         $admin = $this->requireAuth();
         if ($admin['role'] !== 'super_admin') {
             if ($this->isApiRequest()) {
                 $this->json(['error' => 'Forbidden - Super Admin access required'], 403);
             } else {
-                $this->redirect('/dashboard');
+                $this->redirect('/admin/dashboard');
             }
         }
         return $admin;
-        */
-        
-        // Return a mock super admin for testing
-        return [
-            'id' => 4,
-            'name' => 'Super Administrator',
-            'email' => 'superadmin@cornerstone.com',
-            'role' => 'super_admin',
-            'business_name' => 'Super Admin Platform'
-        ];
     }
 
     protected function isApiRequest() {

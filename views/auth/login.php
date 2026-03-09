@@ -27,7 +27,7 @@ $content = '
         </div>
         
         <!-- Form Section -->
-        <form class="space-y-6" action="/login" method="POST">
+        <form class="space-y-6" action="/admin/login" method="POST">
             <div class="space-y-4">
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">

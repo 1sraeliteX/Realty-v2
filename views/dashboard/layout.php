@@ -119,7 +119,7 @@ if (!function_exists('getCurrentUser')) {
                 <div class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-4 mt-4 mb-2">
                     <span class="sidebar-text">People</span>
                 </div>
-                <a href="/tenants" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                <a href="/admin/tenants" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
                     <i class="fas fa-users w-5 mr-3"></i>
                     <span class="sidebar-text">Tenants</span>
                 </a>
@@ -127,15 +127,15 @@ if (!function_exists('getCurrentUser')) {
                 <div class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-4 mt-4 mb-2">
                     <span class="sidebar-text">Financial</span>
                 </div>
-                <a href="/finances" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                <a href="/admin/finances" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
                     <i class="fas fa-chart-line w-5 mr-3"></i>
                     <span class="sidebar-text">Finances</span>
                 </a>
-                <a href="/payments" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                <a href="/admin/payments" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
                     <i class="fas fa-money-bill-wave w-5 mr-3"></i>
                     <span class="sidebar-text">Payments</span>
                 </a>
-                <a href="/invoices" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                <a href="/admin/invoices" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
                     <i class="fas fa-file-invoice w-5 mr-3"></i>
                     <span class="sidebar-text">Invoices</span>
                 </a>
@@ -143,15 +143,15 @@ if (!function_exists('getCurrentUser')) {
                 <div class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-4 mt-4 mb-2">
                     <span class="sidebar-text">Operations</span>
                 </div>
-                <a href="/maintenance" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                <a href="/admin/maintenance" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
                     <i class="fas fa-tools w-5 mr-3"></i>
                     <span class="sidebar-text">Maintenance</span>
                 </a>
-                <a href="/communications" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                <a href="/admin/communications" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
                     <i class="fas fa-envelope w-5 mr-3"></i>
                     <span class="sidebar-text">Communications</span>
                 </a>
-                <a href="/documents" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                <a href="/admin/documents" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
                     <i class="fas fa-folder-open w-5 mr-3"></i>
                     <span class="sidebar-text">Documents</span>
                 </a>
@@ -159,7 +159,7 @@ if (!function_exists('getCurrentUser')) {
                 <div class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-4 mt-4 mb-2">
                     <span class="sidebar-text">Reports</span>
                 </div>
-                <a href="/reports" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                <a href="/admin/reports" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
                     <i class="fas fa-chart-bar w-5 mr-3"></i>
                     <span class="sidebar-text">Reports</span>
                 </a>
@@ -167,11 +167,11 @@ if (!function_exists('getCurrentUser')) {
                 <div class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-4 mt-4 mb-2">
                     <span class="sidebar-text">System</span>
                 </div>
-                <a href="/profile" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                <a href="/admin/profile" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
                     <i class="fas fa-user-circle w-5 mr-3"></i>
                     <span class="sidebar-text">Profile</span>
                 </a>
-                <a href="/settings" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                <a href="/admin/settings" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
                     <i class="fas fa-cog w-5 mr-3"></i>
                     <span class="sidebar-text">Settings</span>
                 </a>

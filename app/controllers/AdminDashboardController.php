@@ -9,6 +9,7 @@ use Config\Database;
 
 class AdminDashboardController extends BaseController {
     public function index() {
+        // Require authentication
         $admin = $this->requireAuth();
         
         // Ensure this is an admin, not super admin
@@ -67,15 +68,25 @@ class AdminDashboardController extends BaseController {
         $stmt->execute([$adminId, 'occupied']);
         $stats['occupied_units'] = $stmt->fetchColumn();
         
-        // Monthly revenue
-        $stmt = $pdo->prepare("SELECT SUM(amount) as total FROM payments WHERE admin_id = ? AND status = ? AND MONTH(payment_date) = ? AND YEAR(payment_date) = ?");
-        $stmt->execute([$adminId, 'paid', date('m'), date('Y')]);
-        $stats['monthly_revenue'] = $stmt->fetchColumn() ?: 0;
+        // Monthly revenue - with defensive checks
+        try {
+            $stmt = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) as total FROM payments WHERE admin_id = ? AND status = ? AND MONTH(payment_date) = ? AND YEAR(payment_date) = ?");
+            $stmt->execute([$adminId, 'paid', date('m'), date('Y')]);
+            $stats['monthly_revenue'] = $stmt->fetchColumn() ?: 0;
+        } catch (Exception $e) {
+            error_log("Error fetching monthly revenue: " . $e->getMessage());
+            $stats['monthly_revenue'] = 0;
+        }
         
-        // Pending payments
-        $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM payments WHERE admin_id = ? AND status = ?");
-        $stmt->execute([$adminId, 'pending']);
-        $stats['pending_payments'] = $stmt->fetchColumn();
+        // Pending payments - with defensive checks
+        try {
+            $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM payments WHERE admin_id = ? AND status = ?");
+            $stmt->execute([$adminId, 'pending']);
+            $stats['pending_payments'] = $stmt->fetchColumn() ?: 0;
+        } catch (Exception $e) {
+            error_log("Error fetching pending payments: " . $e->getMessage());
+            $stats['pending_payments'] = 0;
+        }
         
         // Occupancy rate
         if ($stats['total_units'] > 0) {
