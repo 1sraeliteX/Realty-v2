@@ -46,11 +46,11 @@ function renderSearchableDropdown($options, $name, $id, $label, $placeholder = '
     
     ob_start();
     ?>
-    <div class="searchable-dropdown-container">
+    <div class="searchable-dropdown-container relative">
         <label for="<?php echo $searchId; ?>" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             <?php echo $label; ?><?php if ($required): ?> <span class="text-red-500">*</span><?php endif; ?>
         </label>
-        <div class="relative">
+        <div class="relative z-0">
             <input 
                 type="text" 
                 id="<?php echo $searchId; ?>" 
@@ -68,7 +68,7 @@ function renderSearchableDropdown($options, $name, $id, $label, $placeholder = '
             </button>
             
             <!-- Dropdown Options -->
-            <div id="<?php echo $dropdownId; ?>" class="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto hidden">
+            <div id="<?php echo $dropdownId; ?>" class="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-xl max-h-60 overflow-y-auto hidden">
                 <div class="p-2">
                     <!-- Options will be dynamically populated by JavaScript -->
                 </div>
