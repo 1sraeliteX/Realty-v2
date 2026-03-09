@@ -1,6 +1,15 @@
 <?php
+require_once __DIR__ . '/../../config/property_type_helper.php';
 $title = 'Properties';
 $pageTitle = 'Properties Management';
+
+// Get property type helper functions
+$categoryOptions = getCategoryOptions();
+$currentCategory = $_GET['category'] ?? '';
+$currentType = $_GET['type'] ?? '';
+
+// Get all property types for display
+$allPropertyTypes = getPropertyTypeOptions();
 ?>
 
 <!-- Header Actions -->
@@ -22,11 +31,27 @@ $pageTitle = 'Properties Management';
             </div>
         </div>
         <div class="flex gap-2">
+            <select name="category" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                <?php foreach ($categoryOptions as $value => $label): ?>
+                    <option value="<?php echo $value; ?>" <?php echo $currentCategory === $value ? 'selected' : ''; ?>><?php echo $label; ?></option>
+                <?php endforeach; ?>
+            </select>
             <select name="type" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                 <option value="">All Types</option>
-                <option value="residential" <?php echo (($_GET['type'] ?? '') === 'residential') ? 'selected' : ''; ?>>Residential</option>
-                <option value="commercial" <?php echo (($_GET['type'] ?? '') === 'commercial') ? 'selected' : ''; ?>>Commercial</option>
-                <option value="mixed" <?php echo (($_GET['type'] ?? '') === 'mixed') ? 'selected' : ''; ?>>Mixed</option>
+                <?php
+                if ($currentCategory) {
+                    $categoryTypes = getPropertiesByCategory($currentCategory);
+                    foreach ($categoryTypes as $type): ?>
+                        <option value="<?php echo $type['value']; ?>" <?php echo $currentType === $type['value'] ? 'selected' : ''; ?>><?php echo htmlspecialchars($type['label']); ?></option>
+                    <?php endforeach;
+                } else {
+                    // Show all types if no category selected
+                    $allTypes = getPropertyTypeOptions();
+                    foreach ($allTypes as $type): ?>
+                        <option value="<?php echo $type['value']; ?>" <?php echo $currentType === $type['value'] ? 'selected' : ''; ?>><?php echo htmlspecialchars($type['label']); ?></option>
+                    <?php endforeach;
+                }
+                ?>
             </select>
             <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
                 <i class="fas fa-search mr-2"></i>Search
@@ -97,13 +122,28 @@ $pageTitle = 'Properties Management';
                                     </div>
                                 </div>
                             </td>
+                            <?php
+// Find the specific type label for display
+$typeLabel = '';
+foreach ($allPropertyTypes as $type) {
+    if ($type['value'] === $property['type']) {
+        $typeLabel = $type['label'];
+        break;
+    }
+}
+?>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                    <?php echo $property['type'] === 'residential' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' : 
-                                           ($property['type'] === 'commercial' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' : 
-                                           'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'); ?>">
-                                    <?php echo ucfirst($property['type']); ?>
-                                </span>
+                                <div class="flex flex-col">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                        <?php echo $property['type'] === 'residential' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' : 
+                                               ($property['type'] === 'commercial' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' : 
+                                               'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'); ?>">
+                                        <?php echo ucfirst($property['type']); ?>
+                                    </span>
+                                    <?php if ($typeLabel): ?>
+                                        <span class="text-xs text-gray-500 dark:text-gray-400 ml-1"><?php echo htmlspecialchars($typeLabel); ?></span>
+                                    <?php endif; ?>
+                                </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                 <div class="flex items-center">
@@ -187,7 +227,7 @@ $pageTitle = 'Properties Management';
         <div class="bg-white dark:bg-gray-800 px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 sm:px-6">
             <div class="flex-1 flex justify-between sm:hidden">
                 <?php if ($pagination['has_prev']): ?>
-                    <a href="?page=<?php echo $pagination['current_page'] - 1; ?><?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?><?php echo !empty($type) ? '&type=' . urlencode($type) : ''; ?><?php echo !empty($status) ? '&status=' . urlencode($status) : ''; ?>" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600">Previous</a>
+                    <a href="?page=<?php echo $pagination['current_page'] - 1; ?><?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?><?php echo !empty($type) ? '&type=' . urlencode($type) : ''; ?><?php echo !empty($category) ? '&category=' . urlencode($category) : ''; ?><?php echo !empty($status) ? '&status=' . urlencode($status) : ''; ?>" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600">Previous</a>
                 <?php endif; ?>
                 <?php if ($pagination['has_next']): ?>
                     <a href="?page=<?php echo $pagination['current_page'] + 1; ?><?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?><?php echo !empty($type) ? '&type=' . urlencode($type) : ''; ?><?php echo !empty($status) ? '&status=' . urlencode($status) : ''; ?>" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600">Next</a>
@@ -208,7 +248,7 @@ $pageTitle = 'Properties Management';
                         <?php endif; ?>
                         
                         <?php for ($i = max(1, $pagination['current_page'] - 2); $i <= min($pagination['total_pages'], $pagination['current_page'] + 2); $i++): ?>
-                            <a href="?page=<?php echo $i; ?><?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?><?php echo !empty($type) ? '&type=' . urlencode($type) : ''; ?><?php echo !empty($status) ? '&status=' . urlencode($status) : ''; ?>" class="relative inline-flex items-center px-4 py-2 border text-sm font-medium 
+                            <a href="?page=<?php echo $i; ?><?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?><?php echo !empty($type) ? '&type=' . urlencode($type) : ''; ?><?php echo !empty($category) ? '&category=' . urlencode($category) : ''; ?><?php echo !empty($status) ? '&status=' . urlencode($status) : ''; ?>" class="relative inline-flex items-center px-4 py-2 border text-sm font-medium 
                                 <?php echo $i === $pagination['current_page'] ? 
                                     'z-10 bg-primary-50 border-primary-500 text-primary-600 dark:bg-primary-900 dark:border-primary-400 dark:text-primary-300' : 
                                     'bg-white border-gray-300 text-gray-500 hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600'; ?>">
@@ -217,7 +257,7 @@ $pageTitle = 'Properties Management';
                         <?php endfor; ?>
                         
                         <?php if ($pagination['has_next']): ?>
-                            <a href="?page=<?php echo $pagination['current_page'] + 1; ?><?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?><?php echo !empty($type) ? '&type=' . urlencode($type) : ''; ?><?php echo !empty($status) ? '&status=' . urlencode($status) : ''; ?>" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">Next</a>
+                            <a href="?page=<?php echo $pagination['current_page'] + 1; ?><?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?><?php echo !empty($type) ? '&type=' . urlencode($type) : ''; ?><?php echo !empty($category) ? '&category=' . urlencode($category) : ''; ?><?php echo !empty($status) ? '&status=' . urlencode($status) : ''; ?>" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">Next</a>
                         <?php endif; ?>
                     </nav>
                 </div>

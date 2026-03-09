@@ -9,6 +9,7 @@ class PropertyController extends BaseController {
         $page = $_GET['page'] ?? 1;
         $search = $_GET['search'] ?? '';
         $type = $_GET['type'] ?? '';
+        $category = $_GET['category'] ?? '';
         $status = $_GET['status'] ?? '';
         
         // Build query
@@ -24,6 +25,16 @@ class PropertyController extends BaseController {
         if (!empty($type)) {
             $where[] = "p.type = ?";
             $params[] = $type;
+        }
+        
+        if (!empty($category)) {
+            require_once __DIR__ . '/../../config/property_type_helper.php';
+            $categoryTypes = getPropertiesByCategory($category);
+            if (!empty($categoryTypes)) {
+                $placeholders = str_repeat('?,', count($categoryTypes));
+                $where[] = "p.type IN ($placeholders)";
+                $params = array_merge($params, array_column($categoryTypes, 'value'));
+            }
         }
         
         if (!empty($status)) {
@@ -51,6 +62,7 @@ class PropertyController extends BaseController {
                 'pagination' => $result['pagination'],
                 'search' => $search,
                 'type' => $type,
+                'category' => $category,
                 'status' => $status
             ])
         ]);
@@ -70,20 +82,37 @@ class PropertyController extends BaseController {
         $admin = $this->requireAuth();
         $data = $this->getPostData();
         
+        // Handle both regular form submission and AJAX mapped field names
+        $mappedData = [
+            'property_name' => $data['name'] ?? $data['property_name'] ?? '',
+            'address' => $data['address'] ?? '',
+            'property_type' => $data['type'] ?? $data['property_type'] ?? '',
+            'yearly_rent' => $data['rent_price'] ?? $data['yearly_rent'] ?? '',
+            'year_built' => $data['year_built'] ?? '',
+            'rooms' => $data['bedrooms'] ?? $data['rooms'] ?? '',
+            'bathrooms' => $data['bathrooms'] ?? '',
+            'kitchens' => $data['kitchens'] ?? '',
+            'parking' => $data['parking'] ?? '',
+            'water_availability' => $data['water_availability'] ?? '',
+            'description' => $data['description'] ?? '',
+            'category' => $data['category'] ?? '',
+            'status' => $data['status'] ?? 'active'
+        ];
+        
         // Validate required fields
-        $required = ['property_name', 'address', 'property_type'];
-        $errors = $this->validateRequired($data, $required);
+        $required = ['property_name', 'address', 'property_type', 'water_availability'];
+        $errors = $this->validateRequired($mappedData, $required);
         
         if (!empty($errors)) {
             if ($this->isApiRequest()) {
                 $this->json(['errors' => $errors], 422);
             } else {
                 $_SESSION['errors'] = $errors;
-                $_SESSION['old'] = $data;
+                $_SESSION['old'] = $mappedData;
                 $this->redirect('/properties/create');
             }
         }
-
+        
         // Handle file uploads
         $images = [];
         if (isset($_FILES['images']) && !empty($_FILES['images']['name'][0])) {
@@ -114,7 +143,7 @@ class PropertyController extends BaseController {
                 $this->json(['errors' => $errors], 422);
             } else {
                 $_SESSION['errors'] = $errors;
-                $_SESSION['old'] = $data;
+                $_SESSION['old'] = $mappedData;
                 $this->redirect('/properties/create');
             }
         }
@@ -122,18 +151,18 @@ class PropertyController extends BaseController {
         // Prepare property data
         $propertyData = [
             'admin_id' => $admin['id'],
-            'name' => $data['property_name'],
-            'address' => $data['address'],
-            'type' => $data['property_type'],
-            'category' => $data['category'] ?? null,
-            'description' => $data['description'] ?? null,
-            'year_built' => $data['year_built'] ?? null,
-            'bedrooms' => $data['rooms'] ?? null,
-            'bathrooms' => $data['bathrooms'] ?? null,
-            'kitchens' => $data['kitchens'] ?? 1,
-            'parking' => $data['parking'] ?? 0,
-            'rent_price' => $data['yearly_rent'] ?? null,
-            'status' => $data['status'] ?? 'active',
+            'name' => $mappedData['property_name'],
+            'address' => $mappedData['address'],
+            'type' => $mappedData['property_type'],
+            'category' => $mappedData['category'] ?? null,
+            'description' => $mappedData['description'] ?? null,
+            'year_built' => $mappedData['year_built'] ?? null,
+            'bedrooms' => $mappedData['rooms'] ?? null,
+            'bathrooms' => $mappedData['bathrooms'] ?? null,
+            'kitchens' => $mappedData['kitchens'] ?? 1,
+            'parking' => $mappedData['parking'] ?? 0,
+            'rent_price' => $mappedData['yearly_rent'] ?? null,
+            'status' => $mappedData['status'] ?? 'active',
             'amenities' => !empty($data['amenities']) ? json_decode($data['amenities'], true) : null,
             'images' => !empty($images) ? json_encode($images) : null
         ];
@@ -141,7 +170,7 @@ class PropertyController extends BaseController {
         $propertyId = $this->db->insert('properties', $propertyData);
 
         // Log activity
-        $this->logActivity($admin['id'], 'create', "Created property: {$data['property_name']}", 'property', $propertyId);
+        $this->logActivity($admin['id'], 'create', "Created property: {$mappedData['property_name']}", 'property', $propertyId);
 
         if ($this->isApiRequest() || isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
             $this->json([

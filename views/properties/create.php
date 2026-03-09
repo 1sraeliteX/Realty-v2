@@ -511,6 +511,7 @@ document.getElementById('property-form').addEventListener('submit', function(e) 
     apiFormData.append('bathrooms', formData.get('bathrooms'));
     apiFormData.append('kitchens', formData.get('kitchens'));
     apiFormData.append('parking', formData.get('parking'));
+    apiFormData.append('water_availability', formData.get('water_availability'));
     apiFormData.append('description', formData.get('description'));
     
     // Parse amenities JSON and re-encode for API
