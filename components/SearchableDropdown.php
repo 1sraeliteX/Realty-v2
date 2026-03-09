@@ -68,7 +68,7 @@ function renderSearchableDropdown($options, $name, $id, $label, $placeholder = '
             </button>
             
             <!-- Dropdown Options -->
-            <div id="<?php echo $dropdownId; ?>" class="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-xl max-h-60 overflow-y-auto hidden">
+            <div id="<?php echo $dropdownId; ?>" class="absolute z-[100] w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-xl max-h-60 overflow-y-auto hidden">
                 <div class="p-2">
                     <!-- Options will be dynamically populated by JavaScript -->
                 </div>
