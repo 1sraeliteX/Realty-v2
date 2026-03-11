@@ -30,7 +30,7 @@ $newApplications = ViewManager::get('newApplications', []);
 
 <!-- Secondary Stats Row -->
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <?php echo UIComponents::statsCard('Monthly Revenue', 'N' . number_format(arr_get($stats, 'monthly_revenue', 0) / 1000000000, 2) . 'B', 'money-bill-wave', 8.7, 'green'); ?>
+    <?php echo UIComponents::statsCard('Monthly Revenue', 'N' . number_format(arr_get($stats, 'monthly_revenue', 0) / 1000000, 2) . 'M', 'money-bill-wave', 8.7, 'green'); ?>
     <?php echo UIComponents::statsCard('Occupied Units', arr_get($stats, 'occupied_units'), 'check-circle', 3.4, 'blue'); ?>
     <?php echo UIComponents::statsCard('Pending Payments', arr_get($stats, 'pending_payments'), 'exclamation-triangle', -25.0, 'red'); ?>
 </div>
@@ -312,7 +312,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const revenueValues = Object.values(revenueData);
 
     new Chart(revenueCtx, {
-        type: 'line',
+        type: 'bar',
         data: {
             labels: revenueLabels.map(date => {
                 const d = new Date(date + '-01');
@@ -321,10 +321,11 @@ document.addEventListener('DOMContentLoaded', function() {
             datasets: [{
                 label: 'Revenue',
                 data: revenueValues,
+                backgroundColor: 'rgba(59, 130, 246, 0.8)',
                 borderColor: 'rgb(59, 130, 246)',
-                backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                tension: 0.4,
-                fill: true
+                borderWidth: 1,
+                borderRadius: 4,
+                hoverBackgroundColor: 'rgba(59, 130, 246, 1)'
             }]
         },
         options: {
@@ -337,7 +338,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            return 'Revenue: N' + (context.parsed.y / 1000000000).toFixed(2) + 'B';
+                            const value = context.parsed.y;
+                            if (value >= 1000000000) {
+                                return 'Revenue: N' + (value / 1000000000).toFixed(2) + 'B';
+                            } else if (value >= 1000000) {
+                                return 'Revenue: N' + (value / 1000000).toFixed(2) + 'M';
+                            } else if (value >= 1000) {
+                                return 'Revenue: N' + (value / 1000).toFixed(2) + 'K';
+                            } else {
+                                return 'Revenue: N' + value.toFixed(2);
+                            }
                         }
                     }
                 }
@@ -348,7 +358,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     ticks: {
                         callback: function(value) {
                             if (value === 0) return 'N0';
-                            return 'N' + (value / 1000000000).toFixed(1) + 'B';
+                            if (value >= 1000000000) {
+                                return 'N' + (value / 1000000000).toFixed(1) + 'B';
+                            } else if (value >= 1000000) {
+                                return 'N' + (value / 1000000).toFixed(1) + 'M';
+                            } else if (value >= 1000) {
+                                return 'N' + (value / 1000).toFixed(1) + 'K';
+                            } else {
+                                return 'N' + value;
+                            }
                         }
                     }
                 }
