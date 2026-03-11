@@ -1,0 +1,141 @@
+{
+  "Isolated View Template": {
+    "prefix": "view",
+    "body": [
+      "<?php",
+      "// Initialize framework",
+      "require_once __DIR__ . '/../../config/init_framework.php';",
+      "",
+      "// Set page data",
+      "ViewManager::set('title', \\$title ?? 'Page Title');",
+      "ViewManager::set('pageTitle', \\$pageTitle ?? 'Page Title');",
+      "",
+      "// Get data from provider",
+      "\\$${1:properties} = DataProvider::get('${1:properties}');",
+      "\\$${2:tenants} = DataProvider::get('${2:tenants}');",
+      "",
+      "// Process data for this view",
+      "\\$pageData = [",
+      "  '${1:properties}' => \\$${1:properties},",
+      "  '${2:tenants}' => \\$${2:tenants},",
+      "  'stats' => [",
+      "    'total' => count(\\$${1:properties})",
+      "  ]",
+      "];",
+      "",
+      "// Render view",
+      "echo ViewManager::render('admin.${3:view_name}', \\$pageData);",
+      "?>"
+    ],
+    "description": "Create isolated view with anti-scattering architecture"
+  },
+  "Component Loading": {
+    "prefix": "component",
+    "body": [
+      "// Load component",
+      "ComponentRegistry::load('${1:component_name}');"
+    ],
+    "description": "Load component using registry"
+  },
+  "Data Provider Get": {
+    "prefix": "data",
+    "body": [
+      "DataProvider::get('${1:data_key}'${2:, 'default_value'})"
+    ],
+    "description": "Get data from centralized provider"
+  },
+  "Data Provider Set": {
+    "prefix": "setdata",
+    "body": [
+      "DataProvider::set('${1:data_key}', ${2:value});"
+    ],
+    "description": "Set data in centralized provider"
+  },
+  "View Manager Render": {
+    "prefix": "render",
+    "body": [
+      "ViewManager::render('${1:view_path}'${2:, \\$data})"
+    ],
+    "description": "Render view using view manager"
+  },
+  "UI Component": {
+    "prefix": "uicomp",
+    "body": [
+      "UIComponents::${1:method_name}(${2:parameters})"
+    ],
+    "description": "Use UI component method"
+  },
+  "Clean Controller Method": {
+    "prefix": "controller",
+    "body": [
+      "public function ${1:methodName}() {",
+      "  // Get data",
+      "  \\$${2:data} = DataProvider::get('${2:data}');",
+      "  ",
+      "  // Process business logic",
+      "  \\$processedData = [",
+      "    '${2:data}' => \\$${2:data}",
+      "  ];",
+      "  ",
+      "  // Set view data",
+      "  ViewManager::set('title', '${3:Page Title}');",
+      "  ",
+      "  // Render view",
+      "  return ViewManager::render('admin.${4:view_name}', \\$processedData);",
+      "}"
+    ],
+    "description": "Create clean controller method"
+  },
+  "Isolated Component Class": {
+    "prefix": "isoclass",
+    "body": [
+      "<?php",
+      "",
+      "class ${1:ComponentName} {",
+      "  ",
+      "  /**",
+      "   * Render component",
+      "   */",
+      "  public static function render(\\$data = []) {",
+      "    // Component logic here",
+      "    extract(\\$data);",
+      "    ",
+      "    return '<div class=\"${1:ComponentName}\">",
+      "      . ${2:content}",
+      "      '</div>';",
+      "  }",
+      "  ",
+      "  /**",
+      "   * Process data",
+      "   */",
+      "  private static function processData(\\$data) {",
+      "    // Data processing logic",
+      "    return \\$data;",
+      "  }",
+      "}",
+      "?>"
+    ],
+    "description": "Create isolated component class"
+  },
+  "Framework Init": {
+    "prefix": "init",
+    "body": [
+      "require_once __DIR__ . '/config/init_framework.php';"
+    ],
+    "description": "Initialize framework"
+  },
+  "View Manager Set": {
+    "prefix": "setview",
+    "body": [
+      "ViewManager::set('${1:key}', ${2:value});"
+    ],
+    "description": "Set view manager data"
+  },
+  "Component Registry Register": {
+    "prefix": "register",
+    "body": [
+      "ComponentRegistry::register('${1:component_name}', '${2:path}'${3:, ['${4:dependency}']});"
+    ],
+    "description": "Register component in registry"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "php.suggest.basic": false,
+  "editor.snippetSuggestions": "top",
+  "editor.tabCompletion": "on",
+  "editor.formatOnSave": true,
+  "editor.quickSuggestions": {
+    "comments": false,
+    "strings": true,
+    "other": true
+  },
+  "emmet.includeLanguages": {
+    "php": "html"
+  },
+  "files.associations": {
+    "*.php": "php"
+  },
+  "php.validate.executablePath": "C:/xampp/php/php.exe",
+  "php.validate.run": "onSave"
+}

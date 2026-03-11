@@ -1,56 +1,20 @@
 <?php
-// Include UI Components
-require_once __DIR__ . '/../../components/UIComponents.php';
+// Initialize framework (anti-scattering compliant)
+require_once __DIR__ . '/../../config/init_framework.php';
 
-$title = 'Tenant Details';
-$pageTitle = 'Tenant Details';
-$pageDescription = 'View comprehensive tenant information and manage lease details';
+// Load components through registry (anti-scattering compliant)
+ComponentRegistry::load('ui-components');
 
-// Mock tenant data
-$tenant = [
-    'id' => 1,
-    'first_name' => 'John',
-    'last_name' => 'Smith',
-    'email' => 'john.smith@email.com',
-    'phone' => '(555) 123-4567',
-    'date_of_birth' => '1985-06-15',
-    'ssn' => '***-**-6789',
-    'emergency_contact' => 'Jane Smith',
-    'emergency_phone' => '(555) 987-6543',
-    'status' => 'active',
-    'move_in_date' => '2023-01-15',
-    'lease_start' => '2023-01-15',
-    'lease_end' => '2024-01-14',
-    'monthly_rent' => 1200,
-    'security_deposit' => 2400,
-    'property_name' => 'Sunset Apartments',
-    'unit_number' => '101',
-    'property_id' => 1,
-    'unit_id' => 1,
-    'created_at' => '2023-01-10',
-    'last_updated' => '2024-01-08'
-];
+// Set data through ViewManager (anti-scattering compliant)
+ViewManager::set('title', 'Tenant Details');
+ViewManager::set('pageTitle', 'Tenant Details');
+ViewManager::set('pageDescription', 'View comprehensive tenant information and manage lease details');
 
-// Mock payment history
-$paymentHistory = [
-    ['id' => 1, 'date' => '2024-01-01', 'amount' => 1200, 'type' => 'rent', 'status' => 'paid', 'method' => 'bank_transfer'],
-    ['id' => 2, 'date' => '2023-12-01', 'amount' => 1200, 'type' => 'rent', 'status' => 'paid', 'method' => 'bank_transfer'],
-    ['id' => 3, 'date' => '2023-11-01', 'amount' => 1200, 'type' => 'rent', 'status' => 'paid', 'method' => 'bank_transfer'],
-    ['id' => 4, 'date' => '2023-10-01', 'amount' => 1200, 'type' => 'rent', 'status' => 'paid', 'method' => 'bank_transfer'],
-];
-
-// Mock documents
-$documents = [
-    ['id' => 1, 'name' => 'Lease Agreement', 'type' => 'lease', 'upload_date' => '2023-01-10', 'size' => '2.4 MB'],
-    ['id' => 2, 'name' => 'ID Verification', 'type' => 'identification', 'upload_date' => '2023-01-10', 'size' => '1.2 MB'],
-    ['id' => 3, 'name' => 'Background Check', 'type' => 'background', 'upload_date' => '2023-01-11', 'size' => '856 KB'],
-];
-
-// Mock maintenance requests
-$maintenanceRequests = [
-    ['id' => 1, 'title' => 'Leaky Faucet', 'status' => 'resolved', 'priority' => 'medium', 'created_at' => '2023-12-15', 'resolved_at' => '2023-12-18'],
-    ['id' => 2, 'title' => 'AC Not Working', 'status' => 'pending', 'priority' => 'high', 'created_at' => '2024-01-08', 'resolved_at' => null],
-];
+// Get data from DataProvider (anti-scattering compliant)
+$tenant = DataProvider::get('tenantDetails');
+$paymentHistory = DataProvider::get('tenantPaymentHistory');
+$documents = DataProvider::get('tenantDocuments');
+$maintenanceRequests = DataProvider::get('tenantMaintenanceRequests');
 
 ob_start();
 ?>
@@ -375,5 +339,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <?php
 $content = ob_get_clean();
-include '../dashboard_layout.php';
+echo ViewManager::render('admin.simple_layout', ['content' => $content]);
 ?>

@@ -62,10 +62,9 @@ ob_start();
                 'Property Type',
                 [
                     '' => 'Select type',
-                    'Residential' => 'Residential',
-                    'Commercial' => 'Commercial',
-                    'Industrial' => 'Industrial',
-                    'Mixed Use' => 'Mixed Use'
+                    '1 Room Apartment' => '1 Room Apartment',
+                    'Self Contained' => 'Self Contained',
+                    'Multi-Unit' => 'Multi-Unit'
                 ],
                 '',
                 true
@@ -368,5 +367,5 @@ dropZone.addEventListener('drop', function(e) {
 
 <?php
 $content = ob_get_clean();
-include '../dashboard_layout.php';
+include '../simple_layout.php';
 ?>

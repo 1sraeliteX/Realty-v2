@@ -136,7 +136,7 @@ $content = ob_start();
                         Export Data
                     </a>
                     <a href="/admin/logout" class="block w-full text-center px-4 py-2 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 rounded-lg hover:bg-red-200 dark:hover:bg-red-800">
-                        <i class="fas fa-sign-out-alt mr-2"></i>
+                        <i class="fas fa-right-from-bracket mr-2"></i>
                         Sign Out
                     </a>
                 </div>
@@ -149,5 +149,5 @@ $content = ob_start();
 $content = ob_get_clean();
 
 // Include the admin dashboard layout
-include __DIR__ . '/../dashboard_layout.php';
+include __DIR__ . '/../simple_layout.php';
 ?>

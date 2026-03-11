@@ -44,11 +44,32 @@ class BaseController {
         $content = ob_get_clean();
         
         // Include layout if available
-        $layoutPath = __DIR__ . '/../../views/layout.php';
-        if (file_exists($layoutPath)) {
-            include $layoutPath;
+        if (strpos($view, 'admin/') === 0) {
+            // Check if the view already handles its own layout (includes simple_layout.php)
+            if (strpos($content, "include '../simple_layout.php'") !== false || 
+                strpos($content, 'include "../simple_layout.php"') !== false ||
+                strpos($content, "include '../simple_layout.php';") !== false ||
+                strpos($content, 'include "../simple_layout.php";') !== false) {
+                // View already handles its own layout, just echo the content
+                echo $content;
+            } else {
+                // Use simple layout for admin views
+                $layoutPath = __DIR__ . '/../../views/simple_layout.php';
+                if (file_exists($layoutPath)) {
+                    // Pass the content to the simple layout
+                    include $layoutPath;
+                } else {
+                    echo $content;
+                }
+            }
         } else {
-            echo $content;
+            // Use main layout for non-admin views
+            $layoutPath = __DIR__ . '/../../views/layout.php';
+            if (file_exists($layoutPath)) {
+                include $layoutPath;
+            } else {
+                echo $content;
+            }
         }
     }
 

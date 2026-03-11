@@ -1,9 +1,19 @@
 <?php
-// Include UI Components
-require_once __DIR__ . '/../../components/UIComponents.php';
+// Initialize framework
+require_once __DIR__ . '/../../config/init_framework.php';
 
-$title = 'Upload Document';
-$pageTitle = 'Add Document';
+// Load attachment component
+ComponentRegistry::load('attachment-component');
+
+// Get data from DataProvider
+$properties = DataProvider::get('properties');
+$tenants = DataProvider::get('tenants');
+
+// Set view data
+ViewManager::set('title', 'Upload Document');
+ViewManager::set('pageTitle', 'Add Document');
+ViewManager::set('properties', $properties);
+ViewManager::set('tenants', $tenants);
 
 $content = ob_start();
 ?>
@@ -48,23 +58,36 @@ $content = ob_start();
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Property</label>
                     <select name="property_id" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
                         <option value="">Select Property</option>
-                        <option value="1">Sunset Apartments</option>
-                        <option value="2">Downtown Plaza</option>
+                        <?php foreach ($properties as $property): ?>
+                        <option value="<?php echo $property['id']; ?>"><?php echo htmlspecialchars($property['name']); ?></option>
+                        <?php endforeach; ?>
                     </select>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tenant</label>
                     <select name="tenant_id" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
                         <option value="">Select Tenant</option>
-                        <option value="1">John Doe</option>
-                        <option value="2">Jane Smith</option>
+                        <?php foreach ($tenants as $tenant): ?>
+                        <option value="<?php echo $tenant['id']; ?>"><?php echo htmlspecialchars($tenant['name']); ?></option>
+                        <?php endforeach; ?>
                     </select>
                 </div>
             </div>
             <div class="mt-6">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">File *</label>
-                <input type="file" name="document_file" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Accepted formats: PDF, DOC, DOCX, JPG, PNG (Max 10MB)</p>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Upload Documents *</label>
+                <?php echo AttachmentComponent::renderUploadArea([
+                    'id' => 'document-upload',
+                    'name' => 'documents[]',
+                    'multiple' => true,
+                    'accept' => '.pdf,.doc,.docx,.jpg,.jpeg,.png,.gif',
+                    'max_size' => 10,
+                    'max_files' => 5,
+                    'preview' => true
+                ]); ?>
+                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                    Upload lease agreements, inspection reports, insurance documents, or other property-related files.
+                    You can upload multiple files at once.
+                </p>
             </div>
             <div class="mt-6">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description</label>
@@ -88,6 +111,12 @@ $content = ob_start();
 <?php
 $content = ob_get_clean();
 
+// Include JavaScript for attachment functionality
+echo AttachmentComponentJS::renderJS();
+
+// Render preview modal
+echo AttachmentComponent::renderPreviewModal();
+
 // Include the admin dashboard layout
-include __DIR__ . '/../dashboard_layout.php';
+echo ViewManager::render('admin.dashboard_layout', ['content' => $content]);
 ?>

@@ -2,8 +2,14 @@
 
 namespace App\Controllers;
 
+use DataProvider;
+use ViewManager;
+
 class PropertyController extends BaseController {
     public function index() {
+        // Initialize framework (anti-scattering compliant)
+        require_once __DIR__ . '/../../config/init_framework.php';
+        
         $admin = $this->requireAuth();
         
         $page = $_GET['page'] ?? 1;
@@ -11,6 +17,19 @@ class PropertyController extends BaseController {
         $type = $_GET['type'] ?? '';
         $category = $_GET['category'] ?? '';
         $status = $_GET['status'] ?? '';
+        
+        // Load property type helper and get data
+        require_once __DIR__ . '/../../config/property_type_helper.php';
+        
+        // Set data in DataProvider (anti-scattering compliant)
+        DataProvider::set('property_category_options', getCategoryOptions());
+        DataProvider::set('property_type_options', getPropertyTypeOptions());
+        
+        // Set view data in ViewManager (anti-scattering compliant)
+        ViewManager::set('search', $search);
+        ViewManager::set('type', $type);
+        ViewManager::set('category', $category);
+        ViewManager::set('status', $status);
         
         // Build query
         $where = ["p.admin_id = ?", "p.deleted_at IS NULL"];
@@ -54,19 +73,16 @@ class PropertyController extends BaseController {
         
         $result = $this->paginate($sql, $page, 10, $params);
         
+        // Set data in ViewManager (anti-scattering compliant)
+        ViewManager::set('properties', $result['data']);
+        ViewManager::set('pagination', $result['pagination']);
+        
         // Always use dashboard layout for properties
-        $this->view('dashboard.layout', [
+        $this->view('admin.dashboard_layout', [
             'admin' => $admin,
             'title' => 'Properties',
             'pageTitle' => 'Properties Management',
-            'content' => $this->renderView('properties.index', [
-                'properties' => $result['data'],
-                'pagination' => $result['pagination'],
-                'search' => $search,
-                'type' => $type,
-                'category' => $category,
-                'status' => $status
-            ])
+            'content' => $this->renderView('properties.index')
         ]);
     }
 
@@ -74,7 +90,7 @@ class PropertyController extends BaseController {
         $admin = $this->requireAuth();
         
         // Always use dashboard layout for properties
-        $this->view('dashboard.layout', [
+        $this->view('admin.dashboard_layout', [
             'admin' => $admin,
             'title' => 'Add Property',
             'pageTitle' => 'Add New Property',
@@ -226,7 +242,7 @@ class PropertyController extends BaseController {
                 'tenants' => $tenants
             ]);
         } else {
-            $this->view('dashboard.layout', [
+            $this->view('admin.dashboard_layout', [
                 'admin' => $admin,
                 'pageTitle' => 'Property Details',
                 'content' => $this->renderPropertyDetails($property, $units, $tenants)
@@ -245,7 +261,7 @@ class PropertyController extends BaseController {
             $this->redirect('/properties');
         }
 
-        $this->view('dashboard.layout', [
+        $this->view('admin.dashboard_layout', [
             'admin' => $admin,
             'pageTitle' => 'Edit Property',
             'content' => $this->renderView('properties.create', ['property' => $property])

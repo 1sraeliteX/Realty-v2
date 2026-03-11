@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sidebar Visibility Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/assets/css/fontawesome.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                            950: '#172554',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900">
+    <div class="flex h-screen">
+        <!-- Sidebar Test -->
+        <aside id="sidebar" class="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300">
+            <div class="flex flex-col h-full">
+                <!-- Logo -->
+                <div class="flex items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-building text-white text-sm"></i>
+                            </div>
+                        </div>
+                        <div class="ml-3 sidebar-text">
+                            <h1 class="text-lg font-semibold text-gray-900 dark:text-white">Cornerstone</h1>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Property Manager</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <!-- Collapse Toggle Button -->
+                        <button id="toggleSidebar" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                            <i class="fas fa-chevron-left text-sidebar-toggle"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600">
+                    <!-- Test Menu Items -->
+                    <a href="#" class="nav-item group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors relative text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700" title="Dashboard">
+                        <i class="fas fa-home mr-3 text-lg text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 sidebar-icon"></i>
+                        <span class="sidebar-text">Dashboard</span>
+                        <div class="sidebar-tooltip absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 invisible transition-opacity duration-200 whitespace-nowrap z-50 hidden">
+                            Dashboard
+                        </div>
+                    </a>
+
+                    <a href="#" class="nav-item group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors relative text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700" title="Properties">
+                        <i class="fas fa-building mr-3 text-lg text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 sidebar-icon"></i>
+                        <span class="sidebar-text">Properties</span>
+                        <div class="sidebar-tooltip absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 invisible transition-opacity duration-200 whitespace-nowrap z-50 hidden">
+                            Properties
+                        </div>
+                    </a>
+
+                    <a href="#" class="nav-item group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors relative text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700" title="Tenants">
+                        <i class="fas fa-user-friends mr-3 text-lg text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 sidebar-icon"></i>
+                        <span class="sidebar-text">Tenants</span>
+                        <div class="sidebar-tooltip absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 invisible transition-opacity duration-200 whitespace-nowrap z-50 hidden">
+                            Tenants
+                        </div>
+                    </a>
+
+                    <a href="#" class="nav-item group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors relative text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700" title="Settings">
+                        <i class="fas fa-cog mr-3 text-lg text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 sidebar-icon"></i>
+                        <span class="sidebar-text">Settings</span>
+                        <div class="sidebar-tooltip absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 invisible transition-opacity duration-200 whitespace-nowrap z-50 hidden">
+                            Settings
+                        </div>
+                    </a>
+                </nav>
+
+                <!-- User Profile Section -->
+                <div class="border-t border-gray-200 dark:border-gray-700 p-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-gray-600 text-xs"></i>
+                        </div>
+                        <div class="flex-1 min-w-0 sidebar-text">
+                            <p class="text-sm font-medium text-gray-900 dark:text-white truncate">Test User</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 truncate">test@example.com</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 bg-gray-50 dark:bg-gray-900 p-8">
+            <div class="max-w-4xl mx-auto">
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">Sidebar Visibility Test</h1>
+                
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+                    <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Test Instructions</h2>
+                    <ul class="space-y-2 text-gray-700 dark:text-gray-300">
+                        <li>• Click the chevron icon in the sidebar header to toggle collapse/expand</li>
+                        <li>• When collapsed, text should hide and only icons should show</li>
+                        <li>• Hover over icons when collapsed to see tooltips</li>
+                        <li>• All menu items should remain visible and accessible</li>
+                        <li>• No content should be clipped or cut off</li>
+                        <li>• Test both light and dark modes</li>
+                    </ul>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+                    <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Visibility Checklist</h2>
+                    <div class="space-y-3">
+                        <label class="flex items-center space-x-3">
+                            <input type="checkbox" class="form-checkbox h-5 w-5 text-primary-600">
+                            <span class="text-gray-700 dark:text-gray-300">All menu items visible when expanded</span>
+                        </label>
+                        <label class="flex items-center space-x-3">
+                            <input type="checkbox" class="form-checkbox h-5 w-5 text-primary-600">
+                            <span class="text-gray-700 dark:text-gray-300">Icons properly centered when collapsed</span>
+                        </label>
+                        <label class="flex items-center space-x-3">
+                            <input type="checkbox" class="form-checkbox h-5 w-5 text-primary-600">
+                            <span class="text-gray-700 dark:text-gray-300">Tooltips appear on hover when collapsed</span>
+                        </label>
+                        <label class="flex items-center space-x-3">
+                            <input type="checkbox" class="form-checkbox h-5 w-5 text-primary-600">
+                            <span class="text-gray-700 dark:text-gray-300">No text clipped or overflowing</span>
+                        </label>
+                        <label class="flex items-center space-x-3">
+                            <input type="checkbox" class="form-checkbox h-5 w-5 text-primary-600">
+                            <span class="text-gray-700 dark:text-gray-300">Smooth transitions between states</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Dark Mode Toggle</h2>
+                    <button id="darkModeToggle" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg transition-colors">
+                        <i class="fas fa-moon mr-2"></i>
+                        Toggle Dark Mode
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Sidebar functionality
+        const sidebar = document.getElementById('sidebar');
+        const toggleSidebar = document.getElementById('toggleSidebar');
+        const sidebarToggleIcon = document.querySelector('.text-sidebar-toggle');
+
+        // Toggle sidebar collapse/expand
+        function toggleSidebarCollapse() {
+            const isCollapsed = sidebar.classList.contains('w-16');
+            
+            if (isCollapsed) {
+                // Expand sidebar
+                sidebar.classList.remove('w-16');
+                sidebar.classList.add('w-64');
+                
+                // Show text elements
+                const textElements = sidebar.querySelectorAll('.sidebar-text');
+                textElements.forEach(el => el.classList.remove('hidden'));
+                
+                // Restore icon margins
+                const iconElements = sidebar.querySelectorAll('.sidebar-icon');
+                iconElements.forEach(el => {
+                    el.classList.add('mr-3');
+                    el.classList.remove('mx-auto');
+                });
+                
+                // Restore nav item padding
+                const navItems = sidebar.querySelectorAll('.nav-item');
+                navItems.forEach(el => {
+                    el.classList.add('px-3');
+                    el.classList.remove('px-2', 'justify-center');
+                });
+                
+                // Update toggle icon
+                sidebarToggleIcon.classList.remove('fa-chevron-right');
+                sidebarToggleIcon.classList.add('fa-chevron-left');
+                
+                localStorage.setItem('sidebarCollapsed', 'false');
+            } else {
+                // Collapse sidebar
+                sidebar.classList.add('w-16');
+                sidebar.classList.remove('w-64');
+                
+                // Hide text elements
+                const textElements = sidebar.querySelectorAll('.sidebar-text');
+                textElements.forEach(el => el.classList.add('hidden'));
+                
+                // Adjust icon margins
+                const iconElements = sidebar.querySelectorAll('.sidebar-icon');
+                iconElements.forEach(el => {
+                    el.classList.remove('mr-3');
+                    el.classList.add('mx-auto');
+                });
+                
+                // Adjust nav item padding
+                const navItems = sidebar.querySelectorAll('.nav-item');
+                navItems.forEach(el => {
+                    el.classList.remove('px-3');
+                    el.classList.add('px-2', 'justify-center');
+                });
+                
+                // Update toggle icon
+                sidebarToggleIcon.classList.remove('fa-chevron-left');
+                sidebarToggleIcon.classList.add('fa-chevron-right');
+                
+                localStorage.setItem('sidebarCollapsed', 'true');
+            }
+            
+            updateTooltips();
+        }
+
+        // Tooltip functionality
+        function setupTooltips() {
+            const navItems = document.querySelectorAll('.nav-item');
+            
+            navItems.forEach(item => {
+                const tooltip = item.querySelector('.sidebar-tooltip');
+                if (tooltip) {
+                    item.addEventListener('mouseenter', () => {
+                        if (sidebar.classList.contains('w-16')) {
+                            tooltip.classList.remove('opacity-0', 'invisible');
+                            tooltip.classList.add('opacity-100');
+                        }
+                    });
+                    
+                    item.addEventListener('mouseleave', () => {
+                        tooltip.classList.add('opacity-0', 'invisible');
+                        tooltip.classList.remove('opacity-100');
+                    });
+                }
+            });
+        }
+
+        function updateTooltips() {
+            const tooltips = document.querySelectorAll('.sidebar-tooltip');
+            const isCollapsed = sidebar.classList.contains('w-16');
+            
+            tooltips.forEach(tooltip => {
+                if (isCollapsed) {
+                    tooltip.classList.remove('hidden');
+                } else {
+                    tooltip.classList.add('hidden');
+                }
+            });
+        }
+
+        // Dark mode toggle
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        darkModeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+        });
+
+        // Event listeners
+        toggleSidebar.addEventListener('click', toggleSidebarCollapse);
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            setupTooltips();
+            updateTooltips();
+        });
+    </script>
+</body>
+</html>

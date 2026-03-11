@@ -1,61 +1,20 @@
 <?php
-// Include UI Components
-require_once __DIR__ . '/../../components/UIComponents.php';
+// Initialize framework (anti-scattering compliant)
+require_once __DIR__ . '/../../config/init_framework.php';
 
-$title = 'Unit Details';
-$pageTitle = 'Unit Details';
-$pageDescription = 'View comprehensive unit information and manage tenant assignments';
+// Load components through registry (anti-scattering compliant)
+ComponentRegistry::load('ui-components');
 
-// Mock unit data
-$unit = [
-    'id' => 1,
-    'unit_number' => '101',
-    'type' => '1BR',
-    'status' => 'occupied',
-    'sqft' => 650,
-    'bedrooms' => 1,
-    'bathrooms' => 1,
-    'rent' => 1200,
-    'security_deposit' => 2400,
-    'property_id' => 1,
-    'property_name' => 'Sunset Apartments',
-    'floor' => 1,
-    'section' => 'A',
-    'parking_space' => 'P-101',
-    'storage_unit' => 'S-101',
-    'created_at' => '2023-01-10',
-    'last_updated' => '2024-01-08'
-];
+// Set data through ViewManager (anti-scattering compliant)
+ViewManager::set('title', 'Unit Details');
+ViewManager::set('pageTitle', 'Unit Details');
+ViewManager::set('pageDescription', 'View comprehensive unit information and manage tenant assignments');
 
-// Mock tenant data
-$tenant = [
-    'id' => 1,
-    'name' => 'John Smith',
-    'email' => 'john.smith@email.com',
-    'phone' => '(555) 123-4567',
-    'lease_start' => '2023-01-15',
-    'lease_end' => '2024-01-14',
-    'monthly_rent' => 1200
-];
-
-// Mock amenities
-$amenities = [
-    'Air Conditioning',
-    'Heating',
-    'Hardwood Floors',
-    'Granite Countertops',
-    'Stainless Steel Appliances',
-    'In-Unit Laundry',
-    'Balcony',
-    'Walk-in Closet'
-];
-
-// Mock maintenance history
-$maintenanceHistory = [
-    ['id' => 1, 'title' => 'AC Filter Replacement', 'date' => '2023-12-01', 'cost' => 50, 'status' => 'completed'],
-    ['id' => 2, 'title' => 'Plumbing Repair', 'date' => '2023-10-15', 'cost' => 200, 'status' => 'completed'],
-    ['id' => 3, 'title' => 'Window Repair', 'date' => '2023-08-20', 'cost' => 150, 'status' => 'completed'],
-];
+// Get data from DataProvider (anti-scattering compliant)
+$unit = DataProvider::get('unit');
+$tenant = DataProvider::get('tenant');
+$amenities = DataProvider::get('amenities');
+$maintenanceHistory = DataProvider::get('maintenanceHistory');
 
 ob_start();
 ?>
@@ -364,5 +323,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <?php
 $content = ob_get_clean();
-include '../dashboard_layout.php';
+echo ViewManager::render('admin.simple_layout', ['content' => $content]);
 ?>

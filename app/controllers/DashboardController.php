@@ -34,7 +34,8 @@ class DashboardController extends BaseController {
 
     private function getDashboardStats($adminId) {
         $stats = [];
-        $pdo = $this->db->getConnection();
+        // Use MySQL database directly for dashboard stats
+        $pdo = \Config\Database::getInstance()->getConnection();
         
         // Total properties
         $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM properties WHERE admin_id = ?");

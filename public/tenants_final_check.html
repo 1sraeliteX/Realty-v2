@@ -1,0 +1,1974 @@
+﻿<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenants Management</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Prevent theme flickering and ensure smooth transitions */
+        html {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        /* Hide content briefly to prevent flash */
+        .no-js {
+            visibility: hidden;
+        }
+        
+        /* Ensure theme transitions are smooth */
+        * {
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900">
+    <script>
+        // Remove no-js class immediately
+        document.documentElement.classList.remove('no-js');
+    </script>
+    
+<!-- Mobile sidebar backdrop -->
+<div id="sidebarBackdrop" class="fixed inset-0 z-40 bg-gray-600 bg-opacity-75 lg:hidden hidden"></div>
+
+<!-- Sidebar -->
+<aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out lg:static lg:inset-0">
+    <div class="flex flex-col h-full">
+        <!-- Logo -->
+        <div class="flex items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-gray-700">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-building text-white text-sm"></i>
+                    </div>
+                </div>
+                <div class="ml-3">
+                    <h1 class="text-lg font-semibold text-gray-900 dark:text-white">Cornerstone</h1>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Property Manager</p>
+                </div>
+            </div>
+            <button id="closeSidebar" class="lg:hidden text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+            <!-- Dashboard -->
+            <a href="/admin/dashboard" class="nav-item group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700">
+                <i class="fas fa-home mr-3 text-lg text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300"></i>
+                Dashboard
+            </a>
+
+            <!-- Properties -->
+            <a href="/admin/dashboard/properties" class="nav-item group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700">
+                <i class="fas fa-building mr-3 text-lg text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300"></i>
+                Properties
+            </a>
+
+            <!-- Tenants & Occupants -->
+            <a href="/admin/tenants-occupants" class="nav-item group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400">
+                <i class="fas fa-user-friends mr-3 text-lg text-primary-600 dark:text-primary-400"></i>
+                Tenants & Occupants
+            </a>
+
+            <!-- Units -->
+            <a href="/admin/dashboard/units" class="nav-item group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700">
+                <i class="fas fa-door-open mr-3 text-lg text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300"></i>
+                Units
+            </a>
+
+            <!-- Rooms -->
+            <a href="/admin/dashboard/rooms" class="nav-item group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700">
+                <i class="fas fa-bed mr-3 text-lg text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300"></i>
+                Rooms
+            </a>
+
+            <!-- Payments -->
+            <a href="/admin/dashboard/payments" class="nav-item group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700">
+                <i class="fas fa-credit-card mr-3 text-lg text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300"></i>
+                Payments
+            </a>
+
+            <!-- Invoices -->
+            <a href="/admin/dashboard/invoices" class="nav-item group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700">
+                <i class="fas fa-file-invoice mr-3 text-lg text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300"></i>
+                Invoices
+            </a>
+
+            <!-- Maintenance -->
+            <a href="/admin/dashboard/maintenance" class="nav-item group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700">
+                <i class="fas fa-tools mr-3 text-lg text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300"></i>
+                Maintenance
+            </a>
+
+            <!-- Finances -->
+            <a href="/admin/dashboard/finances" class="nav-item group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700">
+                <i class="fas fa-chart-line mr-3 text-lg text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300"></i>
+                Finances
+            </a>
+
+            <!-- Reports -->
+            <a href="/admin/dashboard/reports" class="nav-item group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700">
+                <i class="fas fa-chart-bar mr-3 text-lg text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300"></i>
+                Reports
+            </a>
+
+            <!-- Communications -->
+            <a href="/admin/dashboard/communications" class="nav-item group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700">
+                <i class="fas fa-envelope mr-3 text-lg text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300"></i>
+                Communications
+            </a>
+
+            <!-- Documents -->
+            <a href="/admin/dashboard/documents" class="nav-item group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700">
+                <i class="fas fa-folder mr-3 text-lg text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300"></i>
+                Documents
+            </a>
+
+            <!-- Team -->
+            <a href="/admin/dashboard/team" class="nav-item group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700">
+                <i class="fas fa-users-cog mr-3 text-lg text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300"></i>
+                Team
+            </a>
+
+            <!-- Settings -->
+            <a href="/admin/dashboard/settings" class="nav-item group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700">
+                <i class="fas fa-cog mr-3 text-lg text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300"></i>
+                Settings
+            </a>
+        </nav>
+
+        <!-- User Profile Section -->
+        <div class="border-t border-gray-200 dark:border-gray-700 p-4">
+            <div class="flex items-center space-x-3">
+                <div class="relative inline-flex items-center justify-center w-8 h-8 text-sm rounded-full bg-gray-100 dark:bg-gray-700"><span class="font-medium text-gray-700 dark:text-gray-300">JD</span></div>                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-900 dark:text-white truncate">John Doe</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 truncate">admin@example.com</p>
+                </div>
+                <div class="relative">
+                    <button id="userMenuButton" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    
+                    <!-- User Dropdown Menu -->
+                    <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                        <div class="py-1">
+                            <a href="/admin/dashboard/profile" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+                                <i class="fas fa-user mr-2"></i>Profile
+                            </a>
+                            <a href="/admin/dashboard/settings" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+                                <i class="fas fa-cog mr-2"></i>Settings
+                            </a>
+                            <hr class="border-gray-200 dark:border-gray-700">
+                            <a href="/admin/logout" class="block px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-50 dark:hover:bg-gray-700">
+                                <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<!-- Main Content -->
+<div class="lg:ml-64 flex flex-col min-h-screen">
+    <!-- Top Navigation -->
+    <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-30">
+        <div class="flex items-center justify-between px-4 sm:px-6 lg:px-8 h-16">
+            <!-- Left side -->
+            <div class="flex items-center">
+                <!-- Mobile menu button -->
+                <button id="openSidebar" class="lg:hidden text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 mr-4">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                
+                <!-- Breadcrumb -->
+                <nav class="hidden md:flex" aria-label="Breadcrumb">
+                    <ol class="flex items-center space-x-2">
+                        <li>
+                            <a href="/admin/dashboard" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+                                <i class="fas fa-home"></i>
+                            </a>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-chevron-right text-gray-400 text-xs mx-2"></i>
+                            <span class="text-sm font-medium text-gray-900 dark:text-white">Tenants</span>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+
+            <!-- Right side -->
+            <div class="flex items-center space-x-4">
+                <!-- Search -->
+                <div class="hidden md:block">
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            placeholder="Search..." 
+                            class="w-64 pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                        >
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dark Mode Toggle -->
+                <button id="darkModeToggle" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <i class="fas fa-moon dark:hidden"></i>
+                    <i class="fas fa-sun hidden dark:inline"></i>
+                </button>
+
+                <!-- Notifications -->
+                <div class="relative">
+                    <button id="notificationButton" class="relative text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                        <i class="fas fa-bell text-xl"></i>
+                        <span class="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
+                            3                        </span>
+                    </button>
+
+                    <!-- Notifications Dropdown -->
+                    <div id="notificationsDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                        <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                            <h3 class="text-sm font-medium text-gray-900 dark:text-white">Notifications</h3>
+                        </div>
+                        <div class="max-h-96 overflow-y-auto">
+                                                            <div class="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 last:border-b-0">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0">
+                                                                                            <i class="fas fa-info-circle text-blue-500"></i>
+                                                                                    </div>
+                                        <div class="ml-3 flex-1">
+                                            <p class="text-sm text-gray-900 dark:text-white">New tenant application received</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">5 min ago</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                                            <div class="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 last:border-b-0">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0">
+                                                                                            <i class="fas fa-exclamation-triangle text-yellow-500"></i>
+                                                                                    </div>
+                                        <div class="ml-3 flex-1">
+                                            <p class="text-sm text-gray-900 dark:text-white">Rent payment overdue for Unit 3A</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">1 hour ago</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                                            <div class="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 last:border-b-0">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0">
+                                                                                            <i class="fas fa-check-circle text-green-500"></i>
+                                                                                    </div>
+                                        <div class="ml-3 flex-1">
+                                            <p class="text-sm text-gray-900 dark:text-white">Maintenance request completed</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">2 hours ago</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                                    </div>
+                        <div class="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+                            <a href="/admin/dashboard/notifications" class="text-sm text-primary-600 hover:text-primary-500 dark:text-primary-400">
+                                View all notifications
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Content -->
+    <main class="flex-1 bg-gray-50 dark:bg-gray-900">
+        <div class="px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Debug: content exists: yes --><!-- Debug: content length: 42869 -->
+<!-- Header with Actions -->
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+    <div>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Tenants</h2>
+        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Manage tenant information and lease agreements</p>
+    </div>
+    <div class="mt-4 sm:mt-0 flex space-x-3">
+        <button onclick="exportTenants()" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
+            <i class="fas fa-download mr-2"></i>
+            Export
+        </button>
+        <a href="/admin/tenants/create" class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
+            <i class="fas fa-user-plus mr-2"></i>
+            Add Tenant
+        </a>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 rounded-lg p-3">
+                        <i class="fas fa-users text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Active Tenants</p>
+                        <p class="text-2xl font-bold text-gray-900 dark:text-white">4</p>
+                        
+                    </div>
+                </div>
+            </div>
+        
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 bg-yellow-100 dark:bg-yellow-900 text-yellow-600 dark:text-yellow-400 rounded-lg p-3">
+                        <i class="fas fa-calendar-alt text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Expiring Leases</p>
+                        <p class="text-2xl font-bold text-gray-900 dark:text-white">1</p>
+                        
+                    </div>
+                </div>
+            </div>
+        
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400 rounded-lg p-3">
+                        <i class="fas fa-exclamation-triangle text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Overdue Payments</p>
+                        <p class="text-2xl font-bold text-gray-900 dark:text-white">1</p>
+                        
+                    </div>
+                </div>
+            </div>
+        
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-lg p-3">
+                        <i class="fas fa-dollar-sign text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Monthly Revenue</p>
+                        <p class="text-2xl font-bold text-gray-900 dark:text-white">$8,800</p>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+<!-- Filters and Search -->
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <!-- Search -->
+        <div class="md:col-span-2">
+            
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-search text-gray-400"></i>
+                </div>
+                <input type="text" value="" placeholder="Search tenants..." onkeyup="searchTenants(this.value)"
+                    class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+            </div>
+                </div>
+        
+        <!-- Property Filter -->
+        
+            <div class="col-span-1">
+                <label for="property_filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Property</label>
+                <select id="property_filter" name="property_filter" 
+                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                    <option value="" selected>All Properties</option><option value="Sunset Apartments" >Sunset Apartments</option><option value="Downtown Plaza" >Downtown Plaza</option><option value="Riverside Complex" >Riverside Complex</option>
+                </select>
+            </div>
+                
+        <!-- Lease Status Filter -->
+        
+            <div class="col-span-1">
+                <label for="lease_status_filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Lease Status</label>
+                <select id="lease_status_filter" name="lease_status_filter" 
+                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                    <option value="" selected>All Status</option><option value="active" >Active</option><option value="expiring" >Expiring Soon</option><option value="terminated" >Terminated</option>
+                </select>
+            </div>
+            </div>
+    
+    <!-- Additional Filters -->
+    <div class="mt-4 flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+            <button class="text-sm text-primary-600 hover:text-primary-500 dark:text-primary-400">
+                <i class="fas fa-filter mr-1"></i>
+                Advanced Filters
+            </button>
+            <span class="text-sm text-gray-500 dark:text-gray-400">
+                Showing 6 tenants
+            </span>
+        </div>
+        <div class="flex items-center space-x-2">
+            <span class="text-sm text-gray-500 dark:text-gray-400">View:</span>
+            <button id="gridView" class="p-2 text-gray-400 border border-gray-300 rounded">
+                <i class="fas fa-th"></i>
+            </button>
+            <button id="listView" class="p-2 text-primary-600 border border-primary-600 rounded">
+                <i class="fas fa-list"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Tenants Table -->
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden mb-8">
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-900">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Tenant
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Contact
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Property
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Rent
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Lease Status
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Payment Status
+                    </th>
+                    <th class="relative px-6 py-3">
+                        <span class="sr-only">Actions</span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="relative inline-flex items-center justify-center w-10 h-10 text-base rounded-full bg-gray-100 dark:bg-gray-700"><span class="font-medium text-gray-700 dark:text-gray-300">JS</span></div>                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                        John Smith                                    </div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                                        ID: #0001                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white">
+                                <i class="fas fa-envelope mr-1 text-gray-400"></i>
+                                john.smith@email.com                            </div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                <i class="fas fa-phone mr-1 text-gray-400"></i>
+                                (555) 123-4567                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white">
+                                Sunset Apartments                            </div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                Unit 1A                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                $1,200                            </div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">
+                                per month
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center rounded-full font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 px-2 py-0.5 text-xs">Active</span>                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                                    Until Jan 1, 2024                                                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center rounded-full font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 px-2 py-0.5 text-xs">Current</span>                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex items-center justify-end space-x-2">
+                                <a href="/admin/tenants/1" class="text-primary-600 hover:text-primary-900 dark:text-primary-400">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="/admin/tenants/1/edit" class="text-blue-600 hover:text-blue-900 dark:text-blue-400">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button onclick="sendMessage(1)" class="text-green-600 hover:text-green-900 dark:text-green-400">
+                                    <i class="fas fa-envelope"></i>
+                                </button>
+                                <button onclick="viewPayments(1)" class="text-purple-600 hover:text-purple-900 dark:text-purple-400">
+                                    <i class="fas fa-credit-card"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="relative inline-flex items-center justify-center w-10 h-10 text-base rounded-full bg-gray-100 dark:bg-gray-700"><span class="font-medium text-gray-700 dark:text-gray-300">SJ</span></div>                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                        Sarah Johnson                                    </div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                                        ID: #0002                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white">
+                                <i class="fas fa-envelope mr-1 text-gray-400"></i>
+                                sarah.johnson@email.com                            </div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                <i class="fas fa-phone mr-1 text-gray-400"></i>
+                                (555) 234-5678                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white">
+                                Sunset Apartments                            </div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                Unit 1B                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                $1,200                            </div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">
+                                per month
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center rounded-full font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 px-2 py-0.5 text-xs">Active</span>                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                                    Until Feb 1, 2024                                                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center rounded-full font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 px-2 py-0.5 text-xs">Current</span>                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex items-center justify-end space-x-2">
+                                <a href="/admin/tenants/2" class="text-primary-600 hover:text-primary-900 dark:text-primary-400">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="/admin/tenants/2/edit" class="text-blue-600 hover:text-blue-900 dark:text-blue-400">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button onclick="sendMessage(2)" class="text-green-600 hover:text-green-900 dark:text-green-400">
+                                    <i class="fas fa-envelope"></i>
+                                </button>
+                                <button onclick="viewPayments(2)" class="text-purple-600 hover:text-purple-900 dark:text-purple-400">
+                                    <i class="fas fa-credit-card"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="relative inline-flex items-center justify-center w-10 h-10 text-base rounded-full bg-gray-100 dark:bg-gray-700"><span class="font-medium text-gray-700 dark:text-gray-300">MC</span></div>                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                        Mike Chen                                    </div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                                        ID: #0003                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white">
+                                <i class="fas fa-envelope mr-1 text-gray-400"></i>
+                                mike.chen@email.com                            </div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                <i class="fas fa-phone mr-1 text-gray-400"></i>
+                                (555) 345-6789                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white">
+                                Downtown Plaza                            </div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                Unit 301                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                $2,000                            </div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">
+                                per month
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center rounded-full font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 px-2 py-0.5 text-xs">Active</span>                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                                    Until Jan 15, 2024                                                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center rounded-full font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 px-2 py-0.5 text-xs">Overdue</span>                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex items-center justify-end space-x-2">
+                                <a href="/admin/tenants/3" class="text-primary-600 hover:text-primary-900 dark:text-primary-400">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="/admin/tenants/3/edit" class="text-blue-600 hover:text-blue-900 dark:text-blue-400">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button onclick="sendMessage(3)" class="text-green-600 hover:text-green-900 dark:text-green-400">
+                                    <i class="fas fa-envelope"></i>
+                                </button>
+                                <button onclick="viewPayments(3)" class="text-purple-600 hover:text-purple-900 dark:text-purple-400">
+                                    <i class="fas fa-credit-card"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="relative inline-flex items-center justify-center w-10 h-10 text-base rounded-full bg-gray-100 dark:bg-gray-700"><span class="font-medium text-gray-700 dark:text-gray-300">ED</span></div>                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                        Emily Davis                                    </div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                                        ID: #0004                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white">
+                                <i class="fas fa-envelope mr-1 text-gray-400"></i>
+                                emily.davis@email.com                            </div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                <i class="fas fa-phone mr-1 text-gray-400"></i>
+                                (555) 456-7890                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white">
+                                Riverside Complex                            </div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                Unit 401                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                $1,500                            </div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">
+                                per month
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center rounded-full font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 px-2 py-0.5 text-xs">Active</span>                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                                    Until Mar 1, 2024                                                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center rounded-full font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 px-2 py-0.5 text-xs">Current</span>                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex items-center justify-end space-x-2">
+                                <a href="/admin/tenants/4" class="text-primary-600 hover:text-primary-900 dark:text-primary-400">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="/admin/tenants/4/edit" class="text-blue-600 hover:text-blue-900 dark:text-blue-400">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button onclick="sendMessage(4)" class="text-green-600 hover:text-green-900 dark:text-green-400">
+                                    <i class="fas fa-envelope"></i>
+                                </button>
+                                <button onclick="viewPayments(4)" class="text-purple-600 hover:text-purple-900 dark:text-purple-400">
+                                    <i class="fas fa-credit-card"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="relative inline-flex items-center justify-center w-10 h-10 text-base rounded-full bg-gray-100 dark:bg-gray-700"><span class="font-medium text-gray-700 dark:text-gray-300">RW</span></div>                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                        Robert Wilson                                    </div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                                        ID: #0005                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white">
+                                <i class="fas fa-envelope mr-1 text-gray-400"></i>
+                                robert.wilson@email.com                            </div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                <i class="fas fa-phone mr-1 text-gray-400"></i>
+                                (555) 567-8901                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white">
+                                Sunset Apartments                            </div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                Unit 3B                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                $900                            </div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">
+                                per month
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center rounded-full font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 px-2 py-0.5 text-xs">Expiring</span>                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                                    Expires: Feb 1, 2024                                                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center rounded-full font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 px-2 py-0.5 text-xs">Current</span>                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex items-center justify-end space-x-2">
+                                <a href="/admin/tenants/5" class="text-primary-600 hover:text-primary-900 dark:text-primary-400">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="/admin/tenants/5/edit" class="text-blue-600 hover:text-blue-900 dark:text-blue-400">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button onclick="sendMessage(5)" class="text-green-600 hover:text-green-900 dark:text-green-400">
+                                    <i class="fas fa-envelope"></i>
+                                </button>
+                                <button onclick="viewPayments(5)" class="text-purple-600 hover:text-purple-900 dark:text-purple-400">
+                                    <i class="fas fa-credit-card"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="relative inline-flex items-center justify-center w-10 h-10 text-base rounded-full bg-gray-100 dark:bg-gray-700"><span class="font-medium text-gray-700 dark:text-gray-300">LA</span></div>                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                        Lisa Anderson                                    </div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                                        ID: #0006                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white">
+                                <i class="fas fa-envelope mr-1 text-gray-400"></i>
+                                lisa.anderson@email.com                            </div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                <i class="fas fa-phone mr-1 text-gray-400"></i>
+                                (555) 678-9012                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white">
+                                Downtown Plaza                            </div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                Unit 101                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                $2,000                            </div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">
+                                per month
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center rounded-full font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 px-2 py-0.5 text-xs">Terminated</span>                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center rounded-full font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 px-2 py-0.5 text-xs">Paid</span>                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex items-center justify-end space-x-2">
+                                <a href="/admin/tenants/6" class="text-primary-600 hover:text-primary-900 dark:text-primary-400">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="/admin/tenants/6/edit" class="text-blue-600 hover:text-blue-900 dark:text-blue-400">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button onclick="sendMessage(6)" class="text-green-600 hover:text-green-900 dark:text-green-400">
+                                    <i class="fas fa-envelope"></i>
+                                </button>
+                                <button onclick="viewPayments(6)" class="text-purple-600 hover:text-purple-900 dark:text-purple-400">
+                                    <i class="fas fa-credit-card"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Pagination -->
+<div class="flex items-center justify-between">
+    <div class="text-sm text-gray-700 dark:text-gray-300">
+        Showing <span class="font-medium">1</span> to <span class="font-medium">6</span> of <span class="font-medium">6</span> results
+    </div>
+    </div>
+
+<!-- Quick Actions Modal -->
+
+            <div id="quickActionsModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+                    <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                    <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:w-full max-w-lg">
+                        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-white" id="modal-title">Quick Actions</h3>
+                            <button onclick="closeModal('quickActionsModal')" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="px-6 py-4"><div class="space-y-3">
+        <button onclick="sendBulkMessage()" class="w-full text-left px-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600">
+            <i class="fas fa-envelope mr-3 text-blue-600"></i>
+            Send Bulk Message
+        </button>
+        <button onclick="generateReports()" class="w-full text-left px-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600">
+            <i class="fas fa-file-alt mr-3 text-green-600"></i>
+            Generate Reports
+        </button>
+        <button onclick="sendReminders()" class="w-full text-left px-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600">
+            <i class="fas fa-bell mr-3 text-yellow-600"></i>
+            Send Payment Reminders
+        </button>
+        <button onclick="importTenants()" class="w-full text-left px-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600">
+            <i class="fas fa-upload mr-3 text-purple-600"></i>
+            Import Tenants
+        </button>
+    </div></div>
+                        <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-3"><button onclick="closeModal('quickActionsModal')" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">Close</button></div>
+                    </div>
+                </div>
+            </div>
+        
+<script>
+let currentTenantId = null;
+
+// Search functionality
+function searchTenants(query) {
+    const rows = document.querySelectorAll('tbody tr');
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        if (text.includes(query.toLowerCase())) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+// View toggle
+document.getElementById('gridView').addEventListener('click', function() {
+    this.classList.add('text-primary-600', 'border-primary-600');
+    this.classList.remove('text-gray-400', 'border-gray-300');
+    document.getElementById('listView').classList.add('text-gray-400', 'border-gray-300');
+    document.getElementById('listView').classList.remove('text-primary-600', 'border-primary-600');
+    showToast('Grid view coming soon!', 'info');
+});
+
+document.getElementById('listView').addEventListener('click', function() {
+    this.classList.add('text-primary-600', 'border-primary-600');
+    this.classList.remove('text-gray-400', 'border-gray-300');
+    document.getElementById('gridView').classList.add('text-gray-400', 'border-gray-300');
+    document.getElementById('gridView').classList.remove('text-primary-600', 'border-primary-600');
+});
+
+// Tenant actions
+function sendMessage(tenantId) {
+    currentTenantId = tenantId;
+    showToast('Opening message composer...', 'info');
+    // In a real app, this would open a message modal
+}
+
+function viewPayments(tenantId) {
+    window.location.href = `/admin/payments?tenant_id=${tenantId}`;
+}
+
+// Filter handlers
+document.getElementById('property_filter').addEventListener('change', function() {
+    filterTenants();
+});
+
+document.getElementById('lease_status_filter').addEventListener('change', function() {
+    filterTenants();
+});
+
+function filterTenants() {
+    const propertyFilter = document.getElementById('property_filter').value;
+    const leaseStatusFilter = document.getElementById('lease_status_filter').value;
+    
+    const rows = document.querySelectorAll('tbody tr');
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        const matchesProperty = !propertyFilter || text.includes(propertyFilter.toLowerCase());
+        const matchesStatus = !leaseStatusFilter || text.includes(leaseStatusFilter.toLowerCase());
+        
+        if (matchesProperty && matchesStatus) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+// Quick actions
+function exportTenants() {
+    showToast('Exporting tenant data...', 'info');
+    setTimeout(() => {
+        showToast('Tenants exported successfully', 'success');
+    }, 2000);
+}
+
+function sendBulkMessage() {
+    closeModal('quickActionsModal');
+    showToast('Opening bulk message composer...', 'info');
+}
+
+function generateReports() {
+    closeModal('quickActionsModal');
+    showToast('Generating tenant reports...', 'info');
+    setTimeout(() => {
+        showToast('Reports generated successfully', 'success');
+    }, 2000);
+}
+
+function sendReminders() {
+    closeModal('quickActionsModal');
+    showToast('Sending payment reminders...', 'info');
+    setTimeout(() => {
+        showToast('Reminders sent successfully', 'success');
+    }, 2000);
+}
+
+function importTenants() {
+    closeModal('quickActionsModal');
+    showToast('Opening import wizard...', 'info');
+}
+
+function goToPage(page) {
+    showToast(`Loading page ${page}...`, 'info');
+}
+
+// Quick actions button (add to header)
+document.addEventListener('DOMContentLoaded', function() {
+    const headerActions = document.querySelector('.flex.space-x-3');
+    if (headerActions) {
+        const quickActionsBtn = document.createElement('button');
+        quickActionsBtn.className = 'inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700';
+        quickActionsBtn.innerHTML = '<i class="fas fa-bolt mr-2"></i>Quick Actions';
+        quickActionsBtn.onclick = () => document.getElementById('quickActionsModal').classList.remove('hidden');
+        headerActions.appendChild(quickActionsBtn);
+    }
+});
+</script>
+        </div>
+    </main>
+</div>
+
+<!-- Floating Action Button for DotBot AI Assistant -->
+<div class="fixed bottom-6 right-6 z-40">
+    <button id="dotbotButton" class="bg-primary-600 hover:bg-primary-700 text-white rounded-full p-4 shadow-lg transition-all duration-200 transform hover:scale-110">
+        <i class="fas fa-robot text-xl"></i>
+    </button>
+</div>
+
+<!-- DotBot Chat Window -->
+<div id="dotbotChat" class="hidden fixed bottom-24 right-6 w-96 h-[500px] bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50 flex flex-col">
+    <!-- Chat Header -->
+    <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between bg-primary-600 text-white rounded-t-lg">
+        <div class="flex items-center">
+            <i class="fas fa-robot mr-2"></i>
+            <span class="font-medium">DotBot Assistant</span>
+        </div>
+        <button id="closeDotbot" class="text-white hover:text-gray-200">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <!-- Chat Messages -->
+    <div class="flex-1 overflow-y-auto p-4 space-y-3">
+        <div class="flex items-start">
+            <div class="flex-shrink-0 w-8 h-8 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
+                <i class="fas fa-robot text-primary-600 dark:text-primary-400 text-xs"></i>
+            </div>
+            <div class="ml-3 bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2 max-w-[80%]">
+                <p class="text-sm text-gray-900 dark:text-white">Hello! I'm DotBot, your AI assistant. How can I help you today?</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Input -->
+    <div class="p-4 border-t border-gray-200 dark:border-gray-700">
+        <div class="flex items-center space-x-2">
+            <input 
+                type="text" 
+                id="dotbotInput"
+                placeholder="Type your message..." 
+                class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+            >
+            <button class="bg-primary-600 hover:bg-primary-700 text-white rounded-lg px-3 py-2">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Sidebar functionality
+const sidebar = document.getElementById('sidebar');
+const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+const openSidebar = document.getElementById('openSidebar');
+const closeSidebar = document.getElementById('closeSidebar');
+
+// Restore sidebar state from localStorage
+function restoreSidebarState() {
+    const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+    if (isCollapsed && window.innerWidth >= 1024) {
+        sidebar.classList.add('lg:w-16');
+        sidebar.classList.remove('w-64');
+        // Hide text elements when collapsed
+        const textElements = sidebar.querySelectorAll('.sidebar-text');
+        textElements.forEach(el => el.classList.add('hidden'));
+    }
+}
+
+openSidebar.addEventListener('click', () => {
+    sidebar.classList.remove('-translate-x-full');
+    sidebarBackdrop.classList.remove('hidden');
+});
+
+closeSidebar.addEventListener('click', () => {
+    sidebar.classList.add('-translate-x-full');
+    sidebarBackdrop.classList.add('hidden');
+});
+
+sidebarBackdrop.addEventListener('click', () => {
+    sidebar.classList.add('-translate-x-full');
+    sidebarBackdrop.classList.add('hidden');
+});
+
+// Initialize sidebar state
+document.addEventListener('DOMContentLoaded', restoreSidebarState);
+
+// User dropdown
+const userMenuButton = document.getElementById('userMenuButton');
+const userDropdown = document.getElementById('userDropdown');
+
+userMenuButton.addEventListener('click', (e) => {
+    e.stopPropagation();
+    userDropdown.classList.toggle('hidden');
+});
+
+// Notifications dropdown
+const notificationButton = document.getElementById('notificationButton');
+const notificationsDropdown = document.getElementById('notificationsDropdown');
+
+notificationButton.addEventListener('click', (e) => {
+    e.stopPropagation();
+    notificationsDropdown.classList.toggle('hidden');
+    userDropdown.classList.add('hidden');
+});
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', () => {
+    userDropdown.classList.add('hidden');
+    notificationsDropdown.classList.add('hidden');
+});
+
+// Dark mode toggle
+const darkModeToggle = document.getElementById('darkModeToggle');
+
+darkModeToggle.addEventListener('click', () => {
+    const isDark = document.documentElement.classList.toggle('dark');
+    localStorage.setItem('darkMode', isDark);
+    
+    // Dispatch custom event for theme change
+    window.dispatchEvent(new CustomEvent('themechange', { detail: { isDark } }));
+});
+
+// Listen for system theme changes
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+    // Only apply if user hasn't explicitly set a preference
+    if (!localStorage.getItem('darkMode')) {
+        const isDark = e.matches;
+        document.documentElement.classList.toggle('dark', isDark);
+        window.dispatchEvent(new CustomEvent('themechange', { detail: { isDark } }));
+    }
+});
+
+// DotBot Chat
+const dotbotButton = document.getElementById('dotbotButton');
+const dotbotChat = document.getElementById('dotbotChat');
+const closeDotbot = document.getElementById('closeDotbot');
+const dotbotInput = document.getElementById('dotbotInput');
+
+dotbotButton.addEventListener('click', () => {
+    dotbotChat.classList.toggle('hidden');
+    if (!dotbotChat.classList.contains('hidden')) {
+        dotbotInput.focus();
+    }
+});
+
+closeDotbot.addEventListener('click', () => {
+    dotbotChat.classList.add('hidden');
+});
+
+// DotBot message sending
+dotbotInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter' && dotbotInput.value.trim()) {
+        // Add user message
+        const messagesContainer = dotbotChat.querySelector('.overflow-y-auto');
+        const userMessage = document.createElement('div');
+        userMessage.className = 'flex items-start justify-end';
+        userMessage.innerHTML = `
+            <div class="mr-3 bg-primary-600 text-white rounded-lg px-3 py-2 max-w-[80%]">
+                <p class="text-sm">${dotbotInput.value}</p>
+            </div>
+            <div class="flex-shrink-0 w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                <i class="fas fa-user text-gray-600 text-xs"></i>
+            </div>
+        `;
+        messagesContainer.appendChild(userMessage);
+        
+        // Clear input
+        dotbotInput.value = '';
+        
+        // Simulate bot response
+        setTimeout(() => {
+            const botResponse = document.createElement('div');
+            botResponse.className = 'flex items-start';
+            botResponse.innerHTML = `
+                <div class="flex-shrink-0 w-8 h-8 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
+                    <i class="fas fa-robot text-primary-600 dark:text-primary-400 text-xs"></i>
+                </div>
+                <div class="ml-3 bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2 max-w-[80%]">
+                    <p class="text-sm text-gray-900 dark:text-white">I'm processing your request. This is a demo response.</p>
+                </div>
+            `;
+            messagesContainer.appendChild(botResponse);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }, 1000);
+        
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+});
+</script>
+
+
+<!-- Header with Actions -->
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+    <div>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Tenants</h2>
+        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Manage tenant information and lease agreements</p>
+    </div>
+    <div class="mt-4 sm:mt-0 flex space-x-3">
+        <button onclick="exportTenants()" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
+            <i class="fas fa-download mr-2"></i>
+            Export
+        </button>
+        <a href="/admin/tenants/create" class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
+            <i class="fas fa-user-plus mr-2"></i>
+            Add Tenant
+        </a>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 rounded-lg p-3">
+                        <i class="fas fa-users text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Active Tenants</p>
+                        <p class="text-2xl font-bold text-gray-900 dark:text-white">4</p>
+                        
+                    </div>
+                </div>
+            </div>
+        
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 bg-yellow-100 dark:bg-yellow-900 text-yellow-600 dark:text-yellow-400 rounded-lg p-3">
+                        <i class="fas fa-calendar-alt text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Expiring Leases</p>
+                        <p class="text-2xl font-bold text-gray-900 dark:text-white">1</p>
+                        
+                    </div>
+                </div>
+            </div>
+        
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400 rounded-lg p-3">
+                        <i class="fas fa-exclamation-triangle text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Overdue Payments</p>
+                        <p class="text-2xl font-bold text-gray-900 dark:text-white">1</p>
+                        
+                    </div>
+                </div>
+            </div>
+        
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-lg p-3">
+                        <i class="fas fa-dollar-sign text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Monthly Revenue</p>
+                        <p class="text-2xl font-bold text-gray-900 dark:text-white">$8,800</p>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+<!-- Filters and Search -->
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <!-- Search -->
+        <div class="md:col-span-2">
+            
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-search text-gray-400"></i>
+                </div>
+                <input type="text" value="" placeholder="Search tenants..." onkeyup="searchTenants(this.value)"
+                    class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+            </div>
+                </div>
+        
+        <!-- Property Filter -->
+        
+            <div class="col-span-1">
+                <label for="property_filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Property</label>
+                <select id="property_filter" name="property_filter" 
+                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                    <option value="" selected>All Properties</option><option value="Sunset Apartments" >Sunset Apartments</option><option value="Downtown Plaza" >Downtown Plaza</option><option value="Riverside Complex" >Riverside Complex</option>
+                </select>
+            </div>
+                
+        <!-- Lease Status Filter -->
+        
+            <div class="col-span-1">
+                <label for="lease_status_filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Lease Status</label>
+                <select id="lease_status_filter" name="lease_status_filter" 
+                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                    <option value="" selected>All Status</option><option value="active" >Active</option><option value="expiring" >Expiring Soon</option><option value="terminated" >Terminated</option>
+                </select>
+            </div>
+            </div>
+    
+    <!-- Additional Filters -->
+    <div class="mt-4 flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+            <button class="text-sm text-primary-600 hover:text-primary-500 dark:text-primary-400">
+                <i class="fas fa-filter mr-1"></i>
+                Advanced Filters
+            </button>
+            <span class="text-sm text-gray-500 dark:text-gray-400">
+                Showing 6 tenants
+            </span>
+        </div>
+        <div class="flex items-center space-x-2">
+            <span class="text-sm text-gray-500 dark:text-gray-400">View:</span>
+            <button id="gridView" class="p-2 text-gray-400 border border-gray-300 rounded">
+                <i class="fas fa-th"></i>
+            </button>
+            <button id="listView" class="p-2 text-primary-600 border border-primary-600 rounded">
+                <i class="fas fa-list"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Tenants Table -->
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden mb-8">
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-900">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Tenant
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Contact
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Property
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Rent
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Lease Status
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Payment Status
+                    </th>
+                    <th class="relative px-6 py-3">
+                        <span class="sr-only">Actions</span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="relative inline-flex items-center justify-center w-10 h-10 text-base rounded-full bg-gray-100 dark:bg-gray-700"><span class="font-medium text-gray-700 dark:text-gray-300">JS</span></div>                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                        John Smith                                    </div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                                        ID: #0001                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white">
+                                <i class="fas fa-envelope mr-1 text-gray-400"></i>
+                                john.smith@email.com                            </div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                <i class="fas fa-phone mr-1 text-gray-400"></i>
+                                (555) 123-4567                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white">
+                                Sunset Apartments                            </div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                Unit 1A                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                $1,200                            </div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">
+                                per month
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center rounded-full font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 px-2 py-0.5 text-xs">Active</span>                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                                    Until Jan 1, 2024                                                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center rounded-full font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 px-2 py-0.5 text-xs">Current</span>                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex items-center justify-end space-x-2">
+                                <a href="/admin/tenants/1" class="text-primary-600 hover:text-primary-900 dark:text-primary-400">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="/admin/tenants/1/edit" class="text-blue-600 hover:text-blue-900 dark:text-blue-400">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button onclick="sendMessage(1)" class="text-green-600 hover:text-green-900 dark:text-green-400">
+                                    <i class="fas fa-envelope"></i>
+                                </button>
+                                <button onclick="viewPayments(1)" class="text-purple-600 hover:text-purple-900 dark:text-purple-400">
+                                    <i class="fas fa-credit-card"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="relative inline-flex items-center justify-center w-10 h-10 text-base rounded-full bg-gray-100 dark:bg-gray-700"><span class="font-medium text-gray-700 dark:text-gray-300">SJ</span></div>                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                        Sarah Johnson                                    </div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                                        ID: #0002                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white">
+                                <i class="fas fa-envelope mr-1 text-gray-400"></i>
+                                sarah.johnson@email.com                            </div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                <i class="fas fa-phone mr-1 text-gray-400"></i>
+                                (555) 234-5678                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white">
+                                Sunset Apartments                            </div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                Unit 1B                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                $1,200                            </div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">
+                                per month
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center rounded-full font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 px-2 py-0.5 text-xs">Active</span>                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                                    Until Feb 1, 2024                                                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center rounded-full font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 px-2 py-0.5 text-xs">Current</span>                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex items-center justify-end space-x-2">
+                                <a href="/admin/tenants/2" class="text-primary-600 hover:text-primary-900 dark:text-primary-400">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="/admin/tenants/2/edit" class="text-blue-600 hover:text-blue-900 dark:text-blue-400">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button onclick="sendMessage(2)" class="text-green-600 hover:text-green-900 dark:text-green-400">
+                                    <i class="fas fa-envelope"></i>
+                                </button>
+                                <button onclick="viewPayments(2)" class="text-purple-600 hover:text-purple-900 dark:text-purple-400">
+                                    <i class="fas fa-credit-card"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="relative inline-flex items-center justify-center w-10 h-10 text-base rounded-full bg-gray-100 dark:bg-gray-700"><span class="font-medium text-gray-700 dark:text-gray-300">MC</span></div>                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                        Mike Chen                                    </div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                                        ID: #0003                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white">
+                                <i class="fas fa-envelope mr-1 text-gray-400"></i>
+                                mike.chen@email.com                            </div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                <i class="fas fa-phone mr-1 text-gray-400"></i>
+                                (555) 345-6789                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white">
+                                Downtown Plaza                            </div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                Unit 301                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                $2,000                            </div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">
+                                per month
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center rounded-full font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 px-2 py-0.5 text-xs">Active</span>                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                                    Until Jan 15, 2024                                                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center rounded-full font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 px-2 py-0.5 text-xs">Overdue</span>                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex items-center justify-end space-x-2">
+                                <a href="/admin/tenants/3" class="text-primary-600 hover:text-primary-900 dark:text-primary-400">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="/admin/tenants/3/edit" class="text-blue-600 hover:text-blue-900 dark:text-blue-400">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button onclick="sendMessage(3)" class="text-green-600 hover:text-green-900 dark:text-green-400">
+                                    <i class="fas fa-envelope"></i>
+                                </button>
+                                <button onclick="viewPayments(3)" class="text-purple-600 hover:text-purple-900 dark:text-purple-400">
+                                    <i class="fas fa-credit-card"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="relative inline-flex items-center justify-center w-10 h-10 text-base rounded-full bg-gray-100 dark:bg-gray-700"><span class="font-medium text-gray-700 dark:text-gray-300">ED</span></div>                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                        Emily Davis                                    </div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                                        ID: #0004                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white">
+                                <i class="fas fa-envelope mr-1 text-gray-400"></i>
+                                emily.davis@email.com                            </div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                <i class="fas fa-phone mr-1 text-gray-400"></i>
+                                (555) 456-7890                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white">
+                                Riverside Complex                            </div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                Unit 401                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                $1,500                            </div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">
+                                per month
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center rounded-full font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 px-2 py-0.5 text-xs">Active</span>                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                                    Until Mar 1, 2024                                                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center rounded-full font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 px-2 py-0.5 text-xs">Current</span>                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex items-center justify-end space-x-2">
+                                <a href="/admin/tenants/4" class="text-primary-600 hover:text-primary-900 dark:text-primary-400">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="/admin/tenants/4/edit" class="text-blue-600 hover:text-blue-900 dark:text-blue-400">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button onclick="sendMessage(4)" class="text-green-600 hover:text-green-900 dark:text-green-400">
+                                    <i class="fas fa-envelope"></i>
+                                </button>
+                                <button onclick="viewPayments(4)" class="text-purple-600 hover:text-purple-900 dark:text-purple-400">
+                                    <i class="fas fa-credit-card"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="relative inline-flex items-center justify-center w-10 h-10 text-base rounded-full bg-gray-100 dark:bg-gray-700"><span class="font-medium text-gray-700 dark:text-gray-300">RW</span></div>                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                        Robert Wilson                                    </div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                                        ID: #0005                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white">
+                                <i class="fas fa-envelope mr-1 text-gray-400"></i>
+                                robert.wilson@email.com                            </div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                <i class="fas fa-phone mr-1 text-gray-400"></i>
+                                (555) 567-8901                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white">
+                                Sunset Apartments                            </div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                Unit 3B                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                $900                            </div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">
+                                per month
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center rounded-full font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 px-2 py-0.5 text-xs">Expiring</span>                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                                    Expires: Feb 1, 2024                                                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center rounded-full font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 px-2 py-0.5 text-xs">Current</span>                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex items-center justify-end space-x-2">
+                                <a href="/admin/tenants/5" class="text-primary-600 hover:text-primary-900 dark:text-primary-400">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="/admin/tenants/5/edit" class="text-blue-600 hover:text-blue-900 dark:text-blue-400">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button onclick="sendMessage(5)" class="text-green-600 hover:text-green-900 dark:text-green-400">
+                                    <i class="fas fa-envelope"></i>
+                                </button>
+                                <button onclick="viewPayments(5)" class="text-purple-600 hover:text-purple-900 dark:text-purple-400">
+                                    <i class="fas fa-credit-card"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="relative inline-flex items-center justify-center w-10 h-10 text-base rounded-full bg-gray-100 dark:bg-gray-700"><span class="font-medium text-gray-700 dark:text-gray-300">LA</span></div>                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                        Lisa Anderson                                    </div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                                        ID: #0006                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white">
+                                <i class="fas fa-envelope mr-1 text-gray-400"></i>
+                                lisa.anderson@email.com                            </div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                <i class="fas fa-phone mr-1 text-gray-400"></i>
+                                (555) 678-9012                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white">
+                                Downtown Plaza                            </div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                Unit 101                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                $2,000                            </div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">
+                                per month
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center rounded-full font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 px-2 py-0.5 text-xs">Terminated</span>                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center rounded-full font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 px-2 py-0.5 text-xs">Paid</span>                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex items-center justify-end space-x-2">
+                                <a href="/admin/tenants/6" class="text-primary-600 hover:text-primary-900 dark:text-primary-400">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="/admin/tenants/6/edit" class="text-blue-600 hover:text-blue-900 dark:text-blue-400">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button onclick="sendMessage(6)" class="text-green-600 hover:text-green-900 dark:text-green-400">
+                                    <i class="fas fa-envelope"></i>
+                                </button>
+                                <button onclick="viewPayments(6)" class="text-purple-600 hover:text-purple-900 dark:text-purple-400">
+                                    <i class="fas fa-credit-card"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Pagination -->
+<div class="flex items-center justify-between">
+    <div class="text-sm text-gray-700 dark:text-gray-300">
+        Showing <span class="font-medium">1</span> to <span class="font-medium">6</span> of <span class="font-medium">6</span> results
+    </div>
+    </div>
+
+<!-- Quick Actions Modal -->
+
+            <div id="quickActionsModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+                    <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                    <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:w-full max-w-lg">
+                        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-white" id="modal-title">Quick Actions</h3>
+                            <button onclick="closeModal('quickActionsModal')" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="px-6 py-4"><div class="space-y-3">
+        <button onclick="sendBulkMessage()" class="w-full text-left px-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600">
+            <i class="fas fa-envelope mr-3 text-blue-600"></i>
+            Send Bulk Message
+        </button>
+        <button onclick="generateReports()" class="w-full text-left px-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600">
+            <i class="fas fa-file-alt mr-3 text-green-600"></i>
+            Generate Reports
+        </button>
+        <button onclick="sendReminders()" class="w-full text-left px-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600">
+            <i class="fas fa-bell mr-3 text-yellow-600"></i>
+            Send Payment Reminders
+        </button>
+        <button onclick="importTenants()" class="w-full text-left px-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600">
+            <i class="fas fa-upload mr-3 text-purple-600"></i>
+            Import Tenants
+        </button>
+    </div></div>
+                        <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-3"><button onclick="closeModal('quickActionsModal')" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">Close</button></div>
+                    </div>
+                </div>
+            </div>
+        
+<script>
+let currentTenantId = null;
+
+// Search functionality
+function searchTenants(query) {
+    const rows = document.querySelectorAll('tbody tr');
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        if (text.includes(query.toLowerCase())) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+// View toggle
+document.getElementById('gridView').addEventListener('click', function() {
+    this.classList.add('text-primary-600', 'border-primary-600');
+    this.classList.remove('text-gray-400', 'border-gray-300');
+    document.getElementById('listView').classList.add('text-gray-400', 'border-gray-300');
+    document.getElementById('listView').classList.remove('text-primary-600', 'border-primary-600');
+    showToast('Grid view coming soon!', 'info');
+});
+
+document.getElementById('listView').addEventListener('click', function() {
+    this.classList.add('text-primary-600', 'border-primary-600');
+    this.classList.remove('text-gray-400', 'border-gray-300');
+    document.getElementById('gridView').classList.add('text-gray-400', 'border-gray-300');
+    document.getElementById('gridView').classList.remove('text-primary-600', 'border-primary-600');
+});
+
+// Tenant actions
+function sendMessage(tenantId) {
+    currentTenantId = tenantId;
+    showToast('Opening message composer...', 'info');
+    // In a real app, this would open a message modal
+}
+
+function viewPayments(tenantId) {
+    window.location.href = `/admin/payments?tenant_id=${tenantId}`;
+}
+
+// Filter handlers
+document.getElementById('property_filter').addEventListener('change', function() {
+    filterTenants();
+});
+
+document.getElementById('lease_status_filter').addEventListener('change', function() {
+    filterTenants();
+});
+
+function filterTenants() {
+    const propertyFilter = document.getElementById('property_filter').value;
+    const leaseStatusFilter = document.getElementById('lease_status_filter').value;
+    
+    const rows = document.querySelectorAll('tbody tr');
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        const matchesProperty = !propertyFilter || text.includes(propertyFilter.toLowerCase());
+        const matchesStatus = !leaseStatusFilter || text.includes(leaseStatusFilter.toLowerCase());
+        
+        if (matchesProperty && matchesStatus) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+// Quick actions
+function exportTenants() {
+    showToast('Exporting tenant data...', 'info');
+    setTimeout(() => {
+        showToast('Tenants exported successfully', 'success');
+    }, 2000);
+}
+
+function sendBulkMessage() {
+    closeModal('quickActionsModal');
+    showToast('Opening bulk message composer...', 'info');
+}
+
+function generateReports() {
+    closeModal('quickActionsModal');
+    showToast('Generating tenant reports...', 'info');
+    setTimeout(() => {
+        showToast('Reports generated successfully', 'success');
+    }, 2000);
+}
+
+function sendReminders() {
+    closeModal('quickActionsModal');
+    showToast('Sending payment reminders...', 'info');
+    setTimeout(() => {
+        showToast('Reminders sent successfully', 'success');
+    }, 2000);
+}
+
+function importTenants() {
+    closeModal('quickActionsModal');
+    showToast('Opening import wizard...', 'info');
+}
+
+function goToPage(page) {
+    showToast(`Loading page ${page}...`, 'info');
+}
+
+// Quick actions button (add to header)
+document.addEventListener('DOMContentLoaded', function() {
+    const headerActions = document.querySelector('.flex.space-x-3');
+    if (headerActions) {
+        const quickActionsBtn = document.createElement('button');
+        quickActionsBtn.className = 'inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700';
+        quickActionsBtn.innerHTML = '<i class="fas fa-bolt mr-2"></i>Quick Actions';
+        quickActionsBtn.onclick = () => document.getElementById('quickActionsModal').classList.remove('hidden');
+        headerActions.appendChild(quickActionsBtn);
+    }
+});
+</script>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50"></div>
+
+    <script>
+        // Initialize dark mode immediately to prevent flickering
+        (function() {
+            const darkMode = localStorage.getItem('darkMode');
+            const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (darkMode === 'true' || (!darkMode && systemDark)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+
+        // Theme synchronization across page navigation
+        window.addEventListener('themechange', (e) => {
+            // Ensure all iframes and components get the theme update
+            const iframes = document.querySelectorAll('iframe');
+            iframes.forEach(iframe => {
+                try {
+                    iframe.contentWindow.postMessage({
+                        type: 'themechange',
+                        isDark: e.detail.isDark
+                    }, '*');
+                } catch (err) {
+                    // Ignore cross-origin errors
+                }
+            });
+        });
+
+        // Listen for theme changes from parent (if in iframe)
+        window.addEventListener('message', (e) => {
+            if (e.data.type === 'themechange') {
+                document.documentElement.classList.toggle('dark', e.data.isDark);
+            }
+        });
+
+        // Prevent theme flickering on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Double-check theme is applied after DOM loads
+            const darkMode = localStorage.getItem('darkMode');
+            const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const shouldBeDark = darkMode === 'true' || (!darkMode && systemDark);
+            
+            if (shouldBeDark !== document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.toggle('dark', shouldBeDark);
+            }
+        });
+
+        // Toast notification function
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `mb-2 px-4 py-3 rounded-lg shadow-lg text-white ${
+                type === 'success' ? 'bg-green-500' : 
+                type === 'error' ? 'bg-red-500' : 
+                type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
+            } transform transition-all duration-300 translate-x-full`;
+            
+            toast.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas ${
+                        type === 'success' ? 'fa-check-circle' : 
+                        type === 'error' ? 'fa-exclamation-circle' : 
+                        type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle'
+                    } mr-2"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.getElementById('toast-container').appendChild(toast);
+            
+            // Animate in
+            setTimeout(() => {
+                toast.classList.remove('translate-x-full');
+                toast.classList.add('translate-x-0');
+            }, 100);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Show PHP session messages as toasts
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            
+                    });
+
+        // Helper function to get cookies
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+            return null;
+        }
+
+        // CSRF token for AJAX requests
+        function getCsrfToken() {
+            return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        }
+
+        // API request helper
+        async function apiRequest(endpoint, options = {}) {
+            const defaultOptions = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            };
+
+            const token = localStorage.getItem('jwt_token');
+            if (token) {
+                defaultOptions.headers.Authorization = `Bearer ${token}`;
+            }
+
+            const finalOptions = {
+                ...defaultOptions,
+                ...options,
+                headers: {
+                    ...defaultOptions.headers,
+                    ...options.headers
+                }
+            };
+
+            try {
+                const response = await fetch(endpoint, finalOptions);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Request failed');
+                }
+
+                return data;
+            } catch (error) {
+                showToast(error.message, 'error');
+                throw error;
+            }
+        }
+    </script>
+</body>
+</html>
+

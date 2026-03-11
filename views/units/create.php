@@ -163,7 +163,7 @@ $content = ob_start();
 
 <?php
 $content = ob_get_clean();
-include __DIR__ . '/../dashboard/layout.php';
+echo ViewManager::render('dashboard.layout', ['content' => $content]);
 ?>
 
 <script>

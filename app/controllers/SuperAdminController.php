@@ -78,7 +78,8 @@ class SuperAdminController extends BaseController {
 
     private function getPlatformStats() {
         $stats = [];
-        $pdo = $this->db->getConnection();
+        // Use MySQL database directly for platform stats
+        $pdo = \Config\Database::getInstance()->getConnection();
         
         try {
             // Total admins

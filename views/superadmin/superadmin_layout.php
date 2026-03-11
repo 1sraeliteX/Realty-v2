@@ -10,45 +10,36 @@ $title = $title ?? 'Super Admin Dashboard';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $title; ?> - Cornerstone Realty Platform</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Local CSS files -->
+    <link rel="stylesheet" href="/assets/css/fontawesome.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <script src="/assets/js/chart.js"></script>
     <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            50: '#eff6ff',
-                            100: '#dbeafe',
-                            200: '#bfdbfe',
-                            300: '#93c5fd',
-                            400: '#60a5fa',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8',
-                            800: '#1e40af',
-                            900: '#1e3a8a',
-                        }
-                    }
-                }
-            }
+        // Dark mode configuration
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
         }
     </script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta name="csrf-token" content="<?php echo $_SESSION['csrf_token'] ?? ''; ?>">
 </head>
 <body class="bg-gray-50 dark:bg-gray-900">
     <div class="flex h-screen overflow-hidden">
         <!-- Sidebar -->
-        <aside class="flex flex-col w-64 bg-white dark:bg-gray-800 shadow-md">
+        <aside id="sidebar" class="fixed lg:relative lg:translate-x-0 -translate-x-full transition-transform duration-300 ease-in-out z-40 flex flex-col w-64 bg-white dark:bg-gray-800 shadow-md h-full">
             <!-- Logo -->
-            <div class="flex items-center justify-center h-16 px-4 bg-primary-600 dark:bg-primary-800">
-                <i class="fas fa-building text-white text-2xl mr-3"></i>
-                <div class="text-left">
-                    <span class="text-white font-bold text-lg">Cornerstone Realty</span>
-                    <p class="text-white text-xs opacity-90">Platform Admin</p>
+            <div class="flex items-center justify-between h-16 px-4 bg-primary-600 dark:bg-primary-800">
+                <div class="flex items-center">
+                    <i class="fas fa-building text-white text-2xl mr-3"></i>
+                    <div class="text-left">
+                        <span class="text-white font-bold text-lg">Cornerstone Realty</span>
+                        <p class="text-white text-xs opacity-90">Platform Admin</p>
+                    </div>
                 </div>
+                <button onclick="toggleSidebar()" class="lg:hidden text-white hover:text-gray-200">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
             </div>
 
             <!-- Navigation -->
@@ -152,13 +143,16 @@ $title = $title ?? 'Super Admin Dashboard';
                     <!-- Logout -->
                     <form action="/logout" method="POST" class="inline w-full">
                         <button type="submit" class="w-full flex items-center justify-center text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 text-sm py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                            <i class="fas fa-sign-out-alt mr-2"></i>
+                            <i class="fas fa-right-from-bracket mr-2"></i>
                             Logout
                         </button>
                     </form>
                 </div>
             </div>
         </aside>
+
+        <!-- Mobile sidebar overlay -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden hidden transition-opacity duration-300" onclick="toggleSidebar()"></div>
 
         <!-- Main content -->
         <div class="flex flex-col flex-1 overflow-hidden">
@@ -280,13 +274,6 @@ $title = $title ?? 'Super Admin Dashboard';
     <!-- Toast Container -->
     <div id="toast-container" class="fixed top-4 right-4 z-50"></div>
 
-    <!-- DotBot Assistant (hidden by default) -->
-    <div id="dotbot-assistant" class="fixed bottom-6 right-6 hidden">
-        <button class="w-14 h-14 bg-purple-600 hover:bg-purple-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110">
-            <i class="fas fa-robot text-xl"></i>
-        </button>
-    </div>
-
     <script>
         // Toast notification function
         function showToast(message, type = 'success') {
@@ -335,11 +322,85 @@ $title = $title ?? 'Super Admin Dashboard';
             document.documentElement.classList.add('dark');
         }
 
-        // Sidebar toggle for mobile
+        // Sidebar toggle for mobile and responsive behavior
+        let sidebarOpen = false;
+        
         function toggleSidebar() {
-            const sidebar = document.querySelector('aside');
-            sidebar.classList.toggle('hidden');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            const body = document.body;
+            
+            sidebarOpen = !sidebarOpen;
+            
+            if (sidebarOpen) {
+                // Open sidebar
+                sidebar.classList.remove('-translate-x-full');
+                sidebar.classList.add('translate-x-0');
+                overlay.classList.remove('hidden');
+                
+                // Add overflow hidden to body on mobile
+                if (window.innerWidth < 1024) {
+                    body.classList.add('overflow-hidden');
+                }
+            } else {
+                // Close sidebar
+                sidebar.classList.add('-translate-x-full');
+                sidebar.classList.remove('translate-x-0');
+                overlay.classList.add('hidden');
+                body.classList.remove('overflow-hidden');
+            }
         }
+        
+        // Auto-collapse sidebar on screen resize
+        function handleResize() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            const body = document.body;
+            
+            if (window.innerWidth >= 1024) {
+                // Desktop: show sidebar permanently
+                sidebar.classList.remove('-translate-x-full');
+                sidebar.classList.add('translate-x-0');
+                overlay.classList.add('hidden');
+                body.classList.remove('overflow-hidden');
+                sidebarOpen = false;
+            } else {
+                // Mobile/tablet: hide sidebar by default
+                if (!sidebarOpen) {
+                    sidebar.classList.add('-translate-x-full');
+                    sidebar.classList.remove('translate-x-0');
+                }
+            }
+        }
+        
+        // Initialize responsive behavior
+        document.addEventListener('DOMContentLoaded', function() {
+            handleResize(); // Set initial state
+            
+            // Add resize listener with debouncing
+            let resizeTimeout;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(handleResize, 250);
+            });
+            
+            // Close sidebar when clicking navigation links on mobile
+            const navLinks = document.querySelectorAll('nav a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth < 1024 && sidebarOpen) {
+                        setTimeout(toggleSidebar, 150); // Small delay for navigation
+                    }
+                });
+            });
+            
+            // Handle escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && sidebarOpen && window.innerWidth < 1024) {
+                    toggleSidebar();
+                }
+            });
+        });
 
         // API request helper
         async function apiRequest(endpoint, options = {}) {

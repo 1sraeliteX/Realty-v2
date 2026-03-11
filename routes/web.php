@@ -57,13 +57,18 @@ return [
     'POST /admin/tenants/{id}' => 'TenantController@update',
     'POST /admin/tenants/{id}/delete' => 'TenantController@delete',
 
+    // Admin Tenants & Occupants routes
+    'GET /admin/tenants-occupants' => 'TenantOccupantController@index',
+
     // Admin Payment routes
     'GET /admin/payments' => 'PaymentController@index',
     'GET /admin/payments/create' => 'PaymentController@create',
     'POST /admin/payments' => 'PaymentController@store',
+    'GET /admin/payments/{id}' => 'PaymentController@show',
     'GET /admin/payments/{id}/edit' => 'PaymentController@edit',
     'POST /admin/payments/{id}' => 'PaymentController@update',
     'POST /admin/payments/{id}/delete' => 'PaymentController@delete',
+    'GET /admin/payments/receipt/{id}/download' => 'PaymentController@downloadReceipt',
 
     // Admin Invoice routes
     'GET /admin/invoices' => 'InvoiceController@index',
@@ -76,12 +81,7 @@ return [
 
     // Admin Financial routes
     'GET /admin/finances' => 'FinanceController@index',
-    'GET /admin/finances/create' => 'FinanceController@create',
-    'POST /admin/finances' => 'FinanceController@store',
-    'GET /admin/finances/{id}/edit' => 'FinanceController@edit',
-    'POST /admin/finances/{id}' => 'FinanceController@update',
-    'POST /admin/finances/{id}/delete' => 'FinanceController@delete',
-
+    
     // Admin Maintenance routes
     'GET /admin/maintenance' => 'MaintenanceController@index',
     'GET /admin/maintenance/create' => 'MaintenanceController@create',
@@ -106,6 +106,9 @@ return [
     'POST /admin/documents/{id}' => 'DocumentController@update',
     'POST /admin/documents/{id}/delete' => 'DocumentController@delete',
 
+    // Admin Dashboard Reports routes
+    'GET /admin/dashboard/reports' => 'ReportController@dashboardReports',
+    
     // Admin Reports routes
     'GET /admin/reports' => 'ReportController@index',
     'GET /admin/reports/create' => 'ReportController@create',

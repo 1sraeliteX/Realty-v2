@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard Styling Test</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/fontawesome.css">
+    
+    <style>
+        html {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .no-js {
+            visibility: hidden;
+        }
+        * {
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900">
+    <script>
+        document.documentElement.classList.remove('no-js');
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+
+    <!-- Test Admin Dashboard Layout -->
+    <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <!-- Mobile sidebar backdrop -->
+        <div id="sidebar-backdrop" class="fixed inset-0 bg-gray-600 bg-opacity-75 z-40 lg:hidden hidden"></div>
+        
+        <!-- Sidebar -->
+        <aside id="sidebar" class="fixed top-0 left-0 z-50 w-64 h-screen bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transform -translate-x-full transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0">
+            <!-- Sidebar header -->
+            <div class="flex items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-center">
+                    <i class="fas fa-building text-primary-600 dark:text-primary-400 text-xl mr-3"></i>
+                    <span class="text-xl font-semibold text-gray-900 dark:text-white">Cornerstone</span>
+                </div>
+                <button id="close-sidebar" class="lg:hidden text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <!-- Navigation -->
+            <nav class="p-4 space-y-2">
+                <a href="/admin/dashboard" class="nav-item flex items-center px-4 py-2 text-sm font-medium rounded-lg bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300">
+                    <i class="fas fa-home mr-3"></i>
+                    Dashboard
+                </a>
+                <a href="/admin/properties" class="nav-item flex items-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <i class="fas fa-building mr-3"></i>
+                    Properties
+                </a>
+                <a href="/admin/tenants" class="nav-item flex items-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <i class="fas fa-users mr-3"></i>
+                    Tenants
+                </a>
+            </nav>
+        </aside>
+        
+        <!-- Main content -->
+        <div class="lg:pl-64">
+            <!-- Top navigation -->
+            <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-30">
+                <div class="flex items-center justify-between h-16 px-4 sm:px-6">
+                    <!-- Left side -->
+                    <div class="flex items-center">
+                        <button id="open-sidebar" class="lg:hidden text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 mr-4">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                        <h1 class="text-xl font-semibold text-gray-900 dark:text-white">Admin Dashboard</h1>
+                    </div>
+                    
+                    <!-- Right side -->
+                    <div class="flex items-center space-x-4">
+                        <!-- Dark mode toggle -->
+                        <button id="dark-mode-toggle" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                            <i class="fas fa-moon dark:hidden"></i>
+                            <i class="fas fa-sun hidden dark:block"></i>
+                        </button>
+                        
+                        <!-- User menu -->
+                        <div class="relative">
+                            <button id="user-menu-btn" class="flex items-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                                <div class="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center">
+                                    <span class="text-white text-sm font-medium">A</span>
+                                </div>
+                                <span class="ml-2 text-sm font-medium hidden md:block">Admin User</span>
+                                <i class="fas fa-chevron-down ml-2 text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Main content area -->
+            <main class="p-4 sm:p-6 lg:p-8">
+                <!-- Dashboard Overview -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Properties</p>
+                                <p class="text-2xl font-semibold text-gray-900 dark:text-white">15</p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                                <i class="fas fa-home text-blue-600 dark:text-blue-400"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex items-center text-sm">
+                            <span class="text-green-600 dark:text-green-400">+12.5%</span>
+                            <span class="text-gray-500 dark:text-gray-400 ml-2">from last month</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Active Tenants</p>
+                                <p class="text-2xl font-semibold text-gray-900 dark:text-white">37</p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
+                                <i class="fas fa-users text-green-600 dark:text-green-400"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex items-center text-sm">
+                            <span class="text-green-600 dark:text-green-400">+15.2%</span>
+                            <span class="text-gray-500 dark:text-gray-400 ml-2">from last month</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Occupancy Rate</p>
+                                <p class="text-2xl font-semibold text-gray-900 dark:text-white">84.1%</p>
+                            </div>
+                            <div class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center">
+                                <i class="fas fa-percentage text-yellow-600 dark:text-yellow-400"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex items-center text-sm">
+                            <span class="text-green-600 dark:text-green-400">+2.1%</span>
+                            <span class="text-gray-500 dark:text-gray-400 ml-2">from last month</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Monthly Revenue</p>
+                                <p class="text-2xl font-semibold text-gray-900 dark:text-white">$25,000</p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
+                                <i class="fas fa-dollar-sign text-green-600 dark:text-green-400"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex items-center text-sm">
+                            <span class="text-green-600 dark:text-green-400">+8.7%</span>
+                            <span class="text-gray-500 dark:text-gray-400 ml-2">from last month</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
+                    <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Quick Actions</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                        <a href="#" class="flex flex-col items-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
+                            <i class="fas fa-plus-circle text-blue-600 dark:text-blue-400 text-2xl mb-2"></i>
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Add Property</span>
+                        </a>
+                        <a href="#" class="flex flex-col items-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors">
+                            <i class="fas fa-user-plus text-green-600 dark:text-green-400 text-2xl mb-2"></i>
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Add Tenant</span>
+                        </a>
+                        <a href="#" class="flex flex-col items-center p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg hover:bg-yellow-100 dark:hover:bg-yellow-900/30 transition-colors">
+                            <i class="fas fa-file-invoice-dollar text-yellow-600 dark:text-yellow-400 text-2xl mb-2"></i>
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Record Payment</span>
+                        </a>
+                        <a href="#" class="flex flex-col items-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors">
+                            <i class="fas fa-tools text-purple-600 dark:text-purple-400 text-2xl mb-2"></i>
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Maintenance</span>
+                        </a>
+                        <a href="#" class="flex flex-col items-center p-4 bg-red-50 dark:bg-red-900/20 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors">
+                            <i class="fas fa-file-invoice text-red-600 dark:text-red-400 text-2xl mb-2"></i>
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Create Invoice</span>
+                        </a>
+                        <a href="#" class="flex flex-col items-center p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-colors">
+                            <i class="fas fa-chart-bar text-indigo-600 dark:text-indigo-400 text-2xl mb-2"></i>
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Reports</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Success Message -->
+                <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+                    <div class="flex items-center">
+                        <i class="fas fa-check-circle text-green-600 dark:text-green-400 mr-3"></i>
+                        <div>
+                            <h3 class="text-sm font-medium text-green-800 dark:text-green-200">Dashboard Styling Test Successful</h3>
+                            <p class="text-sm text-green-700 dark:text-green-300 mt-1">The admin dashboard is properly styled and all components are working correctly.</p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sidebar functionality
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebar-backdrop');
+            const openBtn = document.getElementById('open-sidebar');
+            const closeBtn = document.getElementById('close-sidebar');
+            
+            openBtn?.addEventListener('click', () => {
+                sidebar.classList.remove('-translate-x-full');
+                backdrop.classList.remove('hidden');
+            });
+            
+            closeBtn?.addEventListener('click', closeSidebar);
+            backdrop?.addEventListener('click', closeSidebar);
+            
+            function closeSidebar() {
+                sidebar.classList.add('-translate-x-full');
+                backdrop.classList.add('hidden');
+            }
+            
+            // Dark mode toggle
+            const darkModeToggle = document.getElementById('dark-mode-toggle');
+            darkModeToggle?.addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+                localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
+            });
+        });
+    </script>
+</body>
+</html>

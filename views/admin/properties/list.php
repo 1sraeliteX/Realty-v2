@@ -1,101 +1,18 @@
 <?php
-// Include UI Components
-require_once __DIR__ . '/../../components/UIComponents.php';
+// Initialize framework (anti-scattering compliant)
+require_once __DIR__ . '/../../../config/init_framework.php';
 
-$title = 'Properties Management';
-$pageTitle = 'Properties';
-$pageDescription = 'Manage your property portfolio and track performance';
+// Load components through registry (anti-scattering compliant)
+ComponentRegistry::load('ui-components');
 
-// Mock properties data
-$properties = [
-    [
-        'id' => 1,
-        'name' => 'Sunset Apartments',
-        'address' => '123 Main St, Los Angeles, CA 90001',
-        'type' => 'Residential',
-        'status' => 'occupied',
-        'unit_count' => 24,
-        'occupied_units' => 22,
-        'vacant_units' => 2,
-        'monthly_revenue' => 28800,
-        'purchase_price' => 2500000,
-        'image' => 'https://picsum.photos/seed/sunset/400/300.jpg',
-        'year_built' => 2018,
-        'size_sqft' => 15000,
-        'created_at' => '2023-01-15',
-        'last_updated' => '2024-01-10'
-    ],
-    [
-        'id' => 2,
-        'name' => 'Downtown Plaza',
-        'address' => '456 Oak Ave, Los Angeles, CA 90002',
-        'type' => 'Commercial',
-        'status' => 'available',
-        'unit_count' => 12,
-        'occupied_units' => 8,
-        'vacant_units' => 4,
-        'monthly_revenue' => 15600,
-        'purchase_price' => 1800000,
-        'image' => 'https://picsum.photos/seed/downtown/400/300.jpg',
-        'year_built' => 2015,
-        'size_sqft' => 12000,
-        'created_at' => '2023-03-20',
-        'last_updated' => '2024-01-12'
-    ],
-    [
-        'id' => 3,
-        'name' => 'Riverside Complex',
-        'address' => '789 River Rd, Los Angeles, CA 90003',
-        'type' => 'Residential',
-        'status' => 'maintenance',
-        'unit_count' => 36,
-        'occupied_units' => 34,
-        'vacant_units' => 2,
-        'monthly_revenue' => 43200,
-        'purchase_price' => 3200000,
-        'image' => 'https://picsum.photos/seed/riverside/400/300.jpg',
-        'year_built' => 2020,
-        'size_sqft' => 22000,
-        'created_at' => '2023-06-10',
-        'last_updated' => '2024-01-14'
-    ],
-    [
-        'id' => 4,
-        'name' => 'Garden View Homes',
-        'address' => '321 Garden St, Los Angeles, CA 90004',
-        'type' => 'Residential',
-        'status' => 'occupied',
-        'unit_count' => 18,
-        'occupied_units' => 18,
-        'vacant_units' => 0,
-        'monthly_revenue' => 21600,
-        'purchase_price' => 1900000,
-        'image' => 'https://picsum.photos/seed/garden/400/300.jpg',
-        'year_built' => 2019,
-        'size_sqft' => 11000,
-        'created_at' => '2023-08-05',
-        'last_updated' => '2024-01-08'
-    ],
-    [
-        'id' => 5,
-        'name' => 'Industrial Park West',
-        'address' => '555 Industrial Blvd, Los Angeles, CA 90005',
-        'type' => 'Industrial',
-        'status' => 'available',
-        'unit_count' => 8,
-        'occupied_units' => 5,
-        'vacant_units' => 3,
-        'monthly_revenue' => 12000,
-        'purchase_price' => 1500000,
-        'image' => 'https://picsum.photos/seed/industrial/400/300.jpg',
-        'year_built' => 2016,
-        'size_sqft' => 25000,
-        'created_at' => '2023-09-15',
-        'last_updated' => '2024-01-11'
-    ]
-];
+// Get data from centralized provider (anti-scattering compliant)
+$properties = ViewManager::get('properties') ?? DataProvider::get('properties');
+$stats = ViewManager::get('stats') ?? DataProvider::get('property_stats');
 
-ob_start();
+// Set data through ViewManager (anti-scattering compliant)
+ViewManager::set('title', 'Properties Management');
+ViewManager::set('pageTitle', 'Properties');
+ViewManager::set('pageDescription', 'Manage your property portfolio and track performance');
 ?>
 
 <!-- Header with Actions -->
@@ -378,5 +295,5 @@ function goToPage(page) {
 
 <?php
 $content = ob_get_clean();
-include '../dashboard_layout.php';
+include '../simple_layout.php';
 ?>

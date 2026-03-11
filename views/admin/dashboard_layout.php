@@ -1,509 +1,395 @@
 <?php
-// Include UI Components
-require_once __DIR__ . '/../../components/UIComponents.php';
+// Initialize anti-scattering system
+require_once __DIR__ . '/../../config/bootstrap.php';
 
-$title = $title ?? 'Admin Dashboard';
-$pageTitle = $pageTitle ?? 'Dashboard';
-$content = $content ?? '';
-
-// Mock user data for UI
-$user = [
-    'name' => 'John Doe',
-    'email' => 'admin@example.com',
-    'avatar' => null,
-    'role' => 'Administrator'
-];
-
-// Mock notification data
-$notifications = [
-    ['id' => 1, 'type' => 'info', 'message' => 'New tenant application received', 'time' => '5 min ago'],
-    ['id' => 2, 'type' => 'warning', 'message' => 'Rent payment overdue for Unit 3A', 'time' => '1 hour ago'],
-    ['id' => 3, 'type' => 'success', 'message' => 'Maintenance request completed', 'time' => '2 hours ago']
-];
-
-// Determine active menu item based on current route
-$currentPath = $_SERVER['REQUEST_URI'] ?? '/';
-$activeMenu = 'dashboard';
-
-// More precise route matching to avoid false positives
-$pathParts = explode('/', trim($currentPath, '/'));
-array_shift($pathParts); // Remove 'admin' if present
-
-if (in_array('properties', $pathParts)) $activeMenu = 'properties';
-elseif (in_array('tenants', $pathParts)) $activeMenu = 'tenants';
-elseif (in_array('occupants', $pathParts)) $activeMenu = 'occupants';
-elseif (in_array('units', $pathParts)) $activeMenu = 'units';
-elseif (in_array('rooms', $pathParts)) $activeMenu = 'rooms';
-elseif (in_array('payments', $pathParts)) $activeMenu = 'payments';
-elseif (in_array('invoices', $pathParts)) $activeMenu = 'invoices';
-elseif (in_array('maintenance', $pathParts)) $activeMenu = 'maintenance';
-elseif (in_array('finances', $pathParts)) $activeMenu = 'finances';
-elseif (in_array('reports', $pathParts)) $activeMenu = 'reports';
-elseif (in_array('communications', $pathParts)) $activeMenu = 'communications';
-elseif (in_array('documents', $pathParts)) $activeMenu = 'documents';
-elseif (in_array('team', $pathParts)) $activeMenu = 'team';
-elseif (in_array('settings', $pathParts)) $activeMenu = 'settings';
-elseif (in_array('profile', $pathParts)) $activeMenu = 'profile';
-
-ob_start();
+// Get centralized data from DataProvider (anti-scattering compliant)
+$user = ViewManager::get('user');
+$notifications = ViewManager::get('notifications');
+$title = ViewManager::get('title', 'Admin Dashboard');
 ?>
 
-<!-- Mobile sidebar backdrop -->
-<div id="sidebarBackdrop" class="fixed inset-0 z-40 bg-gray-600 bg-opacity-75 lg:hidden hidden"></div>
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo $title ?? 'Real Estate Management'; ?></title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Local CSS files -->
+    <link rel="stylesheet" href="/assets/css/fontawesome.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    
+    <script>
+        // Dark mode configuration
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900">
+    <div id="toast-container" class="fixed top-4 right-4 z-50"></div>
 
-<!-- Sidebar -->
-<aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out lg:static lg:inset-0">
-    <div class="flex flex-col h-full">
-        <!-- Logo -->
+<!-- Admin Dashboard Layout -->
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <!-- Mobile sidebar backdrop -->
+    <div id="sidebar-backdrop" class="fixed inset-0 bg-gray-600 bg-opacity-75 z-40 lg:hidden hidden"></div>
+    
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed top-0 left-0 z-50 w-64 h-screen bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transform -translate-x-full transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0">
+        <!-- Sidebar header -->
         <div class="flex items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-gray-700">
             <div class="flex items-center">
-                <div class="flex-shrink-0">
-                    <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-building text-white text-sm"></i>
-                    </div>
-                </div>
-                <div class="ml-3">
-                    <h1 class="text-lg font-semibold text-gray-900 dark:text-white">Cornerstone</h1>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">Property Manager</p>
-                </div>
+                <i class="fas fa-building text-primary-600 dark:text-primary-400 text-xl mr-3"></i>
+                <span class="text-xl font-semibold text-gray-900 dark:text-white">Cornerstone</span>
             </div>
-            <button id="closeSidebar" class="lg:hidden text-gray-400 hover:text-gray-600">
-                <i class="fas fa-times"></i>
+            <button id="close-sidebar" class="lg:hidden text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                <i class="fas fa-times text-xl"></i>
             </button>
         </div>
-
+        
         <!-- Navigation -->
-        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-            <!-- Dashboard -->
-            <a href="/admin/dashboard" class="nav-item group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors <?php echo $activeMenu === 'dashboard' ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400' : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700'; ?>">
-                <i class="fas fa-home mr-3 text-lg <?php echo $activeMenu === 'dashboard' ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'; ?>"></i>
+        <nav class="p-4 space-y-2">
+            <a href="/admin/dashboard" class="nav-item flex items-center px-4 py-2 text-sm font-medium rounded-lg bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300">
+                <i class="fas fa-home mr-3"></i>
                 Dashboard
             </a>
-
-            <!-- Properties -->
-            <a href="/admin/dashboard/properties" class="nav-item group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors <?php echo $activeMenu === 'properties' ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400' : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700'; ?>">
-                <i class="fas fa-building mr-3 text-lg <?php echo $activeMenu === 'properties' ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'; ?>"></i>
+            
+            <div class="pt-4 pb-2">
+                <span class="px-4 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400">Properties</span>
+            </div>
+            <a href="/admin/properties" class="nav-item flex items-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <i class="fas fa-building mr-3"></i>
                 Properties
             </a>
-
-            <!-- Tenants -->
-            <a href="/admin/dashboard/tenants" class="nav-item group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors <?php echo $activeMenu === 'tenants' ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400' : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700'; ?>">
-                <i class="fas fa-users mr-3 text-lg <?php echo $activeMenu === 'tenants' ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'; ?>"></i>
-                Tenants
-            </a>
-
-            <!-- Occupants -->
-            <a href="/admin/dashboard/occupants" class="nav-item group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors <?php echo $activeMenu === 'occupants' ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400' : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700'; ?>">
-                <i class="fas fa-user-friends mr-3 text-lg <?php echo $activeMenu === 'occupants' ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'; ?>"></i>
-                Occupants
-            </a>
-
-            <!-- Units -->
-            <a href="/admin/dashboard/units" class="nav-item group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors <?php echo $activeMenu === 'units' ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400' : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700'; ?>">
-                <i class="fas fa-door-open mr-3 text-lg <?php echo $activeMenu === 'units' ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'; ?>"></i>
+            <a href="/admin/units" class="nav-item flex items-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <i class="fas fa-door-open mr-3"></i>
                 Units
             </a>
-
-            <!-- Rooms -->
-            <a href="/admin/dashboard/rooms" class="nav-item group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors <?php echo $activeMenu === 'rooms' ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400' : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700'; ?>">
-                <i class="fas fa-bed mr-3 text-lg <?php echo $activeMenu === 'rooms' ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'; ?>"></i>
-                Rooms
+            
+            <div class="pt-4 pb-2">
+                <span class="px-4 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400">Tenants</span>
+            </div>
+            <a href="/admin/tenants" class="nav-item flex items-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <i class="fas fa-users mr-3"></i>
+                Tenants
             </a>
-
-            <!-- Payments -->
-            <a href="/admin/dashboard/payments" class="nav-item group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors <?php echo $activeMenu === 'payments' ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400' : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700'; ?>">
-                <i class="fas fa-credit-card mr-3 text-lg <?php echo $activeMenu === 'payments' ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'; ?>"></i>
+            <a href="/admin/tenants-occupants" class="nav-item flex items-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <i class="fas fa-user-friends mr-3"></i>
+                Tenants & Occupants
+            </a>
+            
+            <div class="pt-4 pb-2">
+                <span class="px-4 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400">Financial</span>
+            </div>
+            <a href="/admin/payments" class="nav-item flex items-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <i class="fas fa-credit-card mr-3"></i>
                 Payments
             </a>
-
-            <!-- Invoices -->
-            <a href="/admin/dashboard/invoices" class="nav-item group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors <?php echo $activeMenu === 'invoices' ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400' : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700'; ?>">
-                <i class="fas fa-file-invoice mr-3 text-lg <?php echo $activeMenu === 'invoices' ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'; ?>"></i>
+            <a href="/admin/invoices" class="nav-item flex items-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <i class="fas fa-file-invoice mr-3"></i>
                 Invoices
             </a>
-
-            <!-- Maintenance -->
-            <a href="/admin/dashboard/maintenance" class="nav-item group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors <?php echo $activeMenu === 'maintenance' ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400' : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700'; ?>">
-                <i class="fas fa-tools mr-3 text-lg <?php echo $activeMenu === 'maintenance' ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'; ?>"></i>
-                Maintenance
-            </a>
-
-            <!-- Finances -->
-            <a href="/admin/dashboard/finances" class="nav-item group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors <?php echo $activeMenu === 'finances' ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400' : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700'; ?>">
-                <i class="fas fa-chart-line mr-3 text-lg <?php echo $activeMenu === 'finances' ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'; ?>"></i>
+            <a href="/admin/finances" class="nav-item flex items-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <i class="fas fa-chart-line mr-3"></i>
                 Finances
             </a>
-
-            <!-- Reports -->
-            <a href="/admin/dashboard/reports" class="nav-item group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors <?php echo $activeMenu === 'reports' ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400' : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700'; ?>">
-                <i class="fas fa-chart-bar mr-3 text-lg <?php echo $activeMenu === 'reports' ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'; ?>"></i>
-                Reports
+            
+            <div class="pt-4 pb-2">
+                <span class="px-4 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400">Operations</span>
+            </div>
+            <a href="/admin/maintenance" class="nav-item flex items-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <i class="fas fa-tools mr-3"></i>
+                Maintenance
             </a>
-
-            <!-- Communications -->
-            <a href="/admin/dashboard/communications" class="nav-item group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors <?php echo $activeMenu === 'communications' ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400' : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700'; ?>">
-                <i class="fas fa-envelope mr-3 text-lg <?php echo $activeMenu === 'communications' ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'; ?>"></i>
+            <a href="/admin/communications" class="nav-item flex items-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <i class="fas fa-envelope mr-3"></i>
                 Communications
             </a>
-
-            <!-- Documents -->
-            <a href="/admin/dashboard/documents" class="nav-item group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors <?php echo $activeMenu === 'documents' ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400' : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700'; ?>">
-                <i class="fas fa-folder mr-3 text-lg <?php echo $activeMenu === 'documents' ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'; ?>"></i>
+            <a href="/admin/documents" class="nav-item flex items-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <i class="fas fa-folder mr-3"></i>
                 Documents
             </a>
-
-            <!-- Team -->
-            <a href="/admin/dashboard/team" class="nav-item group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors <?php echo $activeMenu === 'team' ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400' : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700'; ?>">
-                <i class="fas fa-users-cog mr-3 text-lg <?php echo $activeMenu === 'team' ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'; ?>"></i>
-                Team
+            
+            <div class="pt-4 pb-2">
+                <span class="px-4 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400">Reports</span>
+            </div>
+            <a href="/admin/reports" class="nav-item flex items-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <i class="fas fa-chart-bar mr-3"></i>
+                Reports
             </a>
-
-            <!-- Settings -->
-            <a href="/admin/dashboard/settings" class="nav-item group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors <?php echo $activeMenu === 'settings' ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400' : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700'; ?>">
-                <i class="fas fa-cog mr-3 text-lg <?php echo $activeMenu === 'settings' ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'; ?>"></i>
+            <a href="/admin/dashboard/reports" class="nav-item flex items-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <i class="fas fa-analytics mr-3"></i>
+                Dashboard Reports
+            </a>
+            
+            <div class="pt-4 pb-2">
+                <span class="px-4 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400">Settings</span>
+            </div>
+            <a href="/admin/settings" class="nav-item flex items-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <i class="fas fa-cog mr-3"></i>
                 Settings
             </a>
+            <a href="/admin/profile" class="nav-item flex items-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <i class="fas fa-user mr-3"></i>
+                Profile
+            </a>
         </nav>
-
-        <!-- User Profile Section -->
-        <div class="border-t border-gray-200 dark:border-gray-700 p-4">
-            <div class="flex items-center space-x-3">
-                <?php echo UIComponents::avatar($user['name'], $user['avatar'], 'small'); ?>
-                <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium text-gray-900 dark:text-white truncate"><?php echo htmlspecialchars($user['name']); ?></p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 truncate"><?php echo htmlspecialchars($user['email']); ?></p>
-                </div>
-                <div class="relative">
-                    <button id="userMenuButton" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                        <i class="fas fa-chevron-down"></i>
+    </aside>
+    
+    <!-- Main content -->
+    <div class="lg:pl-64">
+        <!-- Top navigation -->
+        <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-30">
+            <div class="flex items-center justify-between h-16 px-4 sm:px-6">
+                <!-- Left side -->
+                <div class="flex items-center">
+                    <button id="open-sidebar" class="lg:hidden text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 mr-4">
+                        <i class="fas fa-bars text-xl"></i>
                     </button>
                     
-                    <!-- User Dropdown Menu -->
-                    <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
-                        <div class="py-1">
-                            <a href="/admin/dashboard/profile" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-                                <i class="fas fa-user mr-2"></i>Profile
-                            </a>
-                            <a href="/admin/dashboard/settings" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-                                <i class="fas fa-cog mr-2"></i>Settings
-                            </a>
-                            <hr class="border-gray-200 dark:border-gray-700">
-                            <a href="/admin/logout" class="block px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-50 dark:hover:bg-gray-700">
-                                <i class="fas fa-sign-out-alt mr-2"></i>Logout
-                            </a>
-                        </div>
-                    </div>
+                    <!-- Breadcrumbs -->
+                    <nav class="hidden md:flex" aria-label="Breadcrumb">
+                        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                            <li class="inline-flex items-center">
+                                <a href="/admin/dashboard" class="text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400">
+                                    Dashboard
+                                </a>
+                            </li>
+                        </ol>
+                    </nav>
                 </div>
-            </div>
-        </div>
-    </div>
-</aside>
-
-<!-- Main Content -->
-<div class="lg:ml-64 flex flex-col min-h-screen">
-    <!-- Top Navigation -->
-    <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-30">
-        <div class="flex items-center justify-between px-4 sm:px-6 lg:px-8 h-16">
-            <!-- Left side -->
-            <div class="flex items-center">
-                <!-- Mobile menu button -->
-                <button id="openSidebar" class="lg:hidden text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 mr-4">
-                    <i class="fas fa-bars text-xl"></i>
-                </button>
                 
-                <!-- Breadcrumb -->
-                <nav class="hidden md:flex" aria-label="Breadcrumb">
-                    <ol class="flex items-center space-x-2">
-                        <li>
-                            <a href="/admin/dashboard" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
-                                <i class="fas fa-home"></i>
-                            </a>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-chevron-right text-gray-400 text-xs mx-2"></i>
-                            <span class="text-sm font-medium text-gray-900 dark:text-white"><?php echo htmlspecialchars($pageTitle); ?></span>
-                        </li>
-                    </ol>
-                </nav>
-            </div>
-
-            <!-- Right side -->
-            <div class="flex items-center space-x-4">
-                <!-- Search -->
-                <div class="hidden md:block">
-                    <div class="relative">
-                        <input 
-                            type="text" 
-                            placeholder="Search..." 
-                            class="w-64 pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
-                        >
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="fas fa-search text-gray-400"></i>
+                <!-- Right side -->
+                <div class="flex items-center space-x-4">
+                    <!-- Search -->
+                    <div class="hidden md:block">
+                        <div class="relative">
+                            <input type="text" placeholder="Search..." class="w-64 pl-10 pr-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                         </div>
                     </div>
-                </div>
-
-                <!-- Dark Mode Toggle -->
-                <button id="darkModeToggle" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                    <i class="fas fa-moon dark:hidden"></i>
-                    <i class="fas fa-sun hidden dark:inline"></i>
-                </button>
-
-                <!-- Notifications -->
-                <div class="relative">
-                    <button id="notificationButton" class="relative text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                        <i class="fas fa-bell text-xl"></i>
-                        <span class="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
-                            <?php echo count($notifications); ?>
-                        </span>
+                    
+                    <!-- Dark mode toggle -->
+                    <button id="dark-mode-toggle" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                        <i class="fas fa-moon dark:hidden"></i>
+                        <i class="fas fa-sun hidden dark:block"></i>
                     </button>
-
-                    <!-- Notifications Dropdown -->
-                    <div id="notificationsDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
-                        <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-                            <h3 class="text-sm font-medium text-gray-900 dark:text-white">Notifications</h3>
-                        </div>
-                        <div class="max-h-96 overflow-y-auto">
-                            <?php foreach ($notifications as $notification): ?>
-                                <div class="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 last:border-b-0">
-                                    <div class="flex items-start">
-                                        <div class="flex-shrink-0">
-                                            <?php if ($notification['type'] === 'success'): ?>
-                                                <i class="fas fa-check-circle text-green-500"></i>
-                                            <?php elseif ($notification['type'] === 'warning'): ?>
-                                                <i class="fas fa-exclamation-triangle text-yellow-500"></i>
-                                            <?php else: ?>
-                                                <i class="fas fa-info-circle text-blue-500"></i>
-                                            <?php endif; ?>
+                    
+                    <!-- Notifications -->
+                    <div class="relative">
+                        <button id="notification-btn" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 relative">
+                            <i class="fas fa-bell"></i>
+                            <?php if (!empty($notifications)): ?>
+                                <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                                    <?php echo count(array_filter($notifications, fn($n) => !$n['read'])); ?>
+                                </span>
+                            <?php endif; ?>
+                        </button>
+                        
+                        <!-- Notifications dropdown -->
+                        <div id="notifications-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                            <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+                                <h3 class="text-sm font-medium text-gray-900 dark:text-white">Notifications</h3>
+                            </div>
+                            <div class="max-h-96 overflow-y-auto">
+                                <?php if (!empty($notifications)): ?>
+                                    <?php foreach ($notifications as $notification): ?>
+                                        <div class="p-4 hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 last:border-b-0">
+                                            <div class="flex items-start">
+                                                <div class="flex-shrink-0">
+                                                    <i class="fas fa-<?php echo $notification['type'] === 'success' ? 'check-circle text-green-500' : ($notification['type'] === 'warning' ? 'exclamation-triangle text-yellow-500' : ($notification['type'] === 'error' ? 'exclamation-circle text-red-500' : 'info-circle text-blue-500')); ?>"></i>
+                                                </div>
+                                                <div class="ml-3 flex-1">
+                                                    <p class="text-sm text-gray-900 dark:text-white"><?php echo $notification['message']; ?></p>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1"><?php echo $notification['time']; ?></p>
+                                                </div>
+                                                <?php if (!$notification['read']): ?>
+                                                    <div class="w-2 h-2 bg-primary-500 rounded-full flex-shrink-0 mt-2"></div>
+                                                <?php endif; ?>
+                                            </div>
                                         </div>
-                                        <div class="ml-3 flex-1">
-                                            <p class="text-sm text-gray-900 dark:text-white"><?php echo htmlspecialchars($notification['message']); ?></p>
-                                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1"><?php echo htmlspecialchars($notification['time']); ?></p>
-                                        </div>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <div class="p-4 text-center text-gray-500 dark:text-gray-400">
+                                        No notifications
                                     </div>
-                                </div>
-                            <?php endforeach; ?>
+                                <?php endif; ?>
+                            </div>
                         </div>
-                        <div class="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
-                            <a href="/admin/dashboard/notifications" class="text-sm text-primary-600 hover:text-primary-500 dark:text-primary-400">
-                                View all notifications
-                            </a>
+                    </div>
+                    
+                    <!-- User menu -->
+                    <div class="relative">
+                        <button id="user-menu-btn" class="flex items-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                            <?php echo UIComponents::avatar($user['name'], $user['avatar'], 'small'); ?>
+                            <span class="ml-2 text-sm font-medium hidden md:block"><?php echo $user['name']; ?></span>
+                            <i class="fas fa-chevron-down ml-2 text-xs"></i>
+                        </button>
+                        
+                        <!-- User dropdown -->
+                        <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                            <div class="p-3 border-b border-gray-200 dark:border-gray-700">
+                                <p class="text-sm font-medium text-gray-900 dark:text-white"><?php echo $user['name']; ?></p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400"><?php echo $user['email']; ?></p>
+                            </div>
+                            <div class="py-1">
+                                <a href="/admin/profile" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    <i class="fas fa-user mr-2"></i> Profile
+                                </a>
+                                <a href="/admin/settings" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    <i class="fas fa-cog mr-2"></i> Settings
+                                </a>
+                                <form method="POST" action="/admin/logout" class="block">
+                                    <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                        <i class="fas fa-right-from-bracket mr-2"></i> Sign out
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </header>
-
-    <!-- Page Content -->
-    <main class="flex-1 bg-gray-50 dark:bg-gray-900">
-        <div class="px-4 sm:px-6 lg:px-8 py-8">
-            <!-- Page Header -->
-            <div class="mb-8">
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white"><?php echo htmlspecialchars($pageTitle); ?></h1>
-                <?php if (isset($pageDescription)): ?>
-                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-400"><?php echo htmlspecialchars($pageDescription); ?></p>
-                <?php endif; ?>
-            </div>
-
-            <!-- Dynamic Content -->
-            <?php echo $content; ?>
-        </div>
-    </main>
-</div>
-
-<!-- Floating Action Button for DotBot AI Assistant -->
-<div class="fixed bottom-6 right-6 z-40">
-    <button id="dotbotButton" class="bg-primary-600 hover:bg-primary-700 text-white rounded-full p-4 shadow-lg transition-all duration-200 transform hover:scale-110">
-        <i class="fas fa-robot text-xl"></i>
-    </button>
-</div>
-
-<!-- DotBot Chat Window -->
-<div id="dotbotChat" class="hidden fixed bottom-24 right-6 w-96 h-[500px] bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50 flex flex-col">
-    <!-- Chat Header -->
-    <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between bg-primary-600 text-white rounded-t-lg">
-        <div class="flex items-center">
-            <i class="fas fa-robot mr-2"></i>
-            <span class="font-medium">DotBot Assistant</span>
-        </div>
-        <button id="closeDotbot" class="text-white hover:text-gray-200">
-            <i class="fas fa-times"></i>
-        </button>
+        </header>
+        
+        <!-- Main content area -->
+        <main class="p-4 sm:p-6 lg:p-8">
+            <?php echo $content ?? '<div class="text-center py-8"><h1 class="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1><p class="text-gray-600 dark:text-gray-400 mt-2">Welcome to the admin dashboard</p></div>'; ?>
+        </main>
     </div>
-
-    <!-- Chat Messages -->
-    <div class="flex-1 overflow-y-auto p-4 space-y-3">
-        <div class="flex items-start">
-            <div class="flex-shrink-0 w-8 h-8 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
-                <i class="fas fa-robot text-primary-600 dark:text-primary-400 text-xs"></i>
-            </div>
-            <div class="ml-3 bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2 max-w-[80%]">
-                <p class="text-sm text-gray-900 dark:text-white">Hello! I'm DotBot, your AI assistant. How can I help you today?</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Chat Input -->
-    <div class="p-4 border-t border-gray-200 dark:border-gray-700">
-        <div class="flex items-center space-x-2">
-            <input 
-                type="text" 
-                id="dotbotInput"
-                placeholder="Type your message..." 
-                class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
-            >
-            <button class="bg-primary-600 hover:bg-primary-700 text-white rounded-lg px-3 py-2">
-                <i class="fas fa-paper-plane"></i>
-            </button>
-        </div>
-    </div>
-</div>
 
 <script>
-// Sidebar functionality
-const sidebar = document.getElementById('sidebar');
-const sidebarBackdrop = document.getElementById('sidebarBackdrop');
-const openSidebar = document.getElementById('openSidebar');
-const closeSidebar = document.getElementById('closeSidebar');
-
-// Restore sidebar state from localStorage
-function restoreSidebarState() {
-    const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
-    if (isCollapsed && window.innerWidth >= 1024) {
-        sidebar.classList.add('lg:w-16');
-        sidebar.classList.remove('w-64');
-        // Hide text elements when collapsed
-        const textElements = sidebar.querySelectorAll('.sidebar-text');
-        textElements.forEach(el => el.classList.add('hidden'));
-    }
-}
-
-openSidebar.addEventListener('click', () => {
-    sidebar.classList.remove('-translate-x-full');
-    sidebarBackdrop.classList.remove('hidden');
-});
-
-closeSidebar.addEventListener('click', () => {
-    sidebar.classList.add('-translate-x-full');
-    sidebarBackdrop.classList.add('hidden');
-});
-
-sidebarBackdrop.addEventListener('click', () => {
-    sidebar.classList.add('-translate-x-full');
-    sidebarBackdrop.classList.add('hidden');
-});
-
-// Initialize sidebar state
-document.addEventListener('DOMContentLoaded', restoreSidebarState);
-
-// User dropdown
-const userMenuButton = document.getElementById('userMenuButton');
-const userDropdown = document.getElementById('userDropdown');
-
-userMenuButton.addEventListener('click', (e) => {
-    e.stopPropagation();
-    userDropdown.classList.toggle('hidden');
-});
-
-// Notifications dropdown
-const notificationButton = document.getElementById('notificationButton');
-const notificationsDropdown = document.getElementById('notificationsDropdown');
-
-notificationButton.addEventListener('click', (e) => {
-    e.stopPropagation();
-    notificationsDropdown.classList.toggle('hidden');
-    userDropdown.classList.add('hidden');
-});
-
-// Close dropdowns when clicking outside
-document.addEventListener('click', () => {
-    userDropdown.classList.add('hidden');
-    notificationsDropdown.classList.add('hidden');
-});
-
-// Dark mode toggle
-const darkModeToggle = document.getElementById('darkModeToggle');
-
-darkModeToggle.addEventListener('click', () => {
-    const isDark = document.documentElement.classList.toggle('dark');
-    localStorage.setItem('darkMode', isDark);
+document.addEventListener('DOMContentLoaded', function() {
+    // Sidebar functionality
+    const sidebar = document.getElementById('sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    const openBtn = document.getElementById('open-sidebar');
+    const closeBtn = document.getElementById('close-sidebar');
     
-    // Dispatch custom event for theme change
-    window.dispatchEvent(new CustomEvent('themechange', { detail: { isDark } }));
-});
-
-// Listen for system theme changes
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-    // Only apply if user hasn't explicitly set a preference
-    if (!localStorage.getItem('darkMode')) {
-        const isDark = e.matches;
-        document.documentElement.classList.toggle('dark', isDark);
-        window.dispatchEvent(new CustomEvent('themechange', { detail: { isDark } }));
+    // Add debug info
+    console.log('Sidebar elements found:', {
+        sidebar: !!sidebar,
+        backdrop: !!backdrop,
+        openBtn: !!openBtn,
+        closeBtn: !!closeBtn,
+        sidebarClasses: sidebar?.className,
+        isHidden: sidebar?.classList.contains('-translate-x-full')
+    });
+    
+    // Test if sidebar is working on desktop
+    if (window.innerWidth >= 1024) {
+        console.log('Desktop detected - sidebar should be visible');
+        sidebar?.classList.remove('-translate-x-full');
     }
-});
-
-// DotBot Chat
-const dotbotButton = document.getElementById('dotbotButton');
-const dotbotChat = document.getElementById('dotbotChat');
-const closeDotbot = document.getElementById('closeDotbot');
-const dotbotInput = document.getElementById('dotbotInput');
-
-dotbotButton.addEventListener('click', () => {
-    dotbotChat.classList.toggle('hidden');
-    if (!dotbotChat.classList.contains('hidden')) {
-        dotbotInput.focus();
+    
+    openBtn?.addEventListener('click', (e) => {
+        e.preventDefault();
+        console.log('Hamburger menu clicked');
+        sidebar.classList.remove('-translate-x-full');
+        backdrop.classList.remove('hidden');
+        document.body.style.overflow = 'hidden'; // Prevent body scroll when sidebar is open
+    });
+    
+    closeBtn?.addEventListener('click', closeSidebar);
+    backdrop?.addEventListener('click', closeSidebar);
+    
+    function closeSidebar() {
+        console.log('Closing sidebar');
+        sidebar.classList.add('-translate-x-full');
+        backdrop.classList.add('hidden');
+        document.body.style.overflow = ''; // Restore body scroll
     }
-});
-
-closeDotbot.addEventListener('click', () => {
-    dotbotChat.classList.add('hidden');
-});
-
-// DotBot message sending
-dotbotInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter' && dotbotInput.value.trim()) {
-        // Add user message
-        const messagesContainer = dotbotChat.querySelector('.overflow-y-auto');
-        const userMessage = document.createElement('div');
-        userMessage.className = 'flex items-start justify-end';
-        userMessage.innerHTML = `
-            <div class="mr-3 bg-primary-600 text-white rounded-lg px-3 py-2 max-w-[80%]">
-                <p class="text-sm">${dotbotInput.value}</p>
-            </div>
-            <div class="flex-shrink-0 w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                <i class="fas fa-user text-gray-600 text-xs"></i>
-            </div>
-        `;
-        messagesContainer.appendChild(userMessage);
+    
+    // Dark mode toggle
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+    darkModeToggle?.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
+    });
+    
+    // Notifications dropdown
+    const notificationBtn = document.getElementById('notification-btn');
+    const notificationsDropdown = document.getElementById('notifications-dropdown');
+    
+    notificationBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        notificationsDropdown.classList.toggle('hidden');
+        userDropdown.classList.add('hidden');
+    });
+    
+    // User dropdown
+    const userMenuBtn = document.getElementById('user-menu-btn');
+    const userDropdown = document.getElementById('user-dropdown');
+    
+    userMenuBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userDropdown.classList.toggle('hidden');
+        notificationsDropdown.classList.add('hidden');
+    });
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', () => {
+        notificationsDropdown.classList.add('hidden');
+        userDropdown.classList.add('hidden');
+    });
+    
+    // Toast notification system
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `mb-2 px-4 py-3 rounded-lg shadow-lg text-white transform transition-all duration-300 translate-x-full ${
+            type === 'success' ? 'bg-green-500' : 
+            type === 'error' ? 'bg-red-500' : 
+            type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
+        }`;
+        toast.textContent = message;
         
-        // Clear input
-        dotbotInput.value = '';
+        const container = document.getElementById('toast-container');
+        container.appendChild(toast);
         
-        // Simulate bot response
         setTimeout(() => {
-            const botResponse = document.createElement('div');
-            botResponse.className = 'flex items-start';
-            botResponse.innerHTML = `
-                <div class="flex-shrink-0 w-8 h-8 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
-                    <i class="fas fa-robot text-primary-600 dark:text-primary-400 text-xs"></i>
-                </div>
-                <div class="ml-3 bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2 max-w-[80%]">
-                    <p class="text-sm text-gray-900 dark:text-white">I'm processing your request. This is a demo response.</p>
-                </div>
-            `;
-            messagesContainer.appendChild(botResponse);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }, 1000);
+            toast.classList.remove('translate-x-full');
+        }, 100);
         
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }
-});
+        setTimeout(() => {
+            toast.classList.add('translate-x-full');
+            setTimeout(() => {
+                container.removeChild(toast);
+            }, 300);
+        }, 3000);
+    });
 </script>
-
-<?php
-$layoutContent = ob_get_clean();
-
-// Include the main layout
-include '../layout.php';
-?>
+</body>
+</html>

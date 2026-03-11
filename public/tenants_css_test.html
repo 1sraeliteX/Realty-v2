@@ -1,0 +1,580 @@
+﻿<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Real Estate Management</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Local CSS files -->
+    <link rel="stylesheet" href="/assets/css/fontawesome.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    
+    <script>
+        // Dark mode configuration
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+    <style>
+        /* Prevent theme flickering and ensure smooth transitions */
+        html {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        /* Hide content briefly to prevent flash */
+        .no-js {
+            visibility: hidden;
+        }
+        
+        /* Ensure theme transitions are smooth */
+        * {
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900">
+    <script>
+        // Remove no-js class immediately
+        document.documentElement.classList.remove('no-js');
+    </script>
+    
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const loginForm = document.querySelector("form[action=\"/login\"]");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    
+    // Quick Admin Login
+    function quickAdminLogin() {
+        console.log("Quick Admin Login clicked");
+        emailInput.value = "admin@cornerstone.com";
+        passwordInput.value = "admin123";
+        
+        // Add visual feedback
+        emailInput.classList.add("ring-2", "ring-blue-500");
+        passwordInput.classList.add("ring-2", "ring-blue-500");
+        
+        setTimeout(() => {
+            emailInput.classList.remove("ring-2", "ring-blue-500");
+            passwordInput.classList.remove("ring-2", "ring-blue-500");
+        }, 1000);
+        
+        // Submit form
+        loginForm.submit();
+    }
+    
+    // Quick Super Admin Login
+    function quickSuperAdminLogin() {
+        console.log("Quick Super Admin Login clicked");
+        emailInput.value = "superadmin@cornerstone.com";
+        passwordInput.value = "admin123";
+        
+        // Add visual feedback
+        emailInput.classList.add("ring-2", "ring-purple-500");
+        passwordInput.classList.add("ring-2", "ring-purple-500");
+        
+        setTimeout(() => {
+            emailInput.classList.remove("ring-2", "ring-purple-500");
+            passwordInput.classList.remove("ring-2", "ring-purple-500");
+        }, 1000);
+        
+        // Submit form
+        loginForm.submit();
+    }
+    
+    // Toggle password visibility
+    function togglePassword(fieldId) {
+        const field = document.getElementById(fieldId);
+        const eye = document.getElementById(fieldId + "-eye");
+        
+        if (field.type === "password") {
+            field.type = "text";
+            eye.classList.remove("fa-eye");
+            eye.classList.add("fa-eye-slash");
+        } else {
+            field.type = "password";
+            eye.classList.remove("fa-eye-slash");
+            eye.classList.add("fa-eye");
+        }
+    }
+    
+    // Handle form submission
+    loginForm.addEventListener("submit", function(e) {
+        const submitBtn = document.getElementById("login-btn");
+        const loginText = submitBtn.querySelector(".login-text");
+        const loadingText = submitBtn.querySelector(".loading-text");
+        
+        // Show loading state
+        submitBtn.disabled = true;
+        loginText.classList.add("hidden");
+        loadingText.classList.remove("hidden");
+        
+        // Reset loading state after 3 seconds
+        setTimeout(() => {
+            submitBtn.disabled = false;
+            loginText.classList.remove("hidden");
+            loadingText.classList.add("hidden");
+        }, 3000);
+    });
+    
+    // Display errors if any
+    });
+</script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Real Estate Management</title>
+    <!-- Local CSS files -->
+    <link rel="stylesheet" href="/assets/css/fontawesome.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <style>
+        /* Custom styles */
+        .primary-600 { color: #2563eb; }
+        .bg-primary-600 { background-color: #2563eb; }
+        .hover\:bg-primary-700:hover { background-color: #1d4ed8; }
+        .ring-primary-500:focus { border-color: #3b82f6; }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900">
+    <div id="toast-container" class="fixed top-4 right-4 z-50"></div>
+    
+    
+<div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+    <!-- Main Card Container -->
+    <div class="w-full max-w-md bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+        <!-- Header Section -->
+        <div class="text-center mb-8">
+            <div class="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-primary-100 dark:bg-primary-900 mb-4">
+                <i class="fas fa-building text-primary-600 dark:text-primary-400 text-xl"></i>
+            </div>
+            <h2 class="text-2xl font-extrabold text-gray-900 dark:text-white mb-2">
+                Sign in to your account
+            </h2>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+                Real Estate Management System
+            </p>
+        </div>
+        
+        <!-- Demo Accounts Info -->
+        <div class="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+            <h4 class="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">Demo Accounts</h4>
+            <div class="text-xs text-blue-700 dark:text-blue-300 space-y-1">
+                <p><strong>Super Admin:</strong> superadmin@cornerstone.com / admin123</p>
+                <p><strong>Regular Admin:</strong> admin@cornerstone.com / admin123</p>
+            </div>
+        </div>
+        
+        <!-- Form Section -->
+        <form class="space-y-6" action="/admin/login" method="POST">
+            <div class="space-y-4">
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Email Address
+                    </label>
+                    <input 
+                        id="email" 
+                        name="email" 
+                        type="email" 
+                        autocomplete="email" 
+                        required 
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent sm:text-sm" 
+                        placeholder="Enter your email"
+                    >
+                </div>
+                
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Password
+                    </label>
+                    <div class="relative">
+                        <input 
+                            id="password" 
+                            name="password" 
+                            type="password" 
+                            autocomplete="current-password" 
+                            required 
+                            class="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent sm:text-sm" 
+                            placeholder="Enter your password"
+                        >
+                        <button 
+                            type="button" 
+                            onclick="togglePassword('password')" 
+                            class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                        >
+                            <i class="fas fa-eye" id="password-eye"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <input 
+                        id="remember-me" 
+                        name="remember_me" 
+                        type="checkbox" 
+                        class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded"
+                    >
+                    <label for="remember-me" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                        Remember me
+                    </label>
+                </div>
+
+                <div class="text-sm">
+                    <a href="#" class="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400">
+                        Forgot your password?
+                    </a>
+                </div>
+            </div>
+
+            <div>
+                <button 
+                    type="submit" 
+                    class="w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    id="login-btn"
+                >
+                    <span class="login-text">Sign in</span>
+                    <span class="loading-text hidden">
+                        <i class="fas fa-spinner fa-spin mr-2"></i>Signing in...
+                    </span>
+                </button>
+            </div>
+
+            <!-- Sign Up Link -->
+            <div class="text-center pt-4 border-t border-gray-200 dark:border-gray-700">
+                <span class="text-sm text-gray-600 dark:text-gray-400">
+                    Don't have an account? 
+                </span>
+                <a href="/register" class="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 text-sm">
+                    Sign up
+                </a>
+            </div>
+
+            <!-- Quick Admin Login -->
+            <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h4 class="text-sm font-medium text-blue-900 dark:text-blue-100">Admin Access</h4>
+                        <p class="text-xs text-blue-700 dark:text-blue-300 mt-1">Quick login for administrators</p>
+                    </div>
+                    <button 
+                        type="button" 
+                        onclick="quickAdminLogin()" 
+                        class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md transition-colors"
+                    >
+                        <i class="fas fa-user mr-2"></i>Login as Admin
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick Super Admin Login -->
+            <div class="mt-4 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h4 class="text-sm font-medium text-purple-900 dark:text-purple-100">Super Admin Access</h4>
+                        <p class="text-xs text-purple-700 dark:text-purple-300 mt-1">Quick login for platform administrators</p>
+                    </div>
+                    <button 
+                        type="button" 
+                        onclick="quickSuperAdminLogin()" 
+                        class="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-md transition-colors"
+                    >
+                        <i class="fas fa-user-shield mr-2"></i>Login as Super Admin
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+    <script>
+        // Toast notification system
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `mb-2 px-4 py-3 rounded-lg shadow-lg text-white transform transition-all duration-300 translate-x-full ${
+                type === 'success' ? 'bg-green-500' : 
+                type === 'error' ? 'bg-red-500' : 
+                type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
+            }`;
+            
+            toast.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas ${
+                        type === 'success' ? 'fa-check-circle' : 
+                        type === 'error' ? 'fa-exclamation-circle' : 
+                        type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle'
+                    } mr-2"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.getElementById('toast-container').appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.remove('translate-x-full');
+                toast.classList.add('translate-x-0');
+            }, 100);
+            
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Password toggle function
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            const eye = document.getElementById(fieldId + '-eye');
+            
+            if (field.type === 'password') {
+                field.type = 'text';
+                eye.classList.remove('fa-eye');
+                eye.classList.add('fa-eye-slash');
+            } else {
+                field.type = 'password';
+                eye.classList.remove('fa-eye-slash');
+                eye.classList.add('fa-eye');
+            }
+        }
+
+        // Quick super admin login
+        function quickSuperAdminLogin() {
+            document.getElementById('email').value = 'superadmin@cornerstone.com';
+            document.getElementById('password').value = 'admin123';
+            showToast('Super Admin credentials filled. Click "Sign in" to continue.', 'info');
+        }
+
+        // Quick admin login
+        function quickAdminLogin() {
+            document.getElementById('email').value = 'admin@cornerstone.com';
+            document.getElementById('password').value = 'admin123';
+            showToast('Admin credentials filled. Click "Sign in" to continue.', 'info');
+        }
+
+        // Form submission handlers
+        document.addEventListener('DOMContentLoaded', function() {
+            // Login form handler
+            const loginForm = document.querySelector('form[action="/login"]');
+            if (loginForm) {
+                loginForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const email = document.getElementById('email').value;
+                    const password = document.getElementById('password').value;
+                    
+                    // Simple demo login
+                    if (email === 'superadmin@cornerstone.com' && password === 'admin123') {
+                        showToast('Login successful! Redirecting to Super Admin dashboard...', 'success');
+                        setTimeout(() => {
+                            window.location.href = '/superadmin';
+                        }, 2000);
+                    } else if (email === 'admin@cornerstone.com' && password === 'admin123') {
+                        showToast('Login successful! Redirecting to Admin dashboard...', 'success');
+                        setTimeout(() => {
+                            window.location.href = '/dashboard';
+                        }, 2000);
+                    } else {
+                        showToast('Invalid credentials. Try the demo accounts.', 'error');
+                    }
+                });
+            }
+
+            // Register form handler
+            const registerForm = document.querySelector('form[action="/register"]');
+            if (registerForm) {
+                registerForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    showToast('Registration successful! Please login with your new account.', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 2000);
+                });
+            }
+        });
+
+        // Dark mode toggle
+        if (localStorage.getItem('darkMode') === 'true' || 
+            (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+</body>
+</html>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50"></div>
+
+    <script>
+        // Initialize dark mode immediately to prevent flickering
+        (function() {
+            const darkMode = localStorage.getItem('darkMode');
+            const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (darkMode === 'true' || (!darkMode && systemDark)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+
+        // Theme synchronization across page navigation
+        window.addEventListener('themechange', (e) => {
+            // Ensure all iframes and components get the theme update
+            const iframes = document.querySelectorAll('iframe');
+            iframes.forEach(iframe => {
+                try {
+                    iframe.contentWindow.postMessage({
+                        type: 'themechange',
+                        isDark: e.detail.isDark
+                    }, '*');
+                } catch (err) {
+                    // Ignore cross-origin errors
+                }
+            });
+        });
+
+        // Listen for theme changes from parent (if in iframe)
+        window.addEventListener('message', (e) => {
+            if (e.data.type === 'themechange') {
+                document.documentElement.classList.toggle('dark', e.data.isDark);
+            }
+        });
+
+        // Prevent theme flickering on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Double-check theme is applied after DOM loads
+            const darkMode = localStorage.getItem('darkMode');
+            const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const shouldBeDark = darkMode === 'true' || (!darkMode && systemDark);
+            
+            if (shouldBeDark !== document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.toggle('dark', shouldBeDark);
+            }
+        });
+
+        // Toast notification function
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `mb-2 px-4 py-3 rounded-lg shadow-lg text-white ${
+                type === 'success' ? 'bg-green-500' : 
+                type === 'error' ? 'bg-red-500' : 
+                type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
+            } transform transition-all duration-300 translate-x-full`;
+            
+            toast.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas ${
+                        type === 'success' ? 'fa-check-circle' : 
+                        type === 'error' ? 'fa-exclamation-circle' : 
+                        type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle'
+                    } mr-2"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.getElementById('toast-container').appendChild(toast);
+            
+            // Animate in
+            setTimeout(() => {
+                toast.classList.remove('translate-x-full');
+                toast.classList.add('translate-x-0');
+            }, 100);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Show PHP session messages as toasts
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            
+                    });
+
+        // Helper function to get cookies
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+            return null;
+        }
+
+        // CSRF token for AJAX requests
+        function getCsrfToken() {
+            return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        }
+
+        // API request helper
+        async function apiRequest(endpoint, options = {}) {
+            const defaultOptions = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            };
+
+            const token = localStorage.getItem('jwt_token');
+            if (token) {
+                defaultOptions.headers.Authorization = `Bearer ${token}`;
+            }
+
+            const finalOptions = {
+                ...defaultOptions,
+                ...options,
+                headers: {
+                    ...defaultOptions.headers,
+                    ...options.headers
+                }
+            };
+
+            try {
+                const response = await fetch(endpoint, finalOptions);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Request failed');
+                }
+
+                return data;
+            } catch (error) {
+                showToast(error.message, 'error');
+                throw error;
+            }
+        }
+    </script>
+</body>
+</html>
+

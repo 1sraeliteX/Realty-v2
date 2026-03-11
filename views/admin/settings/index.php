@@ -141,5 +141,5 @@ document.addEventListener('DOMContentLoaded', function() {
 $content = ob_get_clean();
 
 // Include the admin dashboard layout
-include __DIR__ . '/../dashboard_layout.php';
+include __DIR__ . '/../simple_layout.php';
 ?>

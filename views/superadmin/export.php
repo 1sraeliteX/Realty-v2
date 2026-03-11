@@ -1,9 +1,13 @@
 <?php
-// Include UI Components
-require_once __DIR__ . '/../components/UIComponents.php';
+// Initialize framework (anti-scattering compliant)
+require_once __DIR__ . '/../config/init_framework.php';
 
-$title = 'Export Data';
-$pageTitle = 'Platform Data Export';
+// Load components through registry (anti-scattering compliant)
+ComponentRegistry::load('ui-components');
+
+// Set data through ViewManager (anti-scattering compliant)
+ViewManager::set('title', 'Export Data');
+ViewManager::set('pageTitle', 'Platform Data Export');
 
 $content = ob_start();
 ?>

@@ -112,9 +112,9 @@ class AuthController extends BaseController {
             } else {
                 // Redirect to appropriate dashboard for web
                 if ($user['role'] === 'super_admin') {
-                    header('Location: /superadmin');
+                    header('Location: /superadmin/dashboard');
                 } else {
-                    header('Location: /dashboard');
+                    header('Location: /admin/dashboard');
                 }
                 exit;
             }

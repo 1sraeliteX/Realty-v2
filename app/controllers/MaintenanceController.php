@@ -2,22 +2,85 @@
 
 namespace App\Controllers;
 
+use DataProvider;
+use ViewManager;
+
+// Initialize framework (anti-scattering compliant)
+require_once __DIR__ . '/../../config/init_framework.php';
+
 class MaintenanceController extends BaseController {
     public function index() {
         $admin = $this->requireAuth();
-        $this->view('simple.placeholder', [
+        
+        // Get data from centralized provider (anti-scattering compliant)
+        $maintenanceRequests = DataProvider::get('maintenance');
+        
+        // Calculate stats from data
+        $maintenanceStats = [
+            'total' => count($maintenanceRequests),
+            'pending' => count(array_filter($maintenanceRequests, fn($r) => $r['status'] === 'pending')),
+            'in_progress' => count(array_filter($maintenanceRequests, fn($r) => $r['status'] === 'in_progress')),
+            'completed' => count(array_filter($maintenanceRequests, fn($r) => $r['status'] === 'completed'))
+        ];
+        
+        $this->view('admin.maintenance.list', [
             'admin' => $admin,
-            'title' => 'Maintenance',
-            'message' => 'Maintenance management module is coming soon.'
+            'title' => 'Maintenance Management',
+            'pageTitle' => 'Maintenance Management',
+            'maintenanceStats' => $maintenanceStats,
+            'maintenanceRequests' => $maintenanceRequests
         ]);
     }
     
     public function create() {
         $admin = $this->requireAuth();
-        $this->view('simple.placeholder', [
+        
+        // Get data from centralized provider (anti-scattering compliant)
+        $properties = DataProvider::get('properties');
+        $tenants = DataProvider::get('tenants');
+        
+        // Mock data for form dropdowns (anti-scattering compliant)
+        $contractors = [
+            ['id' => 'john-handy', 'name' => 'John Handyman'],
+            ['id' => 'mike-plumbing', 'name' => 'Mike Plumbing'],
+            ['id' => 'sparky-electric', 'name' => 'Sparky Electric'],
+            ['id' => 'hvac-pro', 'name' => 'HVAC Pro Services']
+        ];
+        
+        $categories = [
+            ['value' => 'plumbing', 'label' => 'Plumbing'],
+            ['value' => 'electrical', 'label' => 'Electrical'],
+            ['value' => 'hvac', 'label' => 'HVAC'],
+            ['value' => 'appliance', 'label' => 'Appliance'],
+            ['value' => 'structural', 'label' => 'Structural'],
+            ['value' => 'other', 'label' => 'Other']
+        ];
+        
+        $priorities = [
+            ['value' => 'low', 'label' => 'Low'],
+            ['value' => 'medium', 'label' => 'Medium'],
+            ['value' => 'high', 'label' => 'High'],
+            ['value' => 'urgent', 'label' => 'Urgent']
+        ];
+        
+        $statuses = [
+            ['value' => 'pending', 'label' => 'Pending'],
+            ['value' => 'in-progress', 'label' => 'In Progress'],
+            ['value' => 'completed', 'label' => 'Completed'],
+            ['value' => 'cancelled', 'label' => 'Cancelled']
+        ];
+        
+        $this->view('admin.maintenance.create', [
             'admin' => $admin,
             'title' => 'Create Maintenance Request',
-            'message' => 'Maintenance request creation form is coming soon.'
+            'pageTitle' => 'Create Maintenance Request',
+            'pageDescription' => 'Create a new maintenance request or work order',
+            'properties' => $properties,
+            'tenants' => $tenants,
+            'contractors' => $contractors,
+            'categories' => $categories,
+            'priorities' => $priorities,
+            'statuses' => $statuses
         ]);
     }
     

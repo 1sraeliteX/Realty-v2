@@ -1,9 +1,13 @@
 <?php
-// Include UI Components
-require_once __DIR__ . '/../../components/UIComponents.php';
+// Initialize framework (anti-scattering compliant)
+require_once __DIR__ . '/../../config/init_framework.php';
 
-$title = 'Units Management';
-$pageTitle = 'Units';
+// Load components through registry (anti-scattering compliant)
+ComponentRegistry::load('ui-components');
+
+// Set data through ViewManager (anti-scattering compliant)
+ViewManager::set('title', 'Units Management');
+ViewManager::set('pageTitle', 'Units');
 
 $content = ob_start();
 ?>
@@ -186,5 +190,5 @@ $content = ob_start();
 $content = ob_get_clean();
 
 // Include the admin dashboard layout
-include __DIR__ . '/../dashboard_layout.php';
+include __DIR__ . '/../simple_layout.php';
 ?>

@@ -1,6 +1,17 @@
 <?php
-// Include UI Components
-require_once __DIR__ . '/../../components/UIComponents.php';
+// Initialize framework (anti-scattering compliant)
+require_once __DIR__ . '/../../../config/init_framework.php';
+
+// Load components through registry (anti-scattering compliant)
+ComponentRegistry::load('ui-components');
+
+// Get data from centralized provider (anti-scattering compliant)
+$user = DataProvider::get('user');
+$notifications = DataProvider::get('notifications');
+
+// Set data through ViewManager (anti-scattering compliant)
+ViewManager::set('user', $user);
+ViewManager::set('notifications', $notifications);
 
 $title = 'Maintenance Request Details';
 $pageTitle = 'Maintenance Details';
@@ -312,5 +323,5 @@ function contactTenant() {
 
 <?php
 $content = ob_get_clean();
-include '../dashboard_layout.php';
+include '../simple_layout.php';
 ?>

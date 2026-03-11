@@ -1,13 +1,10 @@
 # Enable URL rewriting
 RewriteEngine On
 
-# Set the base directory
-RewriteBase /Realty-v2/public/
-
-# Redirect requests to index.php
+# Redirect requests to app.php
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ index.php [QSA,L]
+RewriteRule ^(.*)$ app.php [QSA,L]
 
 # Set default character encoding
 AddDefaultCharset UTF-8

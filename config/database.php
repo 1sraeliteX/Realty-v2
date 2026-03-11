@@ -5,6 +5,9 @@ namespace Config;
 use PDO;
 use PDOException;
 
+// Include the simple config
+require_once __DIR__ . '/config_simple.php';
+
 class Database {
     private static $instance = null;
     private $pdo;
@@ -43,7 +46,7 @@ class Database {
 
             $this->pdo = new PDO($dsn, $this->user, $this->password, $options);
         } catch (PDOException $e) {
-            if (Config::getInstance()->get('app.debug')) {
+            if (ConfigSimple::getInstance()->get('app.debug')) {
                 die("Database connection failed: " . $e->getMessage());
             } else {
                 die("Database connection failed. Please check your configuration.");
@@ -61,7 +64,7 @@ class Database {
             $stmt->execute($params);
             return $stmt;
         } catch (PDOException $e) {
-            if (Config::getInstance()->get('app.debug')) {
+            if (ConfigSimple::getInstance()->get('app.debug')) {
                 die("Query failed: " . $e->getMessage());
             } else {
                 die("Database query failed.");

@@ -1,6 +1,6 @@
 <?php
 // Include UI Components
-require_once __DIR__ . '/../../components/UIComponents.php';
+// Components loaded via ComponentRegistry in controller
 
 $title = 'Admin Signup - Cornerstone Realty';
 $content = ob_start();

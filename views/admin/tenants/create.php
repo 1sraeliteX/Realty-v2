@@ -1,6 +1,6 @@
 <?php
 // Include UI Components
-require_once __DIR__ . '/../../components/UIComponents.php';
+require_once __DIR__ . '/../../../components/UIComponents.php';
 
 $title = 'Create New Tenant';
 $pageTitle = 'Add New Tenant';
@@ -81,9 +81,13 @@ $content = ob_start();
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Property</label>
                     <select name="property_id" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
                         <option value="">Select Property</option>
-                        <option value="1">Sunset Apartments - Unit 101</option>
-                        <option value="2">Sunset Apartments - Unit 102</option>
-                        <option value="3">Downtown Plaza - Unit 201</option>
+                        <?php if (isset($properties)): ?>
+                            <?php foreach ($properties as $property): ?>
+                                <option value="<?php echo $property['id']; ?>">
+                                    <?php echo htmlspecialchars($property['name']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </select>
                 </div>
                 <div>
@@ -131,7 +135,4 @@ $content = ob_start();
 
 <?php
 $content = ob_get_clean();
-
-// Include the admin dashboard layout
-include __DIR__ . '/../dashboard_layout.php';
 ?>

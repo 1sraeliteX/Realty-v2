@@ -1,15 +1,25 @@
 <?php
-require_once __DIR__ . '/../../config/property_type_helper.php';
-$title = 'Properties';
-$pageTitle = 'Properties Management';
+// Initialize framework (anti-scattering compliant)
+require_once __DIR__ . '/../../config/init_framework.php';
 
-// Get property type helper functions
-$categoryOptions = getCategoryOptions();
-$currentCategory = $_GET['category'] ?? '';
-$currentType = $_GET['type'] ?? '';
+// Load components through registry (anti-scattering compliant)
+ComponentRegistry::load('ui-components');
 
-// Get all property types for display
-$allPropertyTypes = getPropertyTypeOptions();
+// Get data from centralized provider (anti-scattering compliant)
+$properties = ViewManager::get('properties') ?? [];
+$pagination = ViewManager::get('pagination') ?? [];
+$search = ViewManager::get('search') ?? '';
+$type = ViewManager::get('type') ?? '';
+$category = ViewManager::get('category') ?? '';
+$status = ViewManager::get('status') ?? '';
+
+// Get property type data from DataProvider
+$categoryOptions = DataProvider::get('property_category_options') ?? [];
+$allPropertyTypes = DataProvider::get('property_type_options') ?? [];
+
+// Set page data through ViewManager (anti-scattering compliant)
+ViewManager::set('title', 'Properties');
+ViewManager::set('pageTitle', 'Properties Management');
 ?>
 
 <!-- Header Actions -->
@@ -25,7 +35,7 @@ $allPropertyTypes = getPropertyTypeOptions();
     <div class="flex flex-col md:flex-row gap-4">
         <div class="flex-1">
             <div class="relative">
-                <input type="text" name="search" placeholder="Search properties..." value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>" 
+                <input type="text" name="search" placeholder="Search properties..." value="<?php echo htmlspecialchars($search); ?>" 
                        class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                 <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
             </div>
@@ -33,22 +43,22 @@ $allPropertyTypes = getPropertyTypeOptions();
         <div class="flex gap-2">
             <select name="category" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                 <?php foreach ($categoryOptions as $value => $label): ?>
-                    <option value="<?php echo $value; ?>" <?php echo $currentCategory === $value ? 'selected' : ''; ?>><?php echo $label; ?></option>
+                    <option value="<?php echo $value; ?>" <?php echo $category === $value ? 'selected' : ''; ?>><?php echo $label; ?></option>
                 <?php endforeach; ?>
             </select>
             <select name="type" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                 <option value="">All Types</option>
                 <?php
-                if ($currentCategory) {
-                    $categoryTypes = getPropertiesByCategory($currentCategory);
+                if ($category) {
+                    require_once __DIR__ . '/../../config/property_type_helper.php';
+                    $categoryTypes = getPropertiesByCategory($category);
                     foreach ($categoryTypes as $type): ?>
-                        <option value="<?php echo $type['value']; ?>" <?php echo $currentType === $type['value'] ? 'selected' : ''; ?>><?php echo htmlspecialchars($type['label']); ?></option>
+                        <option value="<?php echo $type['value']; ?>" <?php echo $type === $type['value'] ? 'selected' : ''; ?>><?php echo htmlspecialchars($type['label']); ?></option>
                     <?php endforeach;
                 } else {
                     // Show all types if no category selected
-                    $allTypes = getPropertyTypeOptions();
-                    foreach ($allTypes as $type): ?>
-                        <option value="<?php echo $type['value']; ?>" <?php echo $currentType === $type['value'] ? 'selected' : ''; ?>><?php echo htmlspecialchars($type['label']); ?></option>
+                    foreach ($allPropertyTypes as $type): ?>
+                        <option value="<?php echo $type['value']; ?>" <?php echo $type === $type['value'] ? 'selected' : ''; ?>><?php echo htmlspecialchars($type['label']); ?></option>
                     <?php endforeach;
                 }
                 ?>

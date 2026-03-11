@@ -1,6 +1,6 @@
 <?php
 // Include UI Components
-require_once __DIR__ . '/../../components/UIComponents.php';
+require_once __DIR__ . '/../../../components/UIComponents.php';
 
 $title = 'Edit Tenant';
 $pageTitle = 'Edit Tenant Information';
@@ -16,7 +16,7 @@ $content = ob_start();
                 <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Edit Tenant</h1>
                 <p class="text-gray-600 dark:text-gray-400 mt-1">Update tenant information</p>
             </div>
-            <a href="/admin/tenants/<?php echo $_GET['id'] ?? '1'; ?>" class="inline-flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600">
+            <a href="/admin/tenants/<?php echo $tenant['id']; ?>" class="inline-flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600">
                 <i class="fas fa-times mr-2"></i>
                 Cancel
             </a>
@@ -24,26 +24,26 @@ $content = ob_start();
     </div>
 
     <!-- Form -->
-    <form method="POST" action="/admin/tenants/<?php echo $_GET['id'] ?? '1'; ?>" class="space-y-6">
+    <form method="POST" action="/admin/tenants/<?php echo $tenant['id']; ?>" class="space-y-6">
         <!-- Personal Information -->
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Personal Information</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">First Name *</label>
-                    <input type="text" name="first_name" value="John" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                    <input type="text" name="first_name" value="<?php echo htmlspecialchars($tenant['first_name']); ?>" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Last Name *</label>
-                    <input type="text" name="last_name" value="Doe" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                    <input type="text" name="last_name" value="<?php echo htmlspecialchars($tenant['last_name']); ?>" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email *</label>
-                    <input type="email" name="email" value="john.doe@example.com" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                    <input type="email" name="email" value="<?php echo htmlspecialchars($tenant['email']); ?>" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Phone *</label>
-                    <input type="tel" name="phone" value="(555) 123-4567" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                    <input type="tel" name="phone" value="<?php echo htmlspecialchars($tenant['phone']); ?>" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
                 </div>
             </div>
         </div>
@@ -54,28 +54,75 @@ $content = ob_start();
             <div class="grid grid-cols-1 gap-6">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Street Address</label>
-                    <input type="text" name="address" value="123 Main Street, Apt 4B" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                    <input type="text" name="address" value="<?php echo htmlspecialchars($tenant['address'] ?? ''); ?>" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">City</label>
-                        <input type="text" name="city" value="New York" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                        <input type="text" name="city" value="<?php echo htmlspecialchars($tenant['city'] ?? ''); ?>" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">State</label>
-                        <input type="text" name="state" value="NY" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                        <input type="text" name="state" value="<?php echo htmlspecialchars($tenant['state'] ?? ''); ?>" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">ZIP Code</label>
-                        <input type="text" name="zip_code" value="10001" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                        <input type="text" name="zip_code" value="<?php echo htmlspecialchars($tenant['zip_code'] ?? ''); ?>" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lease Information -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Lease Information</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Property</label>
+                    <select name="property_id" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                        <option value="">Select Property</option>
+                        <?php if (isset($properties)): ?>
+                            <?php foreach ($properties as $property): ?>
+                                <option value="<?php echo $property['id']; ?>" <?php echo ($tenant['property_id'] ?? '') == $property['id'] ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($property['name']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Monthly Rent *</label>
+                    <input type="number" name="monthly_rent" value="<?php echo htmlspecialchars($tenant['rent_amount']); ?>" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Lease Start Date *</label>
+                    <input type="date" name="lease_start" value="<?php echo htmlspecialchars($tenant['lease_start']); ?>" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Lease End Date *</label>
+                    <input type="date" name="lease_end" value="<?php echo htmlspecialchars($tenant['lease_end']); ?>" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                </div>
+            </div>
+        </div>
+
+        <!-- Emergency Contact -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Emergency Contact</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Contact Name</label>
+                    <input type="text" name="emergency_contact_name" value="<?php echo htmlspecialchars($tenant['emergency_contact_name'] ?? ''); ?>" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Contact Phone</label>
+                    <input type="tel" name="emergency_contact_phone" value="<?php echo htmlspecialchars($tenant['emergency_contact_phone'] ?? ''); ?>" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
                 </div>
             </div>
         </div>
 
         <!-- Form Actions -->
         <div class="flex justify-end space-x-4">
-            <a href="/admin/tenants/<?php echo $_GET['id'] ?? '1'; ?>" class="px-6 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600">
+            <a href="/admin/tenants/<?php echo $tenant['id']; ?>" class="px-6 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600">
                 Cancel
             </a>
             <button type="submit" class="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
@@ -88,7 +135,4 @@ $content = ob_start();
 
 <?php
 $content = ob_get_clean();
-
-// Include the admin dashboard layout
-include __DIR__ . '/../dashboard_layout.php';
 ?>

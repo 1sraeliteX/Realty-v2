@@ -40,7 +40,7 @@ $content = ob_start();
             </div>
             <div class="ml-4">
                 <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Units</p>
-                <p class="text-2xl font-bold text-gray-900 dark:text-white"><?php echo number_format($stats['total_units']); ?></p>
+                <p class="text-2xl font-bold text-gray-900 dark:text-white"><?php echo arr_format($stats, 'total_units'); ?></p>
             </div>
         </div>
     </div>
@@ -52,7 +52,7 @@ $content = ob_start();
             </div>
             <div class="ml-4">
                 <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Vacant</p>
-                <p class="text-2xl font-bold text-gray-900 dark:text-white"><?php echo number_format($stats['vacant_units']); ?></p>
+                <p class="text-2xl font-bold text-gray-900 dark:text-white"><?php echo arr_format($stats, 'vacant_units'); ?></p>
             </div>
         </div>
     </div>
@@ -64,7 +64,7 @@ $content = ob_start();
             </div>
             <div class="ml-4">
                 <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Occupied</p>
-                <p class="text-2xl font-bold text-gray-900 dark:text-white"><?php echo number_format($stats['occupied_units']); ?></p>
+                <p class="text-2xl font-bold text-gray-900 dark:text-white"><?php echo arr_format($stats, 'occupied_units'); ?></p>
             </div>
         </div>
     </div>
@@ -76,7 +76,7 @@ $content = ob_start();
             </div>
             <div class="ml-4">
                 <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Occupancy Rate</p>
-                <p class="text-2xl font-bold text-gray-900 dark:text-white"><?php echo $stats['occupancy_rate']; ?>%</p>
+                <p class="text-2xl font-bold text-gray-900 dark:text-white"><?php echo arr_get($stats, 'occupancy_rate', 0); ?>%</p>
             </div>
         </div>
     </div>
@@ -122,7 +122,7 @@ $content = ob_start();
             <select id="property-filter" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
                 <option value="all" <?php echo $property_id === 'all' ? 'selected' : ''; ?>>All Properties</option>
                 <?php foreach ($properties as $property): ?>
-                    <option value="<?php echo $property['id']; ?>" <?php echo $property_id == $property['id'] ? 'selected' : ''; ?>><?php echo htmlspecialchars($property['name']); ?></option>
+                    <option value="<?php echo arr_get($property, 'id'); ?>" <?php echo $property_id == arr_get($property, 'id') ? 'selected' : ''; ?>><?php echo arr_escape($property, 'name'); ?></option>
                 <?php endforeach; ?>
             </select>
 
@@ -174,12 +174,12 @@ $content = ob_start();
             <!-- Grid View -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 <?php foreach ($units as $unit): ?>
-                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow cursor-pointer" onclick="viewUnit(<?php echo $unit['id']; ?>)">
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow cursor-pointer" onclick="viewUnit(<?php echo arr_get($unit, 'id'); ?>)">
                         <div class="p-6">
                             <div class="flex items-center justify-between mb-4">
-                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white"><?php echo htmlspecialchars($unit['unit_number']); ?></h3>
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?php echo getStatusColorClass($unit['status']); ?>">
-                                    <?php echo ucfirst($unit['status']); ?>
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white"><?php echo arr_escape($unit, 'unit_number'); ?></h3>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?php echo getStatusColorClass(arr_get($unit, 'status')); ?>">
+                                    <?php echo ucfirst(arr_get($unit, 'status')); ?>
                                 </span>
                             </div>
                             
@@ -348,7 +348,7 @@ function getStatusColorClass($status) {
     return $classes[$status] ?? 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
 }
 
-include __DIR__ . '/../dashboard/layout.php';
+echo ViewManager::render('dashboard.layout', ['content' => ob_get_clean()]);
 ?>
 
 <script>

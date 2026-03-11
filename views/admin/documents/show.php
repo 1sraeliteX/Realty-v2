@@ -356,5 +356,5 @@ function printDocument() {
 
 <?php
 $content = ob_get_clean();
-include '../dashboard_layout.php';
+include '../simple_layout.php';
 ?>

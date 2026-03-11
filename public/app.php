@@ -20,6 +20,9 @@ class ApplicationRouter {
     private $container = [];
 
     public function __construct() {
+        // Handle static files first
+        $this->handleStaticFiles();
+        
         // Load required config files
         require_once __DIR__ . '/../config/config.php';
         require_once __DIR__ . '/../config/database.php';
@@ -82,6 +85,46 @@ class ApplicationRouter {
         }
         
         return false;
+    }
+    
+    private function handleStaticFiles() {
+        $requestUri = $_SERVER['REQUEST_URI'];
+        $requestUri = parse_url($requestUri, PHP_URL_PATH);
+        
+        // Check if it's a static file request
+        if (preg_match('/\.(css|js|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)$/', $requestUri)) {
+            $filePath = __DIR__ . $requestUri;
+            
+            if (file_exists($filePath)) {
+                // Set appropriate content type
+                $extension = pathinfo($filePath, PATHINFO_EXTENSION);
+                $contentTypes = [
+                    'css' => 'text/css',
+                    'js' => 'application/javascript',
+                    'png' => 'image/png',
+                    'jpg' => 'image/jpeg',
+                    'jpeg' => 'image/jpeg',
+                    'gif' => 'image/gif',
+                    'svg' => 'image/svg+xml',
+                    'ico' => 'image/x-icon',
+                    'woff' => 'font/woff',
+                    'woff2' => 'font/woff2',
+                    'ttf' => 'font/ttf',
+                    'eot' => 'application/vnd.ms-fontobject'
+                ];
+                
+                if (isset($contentTypes[$extension])) {
+                    header('Content-Type: ' . $contentTypes[$extension]);
+                }
+                
+                // Enable caching for static files
+                header('Cache-Control: public, max-age=31536000');
+                header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 31536000));
+                
+                readfile($filePath);
+                exit;
+            }
+        }
     }
 
     private function handleRoute($handler, $params = []) {

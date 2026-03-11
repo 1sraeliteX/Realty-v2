@@ -2,19 +2,14 @@
 
 namespace App\Controllers;
 
-// Manually require the database configuration
-require_once __DIR__ . '/../../config/database.php';
-
 use App\Middleware\JwtMiddleware;
 use Config\Database;
 
 class AdminAuthController extends BaseController {
-    private $jwtMiddleware;
     
     public function __construct() {
         // Initialize database connection
         parent::__construct(); // Call parent constructor to initialize db
-        $this->jwtMiddleware = new JwtMiddleware();
     }
     
     public function showLogin() {
@@ -136,7 +131,8 @@ class AdminAuthController extends BaseController {
             // Handle API vs Web response
             if ($this->isApiRequest()) {
                 // Generate token for API
-                $token = $this->jwtMiddleware->generateToken([
+                $jwtMiddleware = new JwtMiddleware();
+                $token = $jwtMiddleware->generateToken([
                     'id' => $user['id'],
                     'email' => $user['email'],
                     'role' => $user['role']
@@ -173,7 +169,8 @@ class AdminAuthController extends BaseController {
     }
     
     public function me() {
-        $user = $this->jwtMiddleware->getCurrentUser();
+        $jwtMiddleware = new JwtMiddleware();
+        $user = $jwtMiddleware->getCurrentUser();
         if ($user && $user['role'] === 'admin') {
             $this->json($user);
         } else {

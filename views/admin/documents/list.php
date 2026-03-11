@@ -1,9 +1,17 @@
 <?php
-// Include UI Components
-require_once __DIR__ . '/../../components/UIComponents.php';
+// Initialize framework
+require_once __DIR__ . '/../../config/init_framework.php';
 
-$title = 'Documents Management';
-$pageTitle = 'Documents';
+// Load attachment component
+ComponentRegistry::load('attachment-component');
+
+// Get data from DataProvider
+$documents = DataProvider::get('documents');
+
+// Set view data
+ViewManager::set('title', 'Documents Management');
+ViewManager::set('pageTitle', 'Documents');
+ViewManager::set('documents', $documents);
 
 $content = ob_start();
 ?>
@@ -74,47 +82,45 @@ $content = ob_start();
         </div>
     </div>
 
-    <!-- Documents Table -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-700">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Type</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Category</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Size</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Uploaded</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                            <div class="flex items-center">
-                                <i class="fas fa-file-pdf text-red-500 mr-2"></i>
-                                Lease Agreement - Unit 101
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">PDF</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">Lease</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">2.4 MB</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">2024-03-01</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <a href="#" class="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-300 mr-3">Download</a>
-                            <a href="/admin/documents/1/edit" class="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-300 mr-3">Edit</a>
-                            <a href="#" class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300">Delete</a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+    <!-- Documents Grid -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Recent Documents</h2>
+            <div class="flex items-center space-x-3">
+                <select class="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                    <option value="all">All Categories</option>
+                    <option value="lease">Lease</option>
+                    <option value="maintenance">Maintenance</option>
+                    <option value="insurance">Insurance</option>
+                    <option value="legal">Legal</option>
+                </select>
+                <select class="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                    <option value="all">All Properties</option>
+                    <option value="1">Sunset Apartments</option>
+                    <option value="2">Oak Villa Complex</option>
+                    <option value="3">Downtown Office Building</option>
+                </select>
+            </div>
         </div>
+        
+        <?php echo AttachmentComponent::renderAttachmentsList($documents, [
+            'show_preview' => true,
+            'show_download' => true,
+            'show_delete' => true,
+            'grid_view' => true
+        ]); ?>
     </div>
 </div>
 
 <?php
 $content = ob_get_clean();
 
+// Include JavaScript for attachment functionality
+echo AttachmentComponentJS::renderJS();
+
+// Render preview modal
+echo AttachmentComponent::renderPreviewModal();
+
 // Include the admin dashboard layout
-include __DIR__ . '/../dashboard_layout.php';
+echo ViewManager::render('admin.dashboard_layout', ['content' => $content]);
 ?>
