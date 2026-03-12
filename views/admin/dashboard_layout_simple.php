@@ -46,17 +46,14 @@ $title = ViewManager::get('title', 'Admin Dashboard');
 
     <div class="flex h-screen bg-gray-50 dark:bg-gray-900">
         <!-- Sidebar -->
-        <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 transform -translate-x-full transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0">
-            <div class="flex flex-col h-full">
+        <aside id="sidebar" class="hidden lg:flex lg:flex-shrink-0">
+            <div class="flex flex-col w-64">
                 <!-- Sidebar Header -->
-                <div class="flex items-center justify-between h-16 px-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-center justify-center h-16 px-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                     <div class="flex items-center">
                         <i class="fas fa-building text-primary-600 dark:text-primary-400 text-xl mr-3"></i>
                         <span class="text-xl font-semibold text-gray-900 dark:text-white">Cornerstone</span>
                     </div>
-                    <button onclick="toggleSidebar()" class="lg:hidden text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
                 </div>
 
                 <!-- Sidebar Navigation -->
@@ -226,7 +223,7 @@ $title = ViewManager::get('title', 'Admin Dashboard');
     </div>
 
     <!-- Mobile Sidebar Overlay -->
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden hidden transition-opacity duration-300" onclick="toggleSidebar()"></div>
+    <div id="sidebar-overlay" class="fixed inset-0 bg-gray-600 bg-opacity-75 z-40 lg:hidden hidden" onclick="toggleSidebar()"></div>
 
     <script>
         // Toast notification function
@@ -281,9 +278,7 @@ $title = ViewManager::get('title', 'Admin Dashboard');
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebar-overlay');
             
-            // Toggle sidebar visibility
-            sidebar.classList.toggle('-translate-x-full');
-            sidebar.classList.toggle('translate-x-0');
+            sidebar.classList.toggle('hidden');
             overlay.classList.toggle('hidden');
         }
 

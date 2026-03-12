@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Sidebar Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Test styles */
+        .test-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .breakpoint-indicator {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Breakpoint Indicator -->
+    <div id="breakpoint-indicator" class="breakpoint-indicator">
+        <span id="screen-size"></span> | <span id="breakpoint"></span>
+    </div>
+
+    <!-- Test Info -->
+    <div class="test-info max-w-4xl mx-auto mt-4">
+        <h1 class="text-2xl font-bold mb-2">Responsive Sidebar Test</h1>
+        <p class="mb-2">This test demonstrates the responsive sidebar functionality:</p>
+        <ul class="list-disc list-inside space-y-1 text-sm">
+            <li><strong>Desktop (≥1024px):</strong> Sidebar is permanently visible on the left</li>
+            <li><strong>Tablet/Mobile (&lt;1024px):</strong> Sidebar is hidden, accessible via hamburger menu</li>
+            <li><strong>Hamburger Menu:</strong> Click the ☰ button to toggle sidebar on mobile</li>
+            <li><strong>Close Actions:</strong> Click X button, backdrop, or press Escape to close</li>
+            <li><strong>Auto-close:</strong> Sidebar closes when clicking navigation links on mobile</li>
+        </ul>
+    </div>
+
+    <!-- Main Layout -->
+    <div class="flex h-screen bg-gray-50">
+        <!-- Mobile sidebar backdrop -->
+        <div id="sidebar-backdrop" class="fixed inset-0 bg-gray-600 bg-opacity-75 z-40 lg:hidden hidden transition-opacity duration-300"></div>
+        
+        <!-- Sidebar -->
+        <aside id="sidebar" class="flex-shrink-0 w-64 bg-white border-r border-gray-200 transform -translate-x-full transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 fixed top-0 left-0 z-50 h-screen overflow-y-auto relative">
+            <!-- Sidebar header -->
+            <div class="flex items-center justify-between h-16 px-6 border-b border-gray-200">
+                <div class="flex items-center">
+                    <i class="fas fa-building text-blue-600 text-xl mr-3"></i>
+                    <span class="text-xl font-semibold text-gray-900">Cornerstone</span>
+                </div>
+                <button id="close-sidebar" class="lg:hidden text-gray-500 hover:text-gray-700 p-2 rounded-lg hover:bg-gray-100 transition-colors" title="Close Sidebar">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <!-- Navigation -->
+            <nav class="p-4 space-y-2">
+                <a href="#dashboard" class="nav-item flex items-center px-4 py-2 text-sm font-medium rounded-lg bg-blue-50 text-blue-700">
+                    <i class="fas fa-home mr-3"></i>
+                    Dashboard
+                </a>
+                <a href="#properties" class="nav-item flex items-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-100">
+                    <i class="fas fa-building mr-3"></i>
+                    Properties
+                </a>
+                <a href="#tenants" class="nav-item flex items-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-100">
+                    <i class="fas fa-users mr-3"></i>
+                    Tenants
+                </a>
+                <a href="#payments" class="nav-item flex items-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-100">
+                    <i class="fas fa-credit-card mr-3"></i>
+                    Payments
+                </a>
+                <a href="#maintenance" class="nav-item flex items-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-100">
+                    <i class="fas fa-tools mr-3"></i>
+                    Maintenance
+                </a>
+                
+                <div class="pt-4 pb-2">
+                    <span class="px-4 text-xs font-semibold text-gray-500 uppercase">Settings</span>
+                </div>
+                <a href="#settings" class="nav-item flex items-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-100">
+                    <i class="fas fa-cog mr-3"></i>
+                    Settings
+                </a>
+                <a href="#profile" class="nav-item flex items-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-100">
+                    <i class="fas fa-user mr-3"></i>
+                    Profile
+                </a>
+                
+                <!-- Logout Button -->
+                <div class="pt-4 pb-2">
+                    <span class="px-4 text-xs font-semibold text-gray-500 uppercase">Account</span>
+                </div>
+                <form method="POST" action="/logout" class="w-full">
+                    <button type="submit" class="w-full flex items-center px-4 py-2 text-sm font-medium rounded-lg text-red-600 hover:bg-red-50 transition-colors">
+                        <i class="fas fa-right-from-bracket mr-3"></i>
+                        Logout
+                    </button>
+                </form>
+            </nav>
+        </aside>
+        
+        <!-- Main content -->
+        <div class="flex flex-col flex-1 overflow-hidden">
+            <!-- Top navigation -->
+            <header class="bg-white border-b border-gray-200 sticky top-0 z-30">
+                <div class="flex items-center justify-between h-16 px-4 sm:px-6">
+                    <!-- Left side -->
+                    <div class="flex items-center">
+                        <button id="open-sidebar" class="lg:hidden text-gray-500 hover:text-gray-700 mr-4 p-2 rounded-lg hover:bg-gray-100 transition-colors" title="Toggle Sidebar">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                        
+                        <h1 class="text-xl font-semibold text-gray-800">Test Dashboard</h1>
+                    </div>
+                    
+                    <!-- Right side -->
+                    <div class="flex items-center space-x-4">
+                        <button class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                        <button class="text-gray-500 hover:text-gray-700 relative">
+                            <i class="fas fa-bell"></i>
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">3</span>
+                        </button>
+                        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                            <span class="text-white text-sm font-medium">A</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Main content area -->
+            <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+                <div class="max-w-4xl mx-auto">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Responsive Sidebar Test</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <div class="flex items-center">
+                                <div class="p-3 bg-blue-100 rounded-lg">
+                                    <i class="fas fa-building text-blue-600 text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">Properties</p>
+                                    <p class="text-2xl font-semibold text-gray-900">24</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <div class="flex items-center">
+                                <div class="p-3 bg-green-100 rounded-lg">
+                                    <i class="fas fa-users text-green-600 text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">Tenants</p>
+                                    <p class="text-2xl font-semibold text-gray-900">18</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <div class="flex items-center">
+                                <div class="p-3 bg-yellow-100 rounded-lg">
+                                    <i class="fas fa-credit-card text-yellow-600 text-xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600">Payments</p>
+                                    <p class="text-2xl font-semibold text-gray-900">92%</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Test Instructions</h3>
+                        <ol class="list-decimal list-inside space-y-2 text-gray-700">
+                            <li><strong>Desktop Test:</strong> Resize browser to ≥1024px width - sidebar should be permanently visible</li>
+                            <li><strong>Mobile Test:</strong> Resize browser to &lt;1024px width - sidebar should hide</li>
+                            <li><strong>Hamburger Menu:</strong> Click the ☰ button in top nav to open sidebar on mobile</li>
+                            <li><strong>Close Sidebar:</strong> Click X button, dark backdrop, or press Escape key</li>
+                            <li><strong>Navigation:</strong> Click any navigation link to auto-close sidebar on mobile</li>
+                            <li><strong>Body Scroll:</strong> Body scroll should be locked when sidebar is open on mobile</li>
+                        </ol>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Sidebar functionality
+        const sidebar = document.getElementById('sidebar');
+        const backdrop = document.getElementById('sidebar-backdrop');
+        const openBtn = document.getElementById('open-sidebar');
+        const closeBtn = document.getElementById('close-sidebar');
+        
+        // State management for sidebar
+        let sidebarOpen = false;
+        
+        // Initialize responsive behavior
+        function initializeSidebar() {
+            if (window.innerWidth >= 1024) {
+                // Desktop: always show sidebar
+                sidebar.classList.remove('-translate-x-full');
+                sidebar.classList.add('translate-x-0');
+                backdrop.classList.add('hidden');
+                document.body.style.overflow = '';
+                sidebarOpen = false;
+            } else {
+                // Mobile/tablet: hide sidebar by default
+                sidebar.classList.add('-translate-x-full');
+                sidebar.classList.remove('translate-x-0');
+                backdrop.classList.add('hidden');
+                document.body.style.overflow = '';
+                sidebarOpen = false;
+            }
+        }
+        
+        // Initialize on page load
+        initializeSidebar();
+        
+        // Handle window resize
+        function handleResize() {
+            clearTimeout(window.resizeTimer);
+            window.resizeTimer = setTimeout(function() {
+                initializeSidebar();
+                updateBreakpointIndicator();
+            }, 250);
+        }
+        
+        window.addEventListener('resize', handleResize);
+        
+        // Open sidebar
+        function openSidebar() {
+            if (window.innerWidth < 1024) {
+                sidebar.classList.remove('-translate-x-full');
+                sidebar.classList.add('translate-x-0');
+                backdrop.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+                sidebarOpen = true;
+            }
+        }
+        
+        // Close sidebar
+        function closeSidebar() {
+            sidebar.classList.add('-translate-x-full');
+            sidebar.classList.remove('translate-x-0');
+            backdrop.classList.add('hidden');
+            document.body.style.overflow = '';
+            sidebarOpen = false;
+        }
+        
+        // Event listeners
+        openBtn?.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log('Hamburger menu clicked');
+            openSidebar();
+        });
+        
+        closeBtn?.addEventListener('click', closeSidebar);
+        backdrop?.addEventListener('click', closeSidebar);
+        
+        // Close sidebar on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && sidebarOpen && window.innerWidth < 1024) {
+                closeSidebar();
+            }
+        });
+        
+        // Close sidebar when clicking navigation links on mobile
+        const navLinks = document.querySelectorAll('#sidebar nav a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (window.innerWidth < 1024 && sidebarOpen) {
+                    setTimeout(closeSidebar, 150);
+                }
+            });
+        });
+        
+        // Breakpoint indicator
+        function updateBreakpointIndicator() {
+            const width = window.innerWidth;
+            const screenSize = document.getElementById('screen-size');
+            const breakpoint = document.getElementById('breakpoint');
+            
+            screenSize.textContent = `${width}px`;
+            
+            if (width >= 1024) {
+                breakpoint.textContent = 'Desktop (lg)';
+                breakpoint.style.color = '#10b981';
+            } else if (width >= 768) {
+                breakpoint.textContent = 'Tablet (md)';
+                breakpoint.style.color = '#f59e0b';
+            } else {
+                breakpoint.textContent = 'Mobile (sm)';
+                breakpoint.style.color = '#ef4444';
+            }
+        }
+        
+        // Initialize breakpoint indicator
+        updateBreakpointIndicator();
+        window.addEventListener('resize', updateBreakpointIndicator);
+    </script>
+</body>
+</html>

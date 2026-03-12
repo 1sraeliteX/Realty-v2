@@ -1,93 +1,22 @@
 <?php
-// Include UI Components
-require_once __DIR__ . '/../../components/UIComponents.php';
+// Initialize framework (anti-scattering compliant)
+require_once __DIR__ . '/../../../config/init_framework.php';
 
-$title = 'Occupants Management';
-$pageTitle = 'Occupants';
-$pageDescription = 'Manage building occupants and residents';
+// Load components through registry (anti-scattering compliant)
+ComponentRegistry::load('ui-components');
 
-// Mock occupants data
-$occupants = [
-    [
-        'id' => 1,
-        'first_name' => 'John',
-        'last_name' => 'Smith',
-        'email' => 'john.smith@email.com',
-        'phone' => '(555) 123-4567',
-        'type' => 'tenant',
-        'property_id' => 1,
-        'property_name' => 'Sunset Apartments',
-        'unit_id' => 1,
-        'unit_number' => '101',
-        'move_in_date' => '2023-01-15',
-        'status' => 'active',
-        'emergency_contact' => 'Jane Smith',
-        'emergency_phone' => '(555) 987-6543',
-        'vehicle_info' => 'Tesla Model 3 - ABC123',
-        'parking_space' => 'P-101',
-        'created_at' => '2023-01-10'
-    ],
-    [
-        'id' => 2,
-        'first_name' => 'Sarah',
-        'last_name' => 'Johnson',
-        'email' => 'sarah.johnson@email.com',
-        'phone' => '(555) 234-5678',
-        'type' => 'tenant',
-        'property_id' => 1,
-        'property_name' => 'Sunset Apartments',
-        'unit_id' => 2,
-        'unit_number' => '102',
-        'move_in_date' => '2023-02-01',
-        'status' => 'active',
-        'emergency_contact' => 'Mike Johnson',
-        'emergency_phone' => '(555) 876-5432',
-        'vehicle_info' => 'Honda Civic - XYZ789',
-        'parking_space' => 'P-102',
-        'created_at' => '2023-01-25'
-    ],
-    [
-        'id' => 3,
-        'first_name' => 'David',
-        'last_name' => 'Wilson',
-        'email' => 'david.wilson@email.com',
-        'phone' => '(555) 345-6789',
-        'type' => 'family_member',
-        'property_id' => 1,
-        'property_name' => 'Sunset Apartments',
-        'unit_id' => 1,
-        'unit_number' => '101',
-        'move_in_date' => '2023-01-15',
-        'status' => 'active',
-        'emergency_contact' => 'John Smith',
-        'emergency_phone' => '(555) 123-4567',
-        'vehicle_info' => 'None',
-        'parking_space' => 'None',
-        'created_at' => '2023-01-15'
-    ],
-    [
-        'id' => 4,
-        'first_name' => 'Emily',
-        'last_name' => 'Brown',
-        'email' => 'emily.brown@email.com',
-        'phone' => '(555) 456-7890',
-        'type' => 'guest',
-        'property_id' => 1,
-        'property_name' => 'Sunset Apartments',
-        'unit_id' => 3,
-        'unit_number' => '103',
-        'move_in_date' => '2024-01-05',
-        'status' => 'temporary',
-        'emergency_contact' => 'Sarah Johnson',
-        'emergency_phone' => '(555) 234-5678',
-        'vehicle_info' => 'Toyota Camry - DEF456',
-        'parking_space' => 'Guest',
-        'created_at' => '2024-01-05'
-    ]
-];
+// Set data through ViewManager (anti-scattering compliant)
+ViewManager::set('title', 'Admin Page');
+ViewManager::set('user', [
+    'name' => 'Admin User',
+    'email' => 'admin@cornerstone.com',
+    'avatar' => null
+]);
+ViewManager::set('notifications', []);
 
 ob_start();
 ?>
+
 
 <!-- Stats Cards -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
@@ -357,7 +286,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+
 <?php
 $content = ob_get_clean();
-include '../simple_layout.php';
+include '../dashboard_layout.php';
 ?>

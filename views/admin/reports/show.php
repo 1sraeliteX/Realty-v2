@@ -1,80 +1,22 @@
 <?php
-// Include UI Components
-require_once __DIR__ . '/../../components/UIComponents.php';
+// Initialize framework (anti-scattering compliant)
+require_once __DIR__ . '/../../../config/init_framework.php';
 
-$title = 'Report Details';
-$pageTitle = 'Report Details';
-$pageDescription = 'View comprehensive report information and analytics';
+// Load components through registry (anti-scattering compliant)
+ComponentRegistry::load('ui-components');
 
-// Mock report data
-$report = [
-    'id' => 1,
-    'name' => 'Monthly Financial Report - January 2024',
-    'description' => 'Comprehensive financial report for January 2024 including income, expenses, profit analysis, and key performance indicators.',
-    'type' => 'financial',
-    'category' => 'monthly',
-    'period_start' => '2024-01-01',
-    'period_end' => '2024-01-31',
-    'generated_date' => '2024-02-05 10:30:00',
-    'generated_by' => 'Admin User',
-    'status' => 'completed',
-    'format' => 'pdf',
-    'file_size' => 2456789,
-    'file_path' => '/uploads/reports/monthly_financial_jan_2024.pdf',
-    'auto_generate' => true,
-    'recipients' => [
-        ['name' => 'Property Manager', 'email' => 'manager@cornerstone.com'],
-        ['name' => 'Accounting Department', 'email' => 'accounting@cornerstone.com']
-    ],
-    'metrics' => [
-        'total_income' => 45000,
-        'total_expenses' => 28000,
-        'net_profit' => 17000,
-        'occupancy_rate' => 92.5,
-        'total_properties' => 5,
-        'total_units' => 120,
-        'occupied_units' => 111
-    ]
-];
-
-// Mock report sections
-$sections = [
-    [
-        'title' => 'Executive Summary',
-        'description' => 'Overview of key financial metrics and performance indicators for January 2024.',
-        'charts' => true
-    ],
-    [
-        'title' => 'Income Analysis',
-        'description' => 'Detailed breakdown of all income sources including rent, fees, and other revenue.',
-        'charts' => true
-    ],
-    [
-        'title' => 'Expense Analysis',
-        'description' => 'Comprehensive analysis of operating expenses, maintenance costs, and capital expenditures.',
-        'charts' => true
-    ],
-    [
-        'title' => 'Property Performance',
-        'description' => 'Individual property performance metrics and comparative analysis.',
-        'charts' => true
-    ],
-    [
-        'title' => 'Tenant Analysis',
-        'description' => 'Tenant demographics, lease expirations, and payment patterns.',
-        'charts' => false
-    ]
-];
-
-// Mock related reports
-$relatedReports = [
-    ['id' => 2, 'name' => 'December 2023 Financial Report', 'type' => 'financial', 'date' => '2024-01-05', 'status' => 'completed'],
-    ['id' => 3, 'name' => 'Q4 2023 Quarterly Report', 'type' => 'quarterly', 'date' => '2024-01-10', 'status' => 'completed'],
-    ['id' => 4, 'name' => 'Annual Report 2023', 'type' => 'annual', 'date' => '2024-01-15', 'status' => 'completed'],
-];
+// Set data through ViewManager (anti-scattering compliant)
+ViewManager::set('title', 'Admin Page');
+ViewManager::set('user', [
+    'name' => 'Admin User',
+    'email' => 'admin@cornerstone.com',
+    'avatar' => null
+]);
+ViewManager::set('notifications', []);
 
 ob_start();
 ?>
+
 
 <!-- Report Header -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-6">
@@ -381,7 +323,8 @@ function archiveReport() {
 }
 </script>
 
+
 <?php
 $content = ob_get_clean();
-include '../simple_layout.php';
+include '../dashboard_layout.php';
 ?>

@@ -1,84 +1,22 @@
 <?php
-// Include UI Components
-require_once __DIR__ . '/../../components/UIComponents.php';
+// Initialize framework (anti-scattering compliant)
+require_once __DIR__ . '/../../../config/init_framework.php';
 
-$title = 'Document Details';
-$pageTitle = 'Document Details';
-$pageDescription = 'View comprehensive document information and manage file details';
+// Load components through registry (anti-scattering compliant)
+ComponentRegistry::load('ui-components');
 
-// Mock document data
-$document = [
-    'id' => 1,
-    'name' => 'Lease Agreement - John Smith',
-    'description' => 'Standard 12-month lease agreement for residential unit 101 at Sunset Apartments. Includes all terms and conditions, rent amount, security deposit, and tenant responsibilities.',
-    'type' => 'lease',
-    'category' => 'legal',
-    'file_name' => 'lease_agreement_john_smith_2024.pdf',
-    'file_size' => 2456789,
-    'file_type' => 'application/pdf',
-    'file_path' => '/uploads/documents/leases/',
-    'tenant_id' => 1,
-    'tenant_name' => 'John Smith',
-    'property_id' => 1,
-    'property_name' => 'Sunset Apartments',
-    'unit_id' => 1,
-    'unit_number' => '101',
-    'uploaded_by' => 'Admin User',
-    'upload_date' => '2023-01-10 14:30:00',
-    'last_modified' => '2023-01-10 14:30:00',
-    'expiry_date' => '2024-01-14',
-    'status' => 'active',
-    'tags' => ['lease', '2024', 'unit-101', 'john-smith'],
-    'access_level' => 'restricted',
-    'version' => 1,
-    'is_signed' => true,
-    'signature_date' => '2023-01-15',
-    'download_count' => 12,
-    'shared_with' => [
-        ['id' => 1, 'name' => 'John Smith', 'email' => 'john.smith@email.com', 'permission' => 'view'],
-        ['id' => 2, 'name' => 'Property Manager', 'email' => 'manager@cornerstone.com', 'permission' => 'edit']
-    ]
-];
-
-// Mock document versions
-$versions = [
-    ['version' => 1, 'uploaded_by' => 'Admin User', 'upload_date' => '2023-01-10 14:30:00', 'file_size' => 2456789, 'notes' => 'Initial lease agreement'],
-];
-
-// Mock activity log
-$activityLog = [
-    [
-        'id' => 1,
-        'action' => 'uploaded',
-        'description' => 'Document uploaded by Admin User',
-        'user' => 'Admin User',
-        'date' => '2023-01-10 14:30:00'
-    ],
-    [
-        'id' => 2,
-        'action' => 'signed',
-        'description' => 'Document signed by John Smith',
-        'user' => 'John Smith',
-        'date' => '2023-01-15 10:00:00'
-    ],
-    [
-        'id' => 3,
-        'action' => 'viewed',
-        'description' => 'Document viewed by Property Manager',
-        'user' => 'Property Manager',
-        'date' => '2023-12-01 09:15:00'
-    ],
-    [
-        'id' => 4,
-        'action' => 'downloaded',
-        'description' => 'Document downloaded by John Smith',
-        'user' => 'John Smith',
-        'date' => '2024-01-05 14:30:00'
-    ]
-];
+// Set data through ViewManager (anti-scattering compliant)
+ViewManager::set('title', 'Admin Page');
+ViewManager::set('user', [
+    'name' => 'Admin User',
+    'email' => 'admin@cornerstone.com',
+    'avatar' => null
+]);
+ViewManager::set('notifications', []);
 
 ob_start();
 ?>
+
 
 <!-- Document Header -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-6">
@@ -354,7 +292,8 @@ function printDocument() {
 }
 </script>
 
+
 <?php
 $content = ob_get_clean();
-include '../simple_layout.php';
+include '../dashboard_layout.php';
 ?>

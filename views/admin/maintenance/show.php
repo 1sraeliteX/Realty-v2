@@ -5,80 +5,18 @@ require_once __DIR__ . '/../../../config/init_framework.php';
 // Load components through registry (anti-scattering compliant)
 ComponentRegistry::load('ui-components');
 
-// Get data from centralized provider (anti-scattering compliant)
-$user = DataProvider::get('user');
-$notifications = DataProvider::get('notifications');
-
 // Set data through ViewManager (anti-scattering compliant)
-ViewManager::set('user', $user);
-ViewManager::set('notifications', $notifications);
-
-$title = 'Maintenance Request Details';
-$pageTitle = 'Maintenance Details';
-$pageDescription = 'View comprehensive maintenance request information and manage repairs';
-
-// Mock maintenance data
-$maintenance = [
-    'id' => 1,
-    'title' => 'Leaky Faucet in Kitchen',
-    'description' => 'The kitchen sink faucet has been leaking continuously for the past 2 days. Water is dripping from the base of the faucet and causing water damage to the cabinet below.',
-    'priority' => 'medium',
-    'status' => 'in_progress',
-    'category' => 'plumbing',
-    'property_id' => 1,
-    'property_name' => 'Sunset Apartments',
-    'unit_id' => 1,
-    'unit_number' => '101',
-    'tenant_id' => 1,
-    'tenant_name' => 'John Smith',
-    'tenant_email' => 'john.smith@email.com',
-    'tenant_phone' => '(555) 123-4567',
-    'reported_date' => '2024-01-08',
-    'scheduled_date' => '2024-01-10',
-    'completed_date' => null,
-    'estimated_cost' => 150,
-    'actual_cost' => null,
-    'assigned_to' => 'Mike Johnson',
-    'assigned_date' => '2024-01-09',
-    'notes' => 'Tenant has placed a bucket under the sink to catch water. Temporary fix applied but needs professional repair.',
-    'created_at' => '2024-01-08 14:30:00',
-    'updated_at' => '2024-01-09 09:15:00'
-];
-
-// Mock updates history
-$updates = [
-    [
-        'id' => 1,
-        'date' => '2024-01-09 09:15:00',
-        'type' => 'assignment',
-        'description' => 'Assigned to Mike Johnson (Plumbing Specialist)',
-        'user' => 'Admin User'
-    ],
-    [
-        'id' => 2,
-        'date' => '2024-01-08 16:45:00',
-        'type' => 'note',
-        'description' => 'Tenant confirmed issue is still active and worsening',
-        'user' => 'Admin User'
-    ],
-    [
-        'id' => 3,
-        'date' => '2024-01-08 14:30:00',
-        'type' => 'creation',
-        'description' => 'Maintenance request created by tenant',
-        'user' => 'John Smith'
-    ]
-];
-
-// Mock materials needed
-$materials = [
-    ['name' => 'Faucet Cartridge', 'quantity' => 1, 'estimated_cost' => 45],
-    ['name' => 'Plumbers Tape', 'quantity' => 1, 'estimated_cost' => 5],
-    ['name' => 'O-rings (set)', 'quantity' => 1, 'estimated_cost' => 8]
-];
+ViewManager::set('title', 'Admin Page');
+ViewManager::set('user', [
+    'name' => 'Admin User',
+    'email' => 'admin@cornerstone.com',
+    'avatar' => null
+]);
+ViewManager::set('notifications', []);
 
 ob_start();
 ?>
+
 
 <!-- Maintenance Header -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-6">
@@ -321,7 +259,8 @@ function contactTenant() {
 }
 </script>
 
+
 <?php
 $content = ob_get_clean();
-include '../simple_layout.php';
+include '../dashboard_layout.php';
 ?>

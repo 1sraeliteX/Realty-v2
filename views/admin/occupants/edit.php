@@ -1,55 +1,22 @@
 <?php
-// Include UI Components
-require_once __DIR__ . '/../../components/UIComponents.php';
+// Initialize framework (anti-scattering compliant)
+require_once __DIR__ . '/../../../config/init_framework.php';
 
-$title = 'Edit Occupant';
-$pageTitle = 'Edit Occupant';
-$pageDescription = 'Update occupant information and details';
+// Load components through registry (anti-scattering compliant)
+ComponentRegistry::load('ui-components');
 
-// Mock occupant data (same as show page)
-$occupant = [
-    'id' => 1,
-    'first_name' => 'John',
-    'last_name' => 'Smith',
-    'email' => 'john.smith@email.com',
-    'phone' => '(555) 123-4567',
-    'date_of_birth' => '1985-06-15',
-    'type' => 'tenant',
-    'property_id' => 1,
-    'property_name' => 'Sunset Apartments',
-    'unit_id' => 1,
-    'unit_number' => '101',
-    'move_in_date' => '2023-01-15',
-    'status' => 'active',
-    'emergency_contact' => 'Jane Smith',
-    'emergency_phone' => '(555) 987-6543',
-    'emergency_relationship' => 'Spouse',
-    'vehicle_info' => 'Tesla Model 3 - ABC123',
-    'parking_space' => 'P-101',
-    'storage_unit' => 'S-101',
-    'notes' => 'Primary leaseholder. Works as software engineer. Quiet resident, pays rent on time.',
-    'created_at' => '2023-01-10',
-    'last_updated' => '2024-01-08',
-    'profile_photo' => null
-];
-
-// Mock properties data
-$properties = [
-    ['id' => 1, 'name' => 'Sunset Apartments'],
-    ['id' => 2, 'name' => 'Downtown Plaza'],
-    ['id' => 3, 'name' => 'Riverside Complex']
-];
-
-// Mock units data
-$units = [
-    ['id' => 1, 'number' => '101', 'property_id' => 1],
-    ['id' => 2, 'number' => '102', 'property_id' => 1],
-    ['id' => 3, 'number' => '103', 'property_id' => 1],
-    ['id' => 4, 'number' => '201', 'property_id' => 1],
-];
+// Set data through ViewManager (anti-scattering compliant)
+ViewManager::set('title', 'Admin Page');
+ViewManager::set('user', [
+    'name' => 'Admin User',
+    'email' => 'admin@cornerstone.com',
+    'avatar' => null
+]);
+ViewManager::set('notifications', []);
 
 ob_start();
 ?>
+
 
 <!-- Breadcrumb -->
 <div class="mb-6">
@@ -295,7 +262,8 @@ function deleteOccupant() {
 }
 </script>
 
+
 <?php
 $content = ob_get_clean();
-include '../simple_layout.php';
+include '../dashboard_layout.php';
 ?>

@@ -1,52 +1,22 @@
 <?php
-// Include UI Components
-require_once __DIR__ . '/../../components/UIComponents.php';
+// Initialize framework (anti-scattering compliant)
+require_once __DIR__ . '/../../../config/init_framework.php';
 
-$title = 'Property Details';
-$pageTitle = 'Property Details';
-$pageDescription = 'View and manage property information';
+// Load components through registry (anti-scattering compliant)
+ComponentRegistry::load('ui-components');
 
-// Mock property data
-$property = [
-    'id' => 1,
-    'name' => 'Sunset Apartments',
-    'address' => '123 Main St, Los Angeles, CA 90001',
-    'type' => 'Residential',
-    'status' => 'occupied',
-    'unit_count' => 24,
-    'occupied_units' => 22,
-    'vacant_units' => 2,
-    'monthly_revenue' => 28800,
-    'purchase_price' => 2500000,
-    'current_value' => 2750000,
-    'image' => 'https://picsum.photos/seed/sunset/800/400.jpg',
-    'year_built' => 2018,
-    'size_sqft' => 15000,
-    'description' => 'Modern residential apartment complex located in the heart of Los Angeles. Features include swimming pool, fitness center, and secured parking.',
-    'amenities' => ['Swimming Pool', 'Fitness Center', 'Secured Parking', 'Elevator', 'Laundry Room', 'Pet Friendly'],
-    'created_at' => '2023-01-15',
-    'last_updated' => '2024-01-10'
-];
-
-// Mock units data
-$units = [
-    ['id' => 1, 'unit_number' => '1A', 'type' => '1BR', 'size_sqft' => 650, 'rent' => 1200, 'status' => 'occupied', 'tenant' => 'John Smith'],
-    ['id' => 2, 'unit_number' => '1B', 'type' => '1BR', 'size_sqft' => 650, 'rent' => 1200, 'status' => 'occupied', 'tenant' => 'Sarah Johnson'],
-    ['id' => 3, 'unit_number' => '2A', 'type' => '2BR', 'size_sqft' => 850, 'rent' => 1600, 'status' => 'occupied', 'tenant' => 'Mike Chen'],
-    ['id' => 4, 'unit_number' => '2B', 'type' => '2BR', 'size_sqft' => 850, 'rent' => 1600, 'status' => 'vacant', 'tenant' => null],
-    ['id' => 5, 'unit_number' => '3A', 'type' => 'Studio', 'size_sqft' => 450, 'rent' => 900, 'status' => 'occupied', 'tenant' => 'Emily Davis'],
-    ['id' => 6, 'unit_number' => '3B', 'type' => 'Studio', 'size_sqft' => 450, 'rent' => 900, 'status' => 'occupied', 'tenant' => 'Robert Wilson']
-];
-
-// Mock maintenance requests
-$maintenanceRequests = [
-    ['id' => 1, 'unit' => '4A', 'issue' => 'HVAC not working', 'priority' => 'high', 'status' => 'pending', 'date' => '2024-01-14'],
-    ['id' => 2, 'unit' => '2B', 'issue' => 'Leaking faucet', 'priority' => 'medium', 'status' => 'in_progress', 'date' => '2024-01-13'],
-    ['id' => 3, 'unit' => '5C', 'issue' => 'Broken window', 'priority' => 'low', 'status' => 'completed', 'date' => '2024-01-12']
-];
+// Set data through ViewManager (anti-scattering compliant)
+ViewManager::set('title', 'Admin Page');
+ViewManager::set('user', [
+    'name' => 'Admin User',
+    'email' => 'admin@cornerstone.com',
+    'avatar' => null
+]);
+ViewManager::set('notifications', []);
 
 ob_start();
 ?>
+
 
 <!-- Back Button and Actions -->
 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
@@ -401,7 +371,8 @@ function switchTab(tabName) {
 }
 </script>
 
+
 <?php
 $content = ob_get_clean();
-include '../simple_layout.php';
+include '../dashboard_layout.php';
 ?>

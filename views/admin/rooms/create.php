@@ -1,28 +1,22 @@
 <?php
-// Include UI Components
-require_once __DIR__ . '/../../components/UIComponents.php';
+// Initialize framework (anti-scattering compliant)
+require_once __DIR__ . '/../../../config/init_framework.php';
 
-$title = 'Add Room';
-$pageTitle = 'Add Room';
-$pageDescription = 'Add a new room to a unit';
+// Load components through registry (anti-scattering compliant)
+ComponentRegistry::load('ui-components');
 
-// Mock properties data
-$properties = [
-    ['id' => 1, 'name' => 'Sunset Apartments'],
-    ['id' => 2, 'name' => 'Downtown Plaza'],
-    ['id' => 3, 'name' => 'Riverside Complex']
-];
-
-// Mock units data
-$units = [
-    ['id' => 1, 'number' => '101', 'property_id' => 1, 'type' => '1BR'],
-    ['id' => 2, 'number' => '102', 'property_id' => 1, 'type' => '1BR'],
-    ['id' => 3, 'number' => '103', 'property_id' => 1, 'type' => '2BR'],
-    ['id' => 4, 'number' => '201', 'property_id' => 1, 'type' => '2BR'],
-];
+// Set data through ViewManager (anti-scattering compliant)
+ViewManager::set('title', 'Admin Page');
+ViewManager::set('user', [
+    'name' => 'Admin User',
+    'email' => 'admin@cornerstone.com',
+    'avatar' => null
+]);
+ViewManager::set('notifications', []);
 
 ob_start();
 ?>
+
 
 <!-- Form Container -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
@@ -289,7 +283,8 @@ function submitRoomForm(event) {
 }
 </script>
 
+
 <?php
 $content = ob_get_clean();
-include '../simple_layout.php';
+include '../dashboard_layout.php';
 ?>

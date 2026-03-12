@@ -1,43 +1,22 @@
 <?php
-// Include UI Components
-require_once __DIR__ . '/../../components/UIComponents.php';
+// Initialize framework (anti-scattering compliant)
+require_once __DIR__ . '/../../../config/init_framework.php';
 
-$title = 'Payment Details';
-$pageTitle = 'Payment Details';
-$pageDescription = 'View comprehensive payment information and manage transactions';
+// Load components through registry (anti-scattering compliant)
+ComponentRegistry::load('ui-components');
 
-// Mock payment data
-$payment = [
-    'id' => 1,
-    'tenant_id' => 1,
-    'tenant_name' => 'John Smith',
-    'property_name' => 'Sunset Apartments',
-    'unit_number' => '101',
-    'amount' => 1200,
-    'type' => 'rent',
-    'status' => 'paid',
-    'payment_date' => '2024-01-01',
-    'due_date' => '2024-01-01',
-    'method' => 'bank_transfer',
-    'transaction_id' => 'TXN123456789',
-    'reference' => 'Jan 2024 Rent',
-    'late_fee' => 0,
-    'discount' => 0,
-    'total_amount' => 1200,
-    'created_at' => '2024-01-01 10:30:00',
-    'processed_at' => '2024-01-01 10:35:00',
-    'notes' => 'Monthly rent payment for January 2024'
-];
-
-// Mock related payments
-$relatedPayments = [
-    ['id' => 2, 'date' => '2023-12-01', 'amount' => 1200, 'type' => 'rent', 'status' => 'paid'],
-    ['id' => 3, 'date' => '2023-11-01', 'amount' => 1200, 'type' => 'rent', 'status' => 'paid'],
-    ['id' => 4, 'date' => '2023-10-01', 'amount' => 1200, 'type' => 'rent', 'status' => 'paid'],
-];
+// Set data through ViewManager (anti-scattering compliant)
+ViewManager::set('title', 'Admin Page');
+ViewManager::set('user', [
+    'name' => 'Admin User',
+    'email' => 'admin@cornerstone.com',
+    'avatar' => null
+]);
+ViewManager::set('notifications', []);
 
 ob_start();
 ?>
+
 
 <!-- Payment Header -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-6">
@@ -246,7 +225,8 @@ function markAsPaid() {
 }
 </script>
 
+
 <?php
 $content = ob_get_clean();
-include '../simple_layout.php';
+include '../dashboard_layout.php';
 ?>

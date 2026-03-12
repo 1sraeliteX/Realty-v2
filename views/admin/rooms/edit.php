@@ -1,48 +1,22 @@
 <?php
-// Include UI Components
-require_once __DIR__ . '/../../components/UIComponents.php';
+// Initialize framework (anti-scattering compliant)
+require_once __DIR__ . '/../../../config/init_framework.php';
 
-$title = 'Edit Room';
-$pageTitle = 'Edit Room';
-$pageDescription = 'Update room information and details';
+// Load components through registry (anti-scattering compliant)
+ComponentRegistry::load('ui-components');
 
-// Mock room data
-$room = [
-    'id' => 1,
-    'name' => 'Master Bedroom',
-    'unit_id' => 1,
-    'unit_number' => '101',
-    'property_name' => 'Sunset Apartments',
-    'type' => 'bedroom',
-    'size_sqft' => 180,
-    'beds' => 1,
-    'baths' => 1,
-    'status' => 'occupied',
-    'occupant' => 'John Smith',
-    'rent_portion' => 600,
-    'description' => 'Spacious master bedroom with en-suite bathroom and walk-in closet.',
-    'amenities' => ['Walk-in Closet', 'En-suite Bathroom', 'Balcony Access', 'Hardwood Floors', 'Ceiling Fan', 'Large Windows'],
-    'created_at' => '2023-01-10',
-    'last_updated' => '2024-01-08'
-];
-
-// Mock properties data
-$properties = [
-    ['id' => 1, 'name' => 'Sunset Apartments'],
-    ['id' => 2, 'name' => 'Downtown Plaza'],
-    ['id' => 3, 'name' => 'Riverside Complex']
-];
-
-// Mock units data
-$units = [
-    ['id' => 1, 'number' => '101', 'property_id' => 1, 'type' => '1BR'],
-    ['id' => 2, 'number' => '102', 'property_id' => 1, 'type' => '1BR'],
-    ['id' => 3, 'number' => '103', 'property_id' => 1, 'type' => '2BR'],
-    ['id' => 4, 'number' => '201', 'property_id' => 1, 'type' => '2BR'],
-];
+// Set data through ViewManager (anti-scattering compliant)
+ViewManager::set('title', 'Admin Page');
+ViewManager::set('user', [
+    'name' => 'Admin User',
+    'email' => 'admin@cornerstone.com',
+    'avatar' => null
+]);
+ViewManager::set('notifications', []);
 
 ob_start();
 ?>
+
 
 <!-- Breadcrumb -->
 <div class="mb-6">
@@ -302,7 +276,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+
 <?php
 $content = ob_get_clean();
-include '../simple_layout.php';
+include '../dashboard_layout.php';
 ?>

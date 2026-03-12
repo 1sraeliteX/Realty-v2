@@ -5,15 +5,18 @@ require_once __DIR__ . '/../../../config/init_framework.php';
 // Load components through registry (anti-scattering compliant)
 ComponentRegistry::load('ui-components');
 
-// Get data from centralized provider (anti-scattering compliant)
-$properties = ViewManager::get('properties') ?? DataProvider::get('properties');
-$stats = ViewManager::get('stats') ?? DataProvider::get('property_stats');
-
 // Set data through ViewManager (anti-scattering compliant)
-ViewManager::set('title', 'Properties Management');
-ViewManager::set('pageTitle', 'Properties');
-ViewManager::set('pageDescription', 'Manage your property portfolio and track performance');
+ViewManager::set('title', 'Admin Page');
+ViewManager::set('user', [
+    'name' => 'Admin User',
+    'email' => 'admin@cornerstone.com',
+    'avatar' => null
+]);
+ViewManager::set('notifications', []);
+
+ob_start();
 ?>
+
 
 <!-- Header with Actions -->
 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
@@ -296,4 +299,9 @@ function goToPage(page) {
 <?php
 $content = ob_get_clean();
 include '../simple_layout.php';
+?>
+
+<?php
+$content = ob_get_clean();
+include '../dashboard_layout.php';
 ?>

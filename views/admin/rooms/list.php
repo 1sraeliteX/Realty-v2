@@ -1,81 +1,22 @@
 <?php
-// Include UI Components
-require_once __DIR__ . '/../../components/UIComponents.php';
+// Initialize framework (anti-scattering compliant)
+require_once __DIR__ . '/../../../config/init_framework.php';
 
-$title = 'Rooms Management';
-$pageTitle = 'Rooms';
-$pageDescription = 'Manage individual rooms within units';
+// Load components through registry (anti-scattering compliant)
+ComponentRegistry::load('ui-components');
 
-// Mock rooms data
-$rooms = [
-    [
-        'id' => 1,
-        'name' => 'Master Bedroom',
-        'unit_id' => 1,
-        'unit_number' => '101',
-        'property_name' => 'Sunset Apartments',
-        'type' => 'bedroom',
-        'size_sqft' => 180,
-        'beds' => 1,
-        'baths' => 1,
-        'status' => 'occupied',
-        'occupant' => 'John Smith',
-        'rent_portion' => 600,
-        'amenities' => ['Walk-in Closet', 'En-suite Bathroom', 'Balcony Access'],
-        'created_at' => '2023-01-10'
-    ],
-    [
-        'id' => 2,
-        'name' => 'Living Room',
-        'unit_id' => 1,
-        'unit_number' => '101',
-        'property_name' => 'Sunset Apartments',
-        'type' => 'living',
-        'size_sqft' => 250,
-        'beds' => 0,
-        'baths' => 0,
-        'status' => 'occupied',
-        'occupant' => 'Shared',
-        'rent_portion' => 300,
-        'amenities' => ['Large Windows', 'Built-in Shelving', 'Ceiling Fan'],
-        'created_at' => '2023-01-10'
-    ],
-    [
-        'id' => 3,
-        'name' => 'Bedroom 2',
-        'unit_id' => 1,
-        'unit_number' => '101',
-        'property_name' => 'Sunset Apartments',
-        'type' => 'bedroom',
-        'size_sqft' => 120,
-        'beds' => 1,
-        'baths' => 0,
-        'status' => 'vacant',
-        'occupant' => null,
-        'rent_portion' => 300,
-        'amenities' => ['Standard Closet', 'Window View'],
-        'created_at' => '2023-01-10'
-    ],
-    [
-        'id' => 4,
-        'name' => 'Kitchen',
-        'unit_id' => 2,
-        'unit_number' => '102',
-        'property_name' => 'Sunset Apartments',
-        'type' => 'kitchen',
-        'size_sqft' => 150,
-        'beds' => 0,
-        'baths' => 0,
-        'status' => 'occupied',
-        'occupant' => 'Sarah Johnson',
-        'rent_portion' => 400,
-        'amenities' => ['Modern Appliances', 'Granite Countertops', 'Pantry'],
-        'created_at' => '2023-01-15'
-    ]
-];
+// Set data through ViewManager (anti-scattering compliant)
+ViewManager::set('title', 'Admin Page');
+ViewManager::set('user', [
+    'name' => 'Admin User',
+    'email' => 'admin@cornerstone.com',
+    'avatar' => null
+]);
+ViewManager::set('notifications', []);
 
 ob_start();
 ?>
+
 
 <!-- Stats Cards -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
@@ -343,7 +284,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+
 <?php
 $content = ob_get_clean();
-include '../simple_layout.php';
+include '../dashboard_layout.php';
 ?>

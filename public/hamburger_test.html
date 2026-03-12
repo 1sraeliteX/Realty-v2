@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hamburger Menu Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Mobile sidebar backdrop -->
+        <div id="sidebar-backdrop" class="fixed inset-0 bg-gray-600 bg-opacity-75 z-40 lg:hidden hidden"></div>
+        
+        <!-- Sidebar -->
+        <aside id="sidebar" class="flex-shrink-0 w-64 bg-white border-r border-gray-200 transform -translate-x-full transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 fixed top-0 left-0 z-50 h-screen overflow-y-auto">
+            <div class="flex items-center justify-between h-16 px-6 border-b border-gray-200">
+                <div class="flex items-center">
+                    <i class="fas fa-building text-blue-600 text-xl mr-3"></i>
+                    <span class="text-xl font-semibold text-gray-900">Cornerstone</span>
+                </div>
+                <button id="close-sidebar" class="lg:hidden text-gray-500 hover:text-gray-700 p-2 rounded-lg hover:bg-gray-100">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <nav class="p-4 space-y-2">
+                <a href="#" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg bg-blue-50 text-blue-700">
+                    <i class="fas fa-home mr-3"></i>
+                    Dashboard
+                </a>
+                <a href="#" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-100">
+                    <i class="fas fa-building mr-3"></i>
+                    Properties
+                </a>
+                <a href="#" class="flex items-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-100">
+                    <i class="fas fa-users mr-3"></i>
+                    Tenants
+                </a>
+            </nav>
+        </aside>
+        
+        <!-- Main content -->
+        <div class="flex flex-col flex-1">
+            <!-- Top navigation -->
+            <header class="bg-white border-b border-gray-200">
+                <div class="flex items-center justify-between h-16 px-4">
+                    <div class="flex items-center">
+                        <!-- HAMBURGER MENU -->
+                        <button id="open-sidebar" class="lg:hidden text-gray-500 hover:text-gray-700 mr-4 p-2 rounded-lg hover:bg-gray-100">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                        <h1 class="text-xl font-semibold text-gray-800">Test Page</h1>
+                    </div>
+                </div>
+            </header>
+            
+            <main class="flex-1 p-6">
+                <div class="max-w-4xl mx-auto">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">Hamburger Menu Test</h2>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow mb-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-3">Test Instructions:</h3>
+                        <ol class="list-decimal list-inside space-y-2 text-gray-700">
+                            <li><strong>On Desktop (≥1024px):</strong> Sidebar should be visible, hamburger menu hidden</li>
+                            <li><strong>On Mobile (&lt;1024px):</strong> Sidebar should be hidden, hamburger menu visible (☰)</li>
+                            <li><strong>Click Hamburger:</strong> Click the ☰ button to open sidebar</li>
+                            <li><strong>Close Sidebar:</strong> Click X button, dark backdrop, or press Escape</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-3">Current Status:</h3>
+                        <div id="status" class="space-y-2">
+                            <p><strong>Screen Width:</strong> <span id="width">-</span>px</p>
+                            <p><strong>Breakpoint:</strong> <span id="breakpoint">-</span></p>
+                            <p><strong>Hamburger Visible:</strong> <span id="hamburger-visible">-</span></p>
+                            <p><strong>Sidebar Visible:</strong> <span id="sidebar-visible">-</span></p>
+                            <p><strong>Sidebar State:</strong> <span id="sidebar-state">-</span></p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Elements
+        const sidebar = document.getElementById('sidebar');
+        const backdrop = document.getElementById('sidebar-backdrop');
+        const openBtn = document.getElementById('open-sidebar');
+        const closeBtn = document.getElementById('close-sidebar');
+        
+        // State
+        let sidebarOpen = false;
+        
+        // Status elements
+        const widthEl = document.getElementById('width');
+        const breakpointEl = document.getElementById('breakpoint');
+        const hamburgerVisibleEl = document.getElementById('hamburger-visible');
+        const sidebarVisibleEl = document.getElementById('sidebar-visible');
+        const sidebarStateEl = document.getElementById('sidebar-state');
+        
+        // Update status display
+        function updateStatus() {
+            const width = window.innerWidth;
+            const isDesktop = width >= 1024;
+            const isHamburgerVisible = openBtn && window.getComputedStyle(openBtn).display !== 'none';
+            const isSidebarVisible = sidebar && !sidebar.classList.contains('-translate-x-full');
+            
+            widthEl.textContent = width;
+            breakpointEl.textContent = isDesktop ? 'Desktop (≥1024px)' : 'Mobile (<1024px)';
+            hamburgerVisibleEl.textContent = isHamburgerVisible ? '✅ Yes' : '❌ No';
+            sidebarVisibleEl.textContent = isSidebarVisible ? '✅ Yes' : '❌ No';
+            sidebarStateEl.textContent = sidebarOpen ? '🟢 Open' : '🔴 Closed';
+            
+            // Color coding
+            breakpointEl.style.color = isDesktop ? '#10b981' : '#ef4444';
+        }
+        
+        // Initialize sidebar
+        function initializeSidebar() {
+            if (window.innerWidth >= 1024) {
+                // Desktop: show sidebar
+                sidebar.classList.remove('-translate-x-full');
+                sidebar.classList.add('translate-x-0');
+                backdrop.classList.add('hidden');
+                document.body.style.overflow = '';
+                sidebarOpen = false;
+            } else {
+                // Mobile: hide sidebar
+                sidebar.classList.add('-translate-x-full');
+                sidebar.classList.remove('translate-x-0');
+                backdrop.classList.add('hidden');
+                document.body.style.overflow = '';
+                sidebarOpen = false;
+            }
+            updateStatus();
+        }
+        
+        // Open sidebar
+        function openSidebar() {
+            if (window.innerWidth < 1024) {
+                sidebar.classList.remove('-translate-x-full');
+                sidebar.classList.add('translate-x-0');
+                backdrop.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+                sidebarOpen = true;
+                updateStatus();
+                console.log('✅ Sidebar opened via hamburger menu');
+            }
+        }
+        
+        // Close sidebar
+        function closeSidebar() {
+            sidebar.classList.add('-translate-x-full');
+            sidebar.classList.remove('translate-x-0');
+            backdrop.classList.add('hidden');
+            document.body.style.overflow = '';
+            sidebarOpen = false;
+            updateStatus();
+            console.log('✅ Sidebar closed');
+        }
+        
+        // Event listeners
+        openBtn?.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log('🍔 Hamburger menu clicked!');
+            openSidebar();
+        });
+        
+        closeBtn?.addEventListener('click', closeSidebar);
+        backdrop?.addEventListener('click', closeSidebar);
+        
+        // Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && sidebarOpen && window.innerWidth < 1024) {
+                closeSidebar();
+                console.log('⌨️ Escape key pressed - sidebar closed');
+            }
+        });
+        
+        // Resize handler
+        window.addEventListener('resize', () => {
+            clearTimeout(window.resizeTimer);
+            window.resizeTimer = setTimeout(() => {
+                initializeSidebar();
+            }, 250);
+        });
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Hamburger menu test initialized');
+            initializeSidebar();
+            
+            // Test hamburger button existence
+            if (openBtn) {
+                console.log('✅ Hamburger button found');
+            } else {
+                console.error('❌ Hamburger button NOT found');
+            }
+        });
+    </script>
+</body>
+</html>

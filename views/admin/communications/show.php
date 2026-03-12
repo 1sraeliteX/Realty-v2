@@ -1,87 +1,22 @@
 <?php
-// Include UI Components
-require_once __DIR__ . '/../../components/UIComponents.php';
+// Initialize framework (anti-scattering compliant)
+require_once __DIR__ . '/../../../config/init_framework.php';
 
-$title = 'Communication Details';
-$pageTitle = 'Communication Details';
-$pageDescription = 'View comprehensive communication details and manage messages';
+// Load components through registry (anti-scattering compliant)
+ComponentRegistry::load('ui-components');
 
-// Mock communication data
-$communication = [
-    'id' => 1,
-    'type' => 'email',
-    'subject' => 'Rent Payment Reminder - January 2024',
-    'message' => 'Dear John,
-
-This is a friendly reminder that your rent payment for January 2024 is due on January 1st, 2024. The amount due is $1,200.00.
-
-Payment can be made through:
-- Online portal
-- Bank transfer
-- Check delivered to the office
-
-If you have already made the payment, please disregard this notice. If you have any questions or concerns about your payment, please don\'t hesitate to contact us.
-
-Thank you for your prompt attention to this matter.
-
-Best regards,
-Cornerstone Realty Management',
-    'sender_id' => 1,
-    'sender_name' => 'Admin User',
-    'sender_email' => 'admin@cornerstone.com',
-    'recipient_id' => 1,
-    'recipient_name' => 'John Smith',
-    'recipient_email' => 'john.smith@email.com',
-    'status' => 'sent',
-    'priority' => 'normal',
-    'category' => 'payment',
-    'property_id' => 1,
-    'property_name' => 'Sunset Apartments',
-    'unit_id' => 1,
-    'unit_number' => '101',
-    'sent_date' => '2024-01-01 09:00:00',
-    'read_date' => '2024-01-01 10:30:00',
-    'reply_date' => null,
-    'attachments' => [
-        ['id' => 1, 'name' => 'January_Invoice_2024.pdf', 'size' => '245 KB', 'type' => 'pdf']
-    ],
-    'created_at' => '2024-01-01 08:45:00',
-    'updated_at' => '2024-01-01 10:30:00'
-];
-
-// Mock conversation thread
-$conversation = [
-    [
-        'id' => 1,
-        'type' => 'email',
-        'sender' => 'Admin User',
-        'sender_email' => 'admin@cornerstone.com',
-        'message' => 'Initial rent payment reminder sent to tenant.',
-        'date' => '2024-01-01 09:00:00',
-        'direction' => 'outgoing'
-    ],
-    [
-        'id' => 2,
-        'type' => 'email',
-        'sender' => 'John Smith',
-        'sender_email' => 'john.smith@email.com',
-        'message' => 'Thank you for the reminder. I have just submitted my payment through the online portal.',
-        'date' => '2024-01-01 10:30:00',
-        'direction' => 'incoming'
-    ],
-    [
-        'id' => 3,
-        'type' => 'system',
-        'sender' => 'System',
-        'sender_email' => 'system@cornerstone.com',
-        'message' => 'Payment of $1,200.00 received from John Smith for unit 101.',
-        'date' => '2024-01-01 10:35:00',
-        'direction' => 'system'
-    ]
-];
+// Set data through ViewManager (anti-scattering compliant)
+ViewManager::set('title', 'Admin Page');
+ViewManager::set('user', [
+    'name' => 'Admin User',
+    'email' => 'admin@cornerstone.com',
+    'avatar' => null
+]);
+ViewManager::set('notifications', []);
 
 ob_start();
 ?>
+
 
 <!-- Communication Header -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-6">
@@ -329,7 +264,8 @@ function addToTemplate() {
 }
 </script>
 
+
 <?php
 $content = ob_get_clean();
-include '../simple_layout.php';
+include '../dashboard_layout.php';
 ?>
