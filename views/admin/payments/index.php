@@ -1,6 +1,6 @@
 <?php
 // Initialize framework (anti-scattering compliant)
-require_once __DIR__ . '/../../config/init_framework.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/../config/bootstrap.php';
 
 // Load components through registry (anti-scattering compliant)
 ComponentRegistry::load('ui-components');
@@ -20,7 +20,7 @@ ViewManager::set('activeMenu', 'payments');
 ViewManager::set('user', $user);
 ViewManager::set('notifications', $notifications);
 
-// Start output buffering for the payments content
+// Start output buffering for the content
 ob_start();
 ?>
 
@@ -311,5 +311,5 @@ $content = ob_get_clean();
 ViewManager::set('content', $content);
 
 // Include the dashboard layout
-include __DIR__ . '/../simple_layout.php';
+include __DIR__ . '/../dashboard_layout.php';
 ?>

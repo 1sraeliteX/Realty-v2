@@ -1,19 +1,29 @@
 <?php
-// Framework initialization is handled by the controller
-// This view is anti-scattering compliant - no direct requires or data access
+// Initialize framework (anti-scattering compliant)
+require_once $_SERVER['DOCUMENT_ROOT'] . '/../config/bootstrap.php';
 
-// Get data from ViewManager (anti-scattering compliant)
-$stats = ViewManager::get('stats') ?? [];
-$recentTransactions = ViewManager::get('recentTransactions') ?? [];
-$revenueData = ViewManager::get('revenueData') ?? [];
-$expenseData = ViewManager::get('expenseData') ?? [];
-$upcomingPayments = ViewManager::get('upcomingPayments') ?? [];
-$overduePayments = ViewManager::get('overduePayments') ?? [];
+// Load components through registry (anti-scattering compliant)
+ComponentRegistry::load('ui-components');
 
-// Set page metadata through ViewManager (anti-scattering compliant)
+// Get data from centralized provider (anti-scattering compliant)
+$stats = ViewManager::get('stats') ?? DataProvider::get('finance_stats');
+$recentTransactions = ViewManager::get('recentTransactions') ?? DataProvider::get('recent_transactions');
+$revenueData = ViewManager::get('revenueData') ?? DataProvider::get('revenue_data');
+$expenseData = ViewManager::get('expenseData') ?? DataProvider::get('expense_data');
+$upcomingPayments = ViewManager::get('upcomingPayments') ?? DataProvider::get('upcoming_payments');
+$overduePayments = ViewManager::get('overduePayments') ?? DataProvider::get('overdue_payments');
+$user = DataProvider::get('user');
+$notifications = DataProvider::get('notifications');
+
+// Set data through ViewManager (anti-scattering compliant)
 ViewManager::set('title', 'Finance Management');
 ViewManager::set('pageTitle', 'Finance Management');
 ViewManager::set('pageDescription', 'Monitor revenue, expenses, and financial performance');
+ViewManager::set('user', $user);
+ViewManager::set('notifications', $notifications);
+
+// Start output buffering for the content
+ob_start();
 ?>
 
 <!-- Financial Overview Stats -->
@@ -251,3 +261,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
+<?php
+$content = ob_get_clean();
+
+// Set content for layout (anti-scattering compliant)
+ViewManager::set('content', $content);
+
+// Include the dashboard layout
+include __DIR__ . '/../dashboard_layout.php';
+?>

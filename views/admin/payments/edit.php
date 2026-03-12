@@ -1,27 +1,69 @@
 <?php
-// Include UI Components
-require_once __DIR__ . '/../../components/UIComponents.php';
+// Initialize framework (anti-scattering compliant)
+require_once $_SERVER['DOCUMENT_ROOT'] . '/../config/bootstrap.php';
 
-$title = 'Edit Payment';
-$pageTitle = 'Edit Payment Information';
+// Load components through registry (anti-scattering compliant)
+ComponentRegistry::load('ui-components');
 
-$content = ob_start();
+// Get data from centralized provider (anti-scattering compliant)
+$tenants = ViewManager::get('tenants') ?? DataProvider::get('tenants');
+$user = DataProvider::get('user');
+$notifications = DataProvider::get('notifications');
+
+// Set data through ViewManager (anti-scattering compliant)
+ViewManager::set('title', 'Edit Payment');
+ViewManager::set('pageTitle', 'Edit Payment');
+ViewManager::set('pageDescription', 'Update payment information');
+ViewManager::set('user', $user);
+ViewManager::set('notifications', $notifications);
+
+// Start output buffering for the content
+ob_start();
 ?>
 
-<div class="max-w-4xl mx-auto">
-    <!-- Header -->
-    <div class="mb-6">
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Edit Payment</h1>
-                <p class="text-gray-600 dark:text-gray-400 mt-1">Update payment information</p>
-            </div>
-            <a href="/admin/payments" class="inline-flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600">
-                <i class="fas fa-times mr-2"></i>
-                Cancel
-            </a>
+<!-- Breadcrumb Navigation -->
+<div class="mb-6">
+    <nav class="flex" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li class="inline-flex items-center">
+                <a href="/admin/dashboard" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400">
+                    <i class="fas fa-home mr-2"></i>
+                    Dashboard
+                </a>
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                    <a href="/admin/payments" class="ml-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 md:ml-2">
+                        Payments
+                    </a>
+                </div>
+            </li>
+            <li aria-current="page">
+                <div class="flex items-center">
+                    <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                    <span class="ml-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ml-2">
+                        Edit Payment
+                    </span>
+                </div>
+            </li>
+        </ol>
+    </nav>
+</div>
+
+<!-- Page Header -->
+<div class="mb-8">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Edit Payment</h1>
+            <p class="text-gray-600 dark:text-gray-400 mt-1">Update payment information</p>
         </div>
+        <a href="/admin/payments" class="inline-flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back to Payments
+        </a>
     </div>
+</div>
 
     <!-- Form -->
     <form method="POST" action="/admin/payments/<?php echo $_GET['id'] ?? '1'; ?>" class="space-y-6">
@@ -88,11 +130,13 @@ $content = ob_start();
             </button>
         </div>
     </form>
-</div>
 
 <?php
 $content = ob_get_clean();
 
-// Include the admin dashboard layout
-include __DIR__ . '/../simple_layout.php';
+// Set content for layout (anti-scattering compliant)
+ViewManager::set('content', $content);
+
+// Include the dashboard layout
+include __DIR__ . '/../dashboard_layout.php';
 ?>

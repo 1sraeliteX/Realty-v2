@@ -109,6 +109,26 @@ ob_start();
                         <option value="other">Other</option>
                     </select>
                 </div>
+
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">ID Document Upload</label>
+                    <?php
+                    // Load attachment component (anti-scattering compliant)
+                    ComponentRegistry::load('attachment-component');
+                    echo AttachmentComponent::renderUploadArea([
+                        'id' => 'occupant-id-upload',
+                        'name' => 'id_documents[]',
+                        'accept' => '.jpg,.jpeg,.png,.pdf',
+                        'max_size' => 5,
+                        'max_files' => 2,
+                        'preview' => true,
+                        'class' => 'id-document-upload'
+                    ]);
+                    ?>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                        Upload clear photos of ID document (front and back) or passport. Accepted formats: JPG, PNG, PDF. Maximum 5MB per file.
+                    </p>
+                </div>
             </div>
 
             <!-- Assignment Information -->
@@ -287,6 +307,13 @@ function saveAsDraft() {
     showToast('Draft saved successfully!', 'info');
 }
 </script>
+
+<?php
+// Include attachment component JavaScript
+ComponentRegistry::load('attachment-component');
+echo AttachmentComponentJS::renderJS();
+echo AttachmentComponent::renderPreviewModal();
+?>
 
 <?php
 // Capture content

@@ -22,6 +22,47 @@ class TenantOccupantController extends BaseController {
         echo \ViewManager::render('admin.tenants_occupants.index', [], 'admin.dashboard_layout');
     }
     
+    public function createOccupant() {
+        // Initialize anti-scattering system
+        require_once __DIR__ . '/../../config/bootstrap.php';
+        
+        // Set page metadata
+        \ViewManager::set('title', 'Add New Occupant');
+        \ViewManager::set('user', ['name' => 'Admin User', 'email' => 'admin@cornerstone.com']);
+        \ViewManager::set('notifications', []);
+        
+        // Set mock data through DataProvider
+        \DataProvider::set('properties', [
+            ['id' => 1, 'name' => 'Sunset Apartments'],
+            ['id' => 2, 'name' => 'Ocean View Condos'],
+            ['id' => 3, 'name' => 'Mountain Heights']
+        ]);
+        
+        \DataProvider::set('units', [
+            ['id' => 1, 'property_id' => 1, 'number' => 'A-101', 'type' => '1 Bedroom'],
+            ['id' => 2, 'property_id' => 1, 'number' => 'A-102', 'type' => '2 Bedroom'],
+            ['id' => 3, 'property_id' => 2, 'number' => 'B-201', 'type' => 'Studio'],
+            ['id' => 4, 'property_id' => 2, 'number' => 'B-202', 'type' => '1 Bedroom'],
+            ['id' => 5, 'property_id' => 3, 'number' => 'C-301', 'type' => '3 Bedroom']
+        ]);
+        
+        \DataProvider::set('tenants', [
+            ['id' => 1, 'name' => 'John Doe', 'email' => 'john@example.com'],
+            ['id' => 2, 'name' => 'Jane Smith', 'email' => 'jane@example.com'],
+            ['id' => 3, 'name' => 'Mike Johnson', 'email' => 'mike@example.com']
+        ]);
+        
+        // Render the occupants create view directly
+        include __DIR__ . '/../../views/admin/occupants/create.php';
+    }
+    
+    public function storeOccupant() {
+        // Store new occupant
+        // Implementation would go here
+        header('Location: /admin/tenants-occupants');
+        exit;
+    }
+    
     public function create() {
         // Initialize anti-scattering system
         require_once __DIR__ . '/../../config/bootstrap.php';

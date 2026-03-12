@@ -54,16 +54,24 @@ ob_start();
     </div>
 </div>
 
-<!-- Tabs -->
-<div class="border-b border-gray-200 dark:border-gray-700 mb-8">
-    <nav class="-mb-px flex space-x-8">
-        <button onclick="switchTab('tenants')" id="tenantsTab" class="py-2 px-1 border-b-2 border-primary-500 font-medium text-sm text-primary-600 dark:text-primary-400">
-            Tenants (<?php echo count($tenants); ?>)
+<!-- Modern Tabbed Navigation -->
+<div class="mb-8">
+    <div class="bg-gray-100 dark:bg-gray-800 rounded-lg p-1 inline-flex">
+        <button onclick="switchTab('tenants')" id="tenantsTab" class="px-6 py-3 rounded-md text-sm font-medium transition-all duration-200 bg-white dark:bg-primary-600 text-primary-600 dark:text-white shadow-sm">
+            <i class="fas fa-users mr-2"></i>
+            Tenants 
+            <span class="ml-2 px-2 py-1 text-xs rounded-full bg-primary-100 dark:bg-primary-700 text-primary-600 dark:text-primary-200">
+                <?php echo count($tenants); ?>
+            </span>
         </button>
-        <button onclick="switchTab('occupants')" id="occupantsTab" class="py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300">
-            Occupants (<?php echo count($occupants); ?>)
+        <button onclick="switchTab('occupants')" id="occupantsTab" class="px-6 py-3 rounded-md text-sm font-medium transition-all duration-200 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
+            <i class="fas fa-bed mr-2"></i>
+            Occupants 
+            <span class="ml-2 px-2 py-1 text-xs rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+                <?php echo count($occupants); ?>
+            </span>
         </button>
-    </nav>
+    </div>
 </div>
 
 <!-- Tenants Content (Hidden by default) -->
@@ -369,22 +377,40 @@ function switchTab(tab) {
     const occupantsContent = document.getElementById('occupantsContent');
     
     if (tab === 'tenants') {
-        // Show tenants tab
-        tenantsTab.classList.add('border-primary-500', 'text-primary-600', 'dark:text-primary-400');
-        tenantsTab.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300', 'dark:text-gray-400', 'dark:hover:text-gray-300');
+        // Show tenants tab - active styling
+        tenantsTab.classList.add('bg-white', 'dark:bg-primary-600', 'text-primary-600', 'dark:text-white', 'shadow-sm');
+        tenantsTab.classList.remove('text-gray-600', 'dark:text-gray-400', 'hover:text-gray-800', 'dark:hover:text-gray-200');
         
-        occupantsTab.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300', 'dark:text-gray-400', 'dark:hover:text-gray-300');
-        occupantsTab.classList.remove('border-primary-500', 'text-primary-600', 'dark:text-primary-400');
+        // Hide occupants tab - inactive styling
+        occupantsTab.classList.add('text-gray-600', 'dark:text-gray-400', 'hover:text-gray-800', 'dark:hover:text-gray-200');
+        occupantsTab.classList.remove('bg-white', 'dark:bg-primary-600', 'text-primary-600', 'dark:text-white', 'shadow-sm');
+        
+        // Update count badges
+        const tenantsBadge = tenantsTab.querySelector('span');
+        const occupantsBadge = occupantsTab.querySelector('span');
+        tenantsBadge.classList.add('bg-primary-100', 'dark:bg-primary-700', 'text-primary-600', 'dark:text-primary-200');
+        tenantsBadge.classList.remove('bg-gray-200', 'dark:bg-gray-700', 'text-gray-600', 'dark:text-gray-300');
+        occupantsBadge.classList.add('bg-gray-200', 'dark:bg-gray-700', 'text-gray-600', 'dark:text-gray-300');
+        occupantsBadge.classList.remove('bg-primary-100', 'dark:bg-primary-700', 'text-primary-600', 'dark:text-primary-200');
         
         tenantsContent.classList.remove('hidden');
         occupantsContent.classList.add('hidden');
     } else {
-        // Show occupants tab
-        occupantsTab.classList.add('border-primary-500', 'text-primary-600', 'dark:text-primary-400');
-        occupantsTab.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300', 'dark:text-gray-400', 'dark:hover:text-gray-300');
+        // Show occupants tab - active styling
+        occupantsTab.classList.add('bg-white', 'dark:bg-primary-600', 'text-primary-600', 'dark:text-white', 'shadow-sm');
+        occupantsTab.classList.remove('text-gray-600', 'dark:text-gray-400', 'hover:text-gray-800', 'dark:hover:text-gray-200');
         
-        tenantsTab.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300', 'dark:text-gray-400', 'dark:hover:text-gray-300');
-        tenantsTab.classList.remove('border-primary-500', 'text-primary-600', 'dark:text-primary-400');
+        // Hide tenants tab - inactive styling
+        tenantsTab.classList.add('text-gray-600', 'dark:text-gray-400', 'hover:text-gray-800', 'dark:hover:text-gray-200');
+        tenantsTab.classList.remove('bg-white', 'dark:bg-primary-600', 'text-primary-600', 'dark:text-white', 'shadow-sm');
+        
+        // Update count badges
+        const tenantsBadge = tenantsTab.querySelector('span');
+        const occupantsBadge = occupantsTab.querySelector('span');
+        occupantsBadge.classList.add('bg-primary-100', 'dark:bg-primary-700', 'text-primary-600', 'dark:text-primary-200');
+        occupantsBadge.classList.remove('bg-gray-200', 'dark:bg-gray-700', 'text-gray-600', 'dark:text-gray-300');
+        tenantsBadge.classList.add('bg-gray-200', 'dark:bg-gray-700', 'text-gray-600', 'dark:text-gray-300');
+        tenantsBadge.classList.remove('bg-primary-100', 'dark:bg-primary-700', 'text-primary-600', 'dark:text-primary-200');
         
         occupantsContent.classList.remove('hidden');
         tenantsContent.classList.add('hidden');

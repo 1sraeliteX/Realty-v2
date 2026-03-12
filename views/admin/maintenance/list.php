@@ -1,6 +1,6 @@
 <?php
 // Initialize framework (anti-scattering compliant)
-require_once __DIR__ . '/../../../config/init_framework.php';
+require_once __DIR__ . '/../../../config/bootstrap.php';
 
 // Load components through registry (anti-scattering compliant)
 ComponentRegistry::load('ui-components');
@@ -16,16 +16,65 @@ ViewManager::set('title', $title ?? 'Maintenance Management');
 ViewManager::set('pageTitle', $pageTitle ?? 'Maintenance Management');
 ViewManager::set('pageDescription', $pageDescription ?? 'Track and manage maintenance requests');
 
-// Add Font Awesome CSS to head (anti-scattering compliant)
-ViewManager::set('headCSS', '
-<!-- Font Awesome -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="/assets/css/fontawesome.css">
-');
-
-// Start output buffering for the dashboard layout
-ob_start();
+// Get current page for navigation highlighting
+$currentPath = $_SERVER['REQUEST_URI'] ?? '';
+$isMaintenance = strpos($currentPath, '/admin/maintenance') === 0;
 ?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo $title ?? 'Maintenance Management'; ?></title>
+    
+    <!-- Blocking theme script - MUST be first to prevent FOIT -->
+    <script>
+        // Apply theme immediately before any CSS loads
+        (function() {
+            var theme = localStorage.getItem('theme');
+            // Default to dark if no preference saved (requirement #4)
+            if (theme === 'light') {
+                document.documentElement.classList.remove('dark');
+            } else {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Tailwind config
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/fontawesome.css">
+</head>
+<body class="bg-gray-50 dark:bg-gray-900">
+    <div id="toast-container" class="fixed top-4 right-4 z-50"></div>
 
 <!-- Mobile sidebar backdrop -->
 <div id="sidebarBackdrop" class="fixed inset-0 z-40 bg-gray-600 bg-opacity-75 lg:hidden hidden"></div>
@@ -223,13 +272,65 @@ ob_start();
 </div>
 
 <script>
+// Toast notification system
+function showToast(message, type = 'success') {
+    const toast = document.createElement('div');
+    toast.className = `mb-2 px-4 py-3 rounded-lg shadow-lg text-white transform transition-all duration-300 translate-x-full ${
+        type === 'success' ? 'bg-green-500' : 
+        type === 'error' ? 'bg-red-500' : 
+        type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
+    }`;
+    
+    toast.innerHTML = `
+        <div class="flex items-center">
+            <i class="fas ${
+                type === 'success' ? 'fa-check-circle' : 
+                type === 'error' ? 'fa-exclamation-circle' : 
+                type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle'
+            } mr-2"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    document.getElementById('toast-container').appendChild(toast);
+    
+    setTimeout(() => {
+        toast.classList.remove('translate-x-full');
+        toast.classList.add('translate-x-0');
+    }, 100);
+    
+    setTimeout(() => {
+        toast.classList.add('translate-x-full');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
 // Sidebar functionality
 const sidebar = document.getElementById('sidebar');
 const sidebarBackdrop = document.getElementById('sidebarBackdrop');
 const openSidebar = document.getElementById('openSidebar');
 const closeSidebar = document.getElementById('closeSidebar');
 const toggleSidebar = document.getElementById('toggleSidebar');
-const sidebarToggleIcon = toggleSidebar.querySelector('i');
+if (toggleSidebar) {
+    const sidebarToggleIcon = toggleSidebar.querySelector('i');
+    
+    toggleSidebar.addEventListener('click', () => {
+        const sidebarText = document.querySelectorAll('.sidebar-text');
+        const sidebarIcons = document.querySelectorAll('.sidebar-icon');
+        
+        sidebar.classList.toggle('w-64');
+        sidebar.classList.toggle('w-16');
+        
+        sidebarText.forEach(text => {
+            text.classList.toggle('hidden');
+        });
+        
+        if (sidebarToggleIcon) {
+            sidebarToggleIcon.classList.toggle('fa-chevron-left');
+            sidebarToggleIcon.classList.toggle('fa-chevron-right');
+        }
+    });
+}
 
 openSidebar.addEventListener('click', () => {
     sidebar.classList.remove('-translate-x-full');
@@ -301,10 +402,5 @@ function deleteMaintenance(id) {
 }
 </script>
 
-<?php
-$content = ob_get_clean();
-
-// Include the dashboard layout
-require_once __DIR__ . '/../../simple_layout.php';
-echo ViewManager::renderLayout($content);
-?>
+</body>
+</html>

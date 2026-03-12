@@ -82,7 +82,7 @@ class PaymentController extends BaseController {
         $admin = $this->requireAuth();
         
         // Initialize framework (anti-scattering compliant)
-        require_once __DIR__ . '/../../config/init_framework.php';
+        require_once __DIR__ . '/../../config/bootstrap.php';
         
         // Load components through registry (anti-scattering compliant)
         \ComponentRegistry::load('ui-components');
@@ -103,16 +103,8 @@ class PaymentController extends BaseController {
         ViewManager::set('properties', $properties);
         ViewManager::set('admin', $admin);
         
-        // Generate payment creation page content (anti-scattering compliant)
-        ob_start();
-        include __DIR__ . '/../../views/admin/payments/create_content.php';
-        $content = ob_get_clean();
-        
-        // Set content for layout (anti-scattering compliant)
-        ViewManager::set('content', $content);
-        
-        // Include the simple layout (without sidebar logout button)
-        include __DIR__ . '/../../views/simple_layout.php';
+        // Include the payments create view (which includes dashboard layout)
+        include __DIR__ . '/../../views/admin/payments/create.php';
     }
     
     public function store() {
@@ -242,7 +234,7 @@ class PaymentController extends BaseController {
         
         try {
             // Initialize framework (anti-scattering compliant)
-            require_once __DIR__ . '/../../config/init_framework.php';
+            require_once __DIR__ . '/../../config/bootstrap.php';
             
             // Load components through registry (anti-scattering compliant)
             \ComponentRegistry::load('ui-components');
@@ -290,16 +282,8 @@ class PaymentController extends BaseController {
             ViewManager::set('receipts', $receipts);
             ViewManager::set('admin', $admin);
             
-            // Generate payment details page content (anti-scattering compliant)
-            ob_start();
+            // Include the payments show view (which includes dashboard layout)
             include __DIR__ . '/../../views/admin/payments/show.php';
-            $content = ob_get_clean();
-            
-            // Set content for layout (anti-scattering compliant)
-            ViewManager::set('content', $content);
-            
-            // Include the simple layout (without sidebar logout button)
-            include __DIR__ . '/../../views/simple_layout.php';
             
         } catch (Exception $e) {
             error_log('Payment view error: ' . $e->getMessage());

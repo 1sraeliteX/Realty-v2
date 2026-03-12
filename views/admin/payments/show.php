@@ -1,11 +1,25 @@
 <?php
-// Framework initialization is handled by the controller
-// This view is anti-scattering compliant - no direct requires or data access
+// Initialize framework (anti-scattering compliant)
+require_once $_SERVER['DOCUMENT_ROOT'] . '/../config/bootstrap.php';
 
-// Get data from ViewManager (anti-scattering compliant)
+// Load components through registry (anti-scattering compliant)
+ComponentRegistry::load('ui-components');
+
+// Get data from centralized provider (anti-scattering compliant)
 $payment = ViewManager::get('payment') ?? [];
 $receipts = ViewManager::get('receipts') ?? [];
-$admin = ViewManager::get('admin') ?? [];
+$user = DataProvider::get('user');
+$notifications = DataProvider::get('notifications');
+
+// Set data through ViewManager (anti-scattering compliant)
+ViewManager::set('title', 'Payment Details');
+ViewManager::set('pageTitle', 'Payment Details');
+ViewManager::set('pageDescription', 'View payment information and uploaded receipts');
+ViewManager::set('user', $user);
+ViewManager::set('notifications', $notifications);
+
+// Start output buffering for the content
+ob_start();
 ?>
 
 <!-- Breadcrumb Navigation -->
@@ -150,3 +164,13 @@ $admin = ViewManager::get('admin') ?? [];
         </div>
     <?php endif; ?>
 </div>
+
+<?php
+$content = ob_get_clean();
+
+// Set content for layout (anti-scattering compliant)
+ViewManager::set('content', $content);
+
+// Include the dashboard layout
+include __DIR__ . '/../dashboard_layout.php';
+?>

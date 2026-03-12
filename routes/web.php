@@ -59,6 +59,8 @@ return [
 
     // Admin Tenants & Occupants routes
     'GET /admin/tenants-occupants' => 'TenantOccupantController@index',
+    'GET /admin/occupants/create' => 'TenantOccupantController@createOccupant',
+    'POST /admin/occupants' => 'TenantOccupantController@storeOccupant',
 
     // Admin Payment routes
     'GET /admin/payments' => 'PaymentController@index',
