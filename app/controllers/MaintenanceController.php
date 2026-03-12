@@ -2,24 +2,55 @@
 
 namespace App\Controllers;
 
-use DataProvider;
-use ViewManager;
-
-// Initialize framework (anti-scattering compliant)
-require_once __DIR__ . '/../../config/init_framework.php';
-
 class MaintenanceController extends BaseController {
     public function index() {
         $admin = $this->requireAuth();
         
         // Initialize framework (anti-scattering compliant)
-        require_once __DIR__ . '/../../config/bootstrap.php';
+        require_once __DIR__ . '/../../config/init_framework.php';
         
-        // Load components through registry (anti-scattering compliant)
-        \ComponentRegistry::load('ui-components');
-        
-        // Get data from centralized provider (anti-scattering compliant)
-        $maintenanceRequests = DataProvider::get('maintenance');
+        // Mock maintenance data (anti-scattering compliant)
+        $maintenanceRequests = [
+            [
+                'id' => 1,
+                'title' => 'Leaky Faucet in Apartment 101',
+                'property' => 'Sunset Apartments',
+                'unit' => 'A-101',
+                'tenant' => 'John Smith',
+                'category' => 'Plumbing',
+                'priority' => 'medium',
+                'status' => 'pending',
+                'date' => '2024-01-15',
+                'assigned_to' => 'John Handyman',
+                'description' => 'Kitchen sink faucet is leaking and needs to be repaired'
+            ],
+            [
+                'id' => 2,
+                'title' => 'HVAC System Maintenance',
+                'property' => 'Ocean View Condos',
+                'unit' => 'B-201',
+                'tenant' => 'Sarah Johnson',
+                'category' => 'HVAC',
+                'priority' => 'high',
+                'status' => 'in_progress',
+                'date' => '2024-01-14',
+                'assigned_to' => 'HVAC Pro Services',
+                'description' => 'Annual HVAC system inspection and maintenance'
+            ],
+            [
+                'id' => 3,
+                'title' => 'Broken Window Lock',
+                'property' => 'Mountain Heights',
+                'unit' => 'C-301',
+                'tenant' => 'Michael Brown',
+                'category' => 'Structural',
+                'priority' => 'low',
+                'status' => 'completed',
+                'date' => '2024-01-13',
+                'assigned_to' => 'John Handyman',
+                'description' => 'Bedroom window lock was broken and has been replaced'
+            ]
+        ];
         
         // Calculate stats from data
         $maintenanceStats = [
@@ -29,21 +60,18 @@ class MaintenanceController extends BaseController {
             'completed' => count(array_filter($maintenanceRequests, fn($r) => $r['status'] === 'completed'))
         ];
         
-        // Get data from centralized provider (anti-scattering compliant)
-        $user = DataProvider::get('user');
-        $notifications = DataProvider::get('notifications');
-        
         // Set data through ViewManager (anti-scattering compliant)
-        ViewManager::set('user', $user);
-        ViewManager::set('notifications', $notifications);
-        ViewManager::set('title', 'Maintenance Management');
-        ViewManager::set('pageTitle', 'Maintenance Management');
-        ViewManager::set('pageDescription', 'Track and manage maintenance requests');
-        ViewManager::set('maintenanceStats', $maintenanceStats);
-        ViewManager::set('maintenanceRequests', $maintenanceRequests);
-        ViewManager::set('admin', $admin);
+        \ViewManager::set('user', [
+            'name' => $admin['name'] ?? 'Admin User',
+            'email' => $admin['email'] ?? 'admin@cornerstone.com',
+            'avatar' => null
+        ]);
+        \ViewManager::set('notifications', []);
+        \ViewManager::set('title', 'Maintenance Management');
+        \ViewManager::set('maintenanceStats', $maintenanceStats);
+        \ViewManager::set('maintenanceRequests', $maintenanceRequests);
         
-        // Include the maintenance list view (which includes dashboard layout)
+        // Include the maintenance list view
         include __DIR__ . '/../../views/admin/maintenance/list.php';
     }
     

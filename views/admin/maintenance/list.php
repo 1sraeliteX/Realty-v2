@@ -1,38 +1,91 @@
 <?php
 // Initialize framework (anti-scattering compliant)
-require_once __DIR__ . '/../../../config/bootstrap.php';
+require_once __DIR__ . '/../../../config/init_framework.php';
 
-// Load components through registry (anti-scattering compliant)
-ComponentRegistry::load('ui-components');
-
-// Get data from centralized provider (anti-scattering compliant)
-$maintenanceStats = ViewManager::get('maintenanceStats') ?? [
+// Get data from ViewManager (anti-scattering compliant)
+$maintenanceStats = \ViewManager::get('maintenanceStats') ?? [
     'total' => 0,
     'pending' => 0,
     'in_progress' => 0,
     'completed' => 0
 ];
-$maintenanceRequests = ViewManager::get('maintenanceRequests') ?? [];
-$user = DataProvider::get('user');
-$notifications = DataProvider::get('notifications');
+$maintenanceRequests = \ViewManager::get('maintenanceRequests') ?? [];
+$user = \ViewManager::get('user');
 
-// Set data through ViewManager (anti-scattering compliant)
-ViewManager::set('title', 'Maintenance Management');
-ViewManager::set('pageTitle', 'Maintenance Management');
-ViewManager::set('pageDescription', 'Track and manage maintenance requests');
-ViewManager::set('user', $user);
-ViewManager::set('notifications', $notifications);
-
-// Start output buffering for the content
 ob_start();
 ?>
 
+<!-- Breadcrumb -->
+<div class="mb-6">
+    <nav class="flex" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li class="inline-flex items-center">
+                <a href="/admin/dashboard" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400">
+                    <i class="fas fa-home mr-2"></i>
+                    Dashboard
+                </a>
+            </li>
+            <li aria-current="page">
+                <div class="flex items-center">
+                    <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                    <span class="ml-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ml-2">
+                        Maintenance
+                    </span>
+                </div>
+            </li>
+        </ol>
+    </nav>
+</div>
+
 <!-- Maintenance Overview Stats -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-    <?php echo UIComponents::statsCard('Total Requests', $maintenanceStats['total'], 'wrench', 0, 'blue'); ?>
-    <?php echo UIComponents::statsCard('Pending', $maintenanceStats['pending'], 'clock', 0, 'yellow'); ?>
-    <?php echo UIComponents::statsCard('In Progress', $maintenanceStats['in_progress'], 'spinner', 0, 'orange'); ?>
-    <?php echo UIComponents::statsCard('Completed', $maintenanceStats['completed'], 'check-circle', 0, 'green'); ?>
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
+        <div class="flex items-center">
+            <div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                <i class="fas fa-wrench text-blue-600 dark:text-blue-400 text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Requests</p>
+                <p class="text-2xl font-semibold text-gray-900 dark:text-white"><?php echo $maintenanceStats['total']; ?></p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
+        <div class="flex items-center">
+            <div class="p-3 bg-yellow-100 dark:bg-yellow-900 rounded-lg">
+                <i class="fas fa-clock text-yellow-600 dark:text-yellow-400 text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Pending</p>
+                <p class="text-2xl font-semibold text-gray-900 dark:text-white"><?php echo $maintenanceStats['pending']; ?></p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
+        <div class="flex items-center">
+            <div class="p-3 bg-orange-100 dark:bg-orange-900 rounded-lg">
+                <i class="fas fa-spinner text-orange-600 dark:text-orange-400 text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">In Progress</p>
+                <p class="text-2xl font-semibold text-gray-900 dark:text-white"><?php echo $maintenanceStats['in_progress']; ?></p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
+        <div class="flex items-center">
+            <div class="p-3 bg-green-100 dark:bg-green-900 rounded-lg">
+                <i class="fas fa-check-circle text-green-600 dark:text-green-400 text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Completed</p>
+                <p class="text-2xl font-semibold text-gray-900 dark:text-white"><?php echo $maintenanceStats['completed']; ?></p>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Maintenance Requests Table -->
@@ -109,7 +162,7 @@ ob_start();
                             ?>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                            <?php echo date('M j, Y', strtotime($request['created_at'])); ?>
+                            <?php echo date('M j, Y', strtotime($request['date'])); ?>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <div class="flex items-center space-x-2">
@@ -173,7 +226,7 @@ function closeDeleteModal() {
 $content = ob_get_clean();
 
 // Set content for layout (anti-scattering compliant)
-ViewManager::set('content', $content);
+\ViewManager::set('content', $content);
 
 // Include the dashboard layout
 include __DIR__ . '/../dashboard_layout.php';

@@ -1,6 +1,6 @@
 <?php
 // Initialize framework (anti-scattering compliant)
-require_once __DIR__ . '/../../../config/bootstrap.php';
+require_once __DIR__ . '/../../../config/init_framework.php';
 
 // Set data through ViewManager (anti-scattering compliant)
 ViewManager::set('title', 'Communications');
@@ -11,8 +11,8 @@ ViewManager::set('user', [
 ]);
 ViewManager::set('notifications', []);
 
-// Mock data for communications (would come from DataProvider in production)
-$communications = DataProvider::get('communications', [
+// Mock data for communications (anti-scattering compliant - using ViewManager)
+ViewManager::set('communications', [
     [
         'id' => 1,
         'subject' => 'Rent Payment Reminder',
@@ -210,7 +210,7 @@ ob_start();
                 </tr>
             </thead>
             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                <?php foreach ($communications as $communication): ?>
+                <?php foreach (ViewManager::get('communications') as $communication): ?>
                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                     <td class="px-6 py-4">
                         <div class="text-sm font-medium text-gray-900 dark:text-white"><?php echo htmlspecialchars($communication['subject']); ?></div>

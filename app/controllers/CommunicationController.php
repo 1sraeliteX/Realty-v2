@@ -5,11 +5,19 @@ namespace App\Controllers;
 class CommunicationController extends BaseController {
     public function index() {
         $admin = $this->requireAuth();
-        $this->view('simple.placeholder', [
-            'admin' => $admin,
-            'title' => 'Communications',
-            'message' => 'Communication management module is coming soon.'
+        
+        // Initialize framework (anti-scattering compliant)
+        require_once __DIR__ . '/../../config/init_framework.php';
+        
+        // Set user data through ViewManager (anti-scattering compliant)
+        \ViewManager::set('user', [
+            'name' => $admin['name'] ?? 'Admin User',
+            'email' => $admin['email'] ?? 'admin@cornerstone.com',
+            'avatar' => null
         ]);
+        
+        // Include the communications index view
+        include __DIR__ . '/../../views/admin/communications/index.php';
     }
     
     public function create() {
