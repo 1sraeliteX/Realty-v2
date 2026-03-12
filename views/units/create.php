@@ -1,24 +1,54 @@
 <?php
-$title = 'Create Unit';
-$pageTitle = 'Create New Unit';
+// Framework components are auto-loaded by ViewManager (anti-scattering compliant)
 
-$properties = $properties ?? [];
-$unitTypes = $unitTypes ?? [];
-
-$content = ob_start();
+// Get data from ViewManager (anti-scattering compliant)
+$properties = ViewManager::get('properties', []);
+$unitTypes = ViewManager::get('unitTypes', []);
 ?>
 
-<div class="max-w-2xl mx-auto">
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
-        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-            <div class="flex items-center justify-between">
-                <h1 class="text-xl font-semibold text-gray-900 dark:text-white">Create New Unit</h1>
-                <a href="/admin/units" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-                    <i class="fas fa-times text-xl"></i>
-                </a>
+<!-- Create Unit Content -->
+<div class="space-y-6">
+    <!-- Page Header with Breadcrumb -->
+    <div class="mb-6">
+        <nav class="flex mb-4" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li class="inline-flex items-center">
+                    <a href="/admin/dashboard" class="text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400">
+                        <i class="fas fa-home mr-2"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                        <a href="/admin/units" class="text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400">
+                            Units
+                        </a>
+                    </div>
+                </li>
+                <li aria-current="page">
+                    <div class="flex items-center">
+                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                        <span class="text-gray-500 dark:text-gray-400">Create Unit</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+        
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Create New Unit</h1>
+                <p class="text-gray-600 dark:text-gray-400 mt-1">Add a new unit to your property portfolio</p>
             </div>
+            <a href="/admin/units" class="inline-flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Back to Units
+            </a>
         </div>
+    </div>
 
+    <!-- Create Unit Form -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
         <form id="unit-form" class="p-6 space-y-6">
             <!-- Property Selection -->
             <div>
@@ -161,11 +191,6 @@ $content = ob_start();
     </div>
 </div>
 
-<?php
-$content = ob_get_clean();
-echo ViewManager::render('dashboard.layout', ['content' => $content]);
-?>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('unit-form');
@@ -184,9 +209,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Add regular fields
         for (let [key, value] of formData.entries()) {
-            if (key !== 'amenities[]') {
-                data[key] = value;
-            }
+            data[key] = value;
         }
         
         // Send request

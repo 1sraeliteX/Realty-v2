@@ -1,25 +1,40 @@
 <?php
-// Initialize framework (anti-scattering compliant)
-require_once __DIR__ . '/../../config/init_framework.php';
+// Framework components are auto-loaded by ViewManager (anti-scattering compliant)
 
-// Load components through registry (anti-scattering compliant)
-ComponentRegistry::load('ui-components');
+// Get data from ViewManager (anti-scattering compliant)
+$stats = ViewManager::get('stats', [
+    'total_units' => 48,
+    'occupied_units' => 36,
+    'vacant_units' => 12,
+    'maintenance_units' => 3
+]);
 
-// Set data through ViewManager (anti-scattering compliant)
-ViewManager::set('title', 'Units Management');
-ViewManager::set('pageTitle', 'Units');
+$units = ViewManager::get('units', [
+    ['id' => 1, 'unit_number' => '101', 'property_name' => 'Sunset Apartments', 'type' => '1br', 'bedrooms' => 1, 'bathrooms' => 1, 'rent_price' => 1200, 'status' => 'occupied', 'tenant_name' => 'John Doe'],
+    ['id' => 2, 'unit_number' => '102', 'property_name' => 'Sunset Apartments', 'type' => '2br', 'bedrooms' => 2, 'bathrooms' => 2, 'rent_price' => 1500, 'status' => 'available', 'tenant_name' => null],
+    ['id' => 3, 'unit_number' => '201', 'property_name' => 'Downtown Plaza', 'type' => 'studio', 'bedrooms' => 0, 'bathrooms' => 1, 'rent_price' => 900, 'status' => 'maintenance', 'tenant_name' => null]
+]);
 
-$content = ob_start();
+$properties = ViewManager::get('properties', [
+    ['id' => 1, 'name' => 'Sunset Apartments'],
+    ['id' => 2, 'name' => 'Downtown Plaza'],
+    ['id' => 3, 'name' => 'Riverside Complex']
+]);
 ?>
 
-<div class="max-w-7xl mx-auto">
-    <!-- Header -->
-    <div class="mb-6">
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Units Management</h1>
-                <p class="text-gray-600 dark:text-gray-400 mt-1">Manage all property units</p>
-            </div>
+<!-- Units Management Content -->
+<div class="space-y-6">
+    <!-- Page Header -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Units Management</h1>
+            <p class="text-gray-600 dark:text-gray-400 mt-1">Manage all property units across your portfolio</p>
+        </div>
+        <div class="flex items-center space-x-3">
+            <button class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+                <i class="fas fa-download mr-2"></i>
+                Export
+            </button>
             <a href="/admin/units/create" class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
                 <i class="fas fa-plus mr-2"></i>
                 Add Unit
@@ -28,7 +43,7 @@ $content = ob_start();
     </div>
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <div class="flex items-center">
                 <div class="flex-shrink-0 bg-blue-100 dark:bg-blue-900 rounded-lg p-3">
@@ -36,7 +51,7 @@ $content = ob_start();
                 </div>
                 <div class="ml-4">
                     <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Units</p>
-                    <p class="text-2xl font-bold text-gray-900 dark:text-white">48</p>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white"><?php echo $stats['total_units'] ?? 0; ?></p>
                 </div>
             </div>
         </div>
@@ -48,7 +63,7 @@ $content = ob_start();
                 </div>
                 <div class="ml-4">
                     <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Occupied</p>
-                    <p class="text-2xl font-bold text-gray-900 dark:text-white">36</p>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white"><?php echo $stats['occupied_units'] ?? 0; ?></p>
                 </div>
             </div>
         </div>
@@ -60,7 +75,7 @@ $content = ob_start();
                 </div>
                 <div class="ml-4">
                     <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Available</p>
-                    <p class="text-2xl font-bold text-gray-900 dark:text-white">12</p>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white"><?php echo $stats['vacant_units'] ?? 0; ?></p>
                 </div>
             </div>
         </div>
@@ -72,14 +87,14 @@ $content = ob_start();
                 </div>
                 <div class="ml-4">
                     <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Maintenance</p>
-                    <p class="text-2xl font-bold text-gray-900 dark:text-white">3</p>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white"><?php echo $stats['maintenance_units'] ?? 0; ?></p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Filters -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Search</label>
@@ -89,9 +104,9 @@ $content = ob_start();
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Property</label>
                 <select class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
                     <option value="">All Properties</option>
-                    <option value="1">Sunset Apartments</option>
-                    <option value="2">Downtown Plaza</option>
-                    <option value="3">Riverside Complex</option>
+                    <?php foreach ($properties as $property): ?>
+                        <option value="<?php echo $property['id']; ?>"><?php echo htmlspecialchars($property['name']); ?></option>
+                    <?php endforeach; ?>
                 </select>
             </div>
             <div>
@@ -132,63 +147,34 @@ $content = ob_start();
                     </tr>
                 </thead>
                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">101</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">Sunset Apartments</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">1 Bedroom</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">$1,200</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                                Occupied
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">John Doe</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <a href="/admin/units/1/edit" class="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-300 mr-3">Edit</a>
-                            <a href="#" class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300">Delete</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">102</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">Sunset Apartments</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">2 Bedroom</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">$1,500</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
-                                Available
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">-</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <a href="/admin/units/2/edit" class="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-300 mr-3">Edit</a>
-                            <a href="#" class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300">Delete</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">201</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">Downtown Plaza</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">Studio</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">$900</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
-                                Maintenance
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">-</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <a href="/admin/units/3/edit" class="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-300 mr-3">Edit</a>
-                            <a href="#" class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300">Delete</a>
-                        </td>
-                    </tr>
+                    <?php foreach ($units as $unit): ?>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white"><?php echo htmlspecialchars($unit['unit_number']); ?></td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"><?php echo htmlspecialchars($unit['property_name']); ?></td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"><?php echo ucfirst($unit['type']); ?></td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">$<?php echo number_format($unit['rent_price'], 0); ?></td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <?php
+                                $statusColors = [
+                                    'occupied' => 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+                                    'available' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+                                    'maintenance' => 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
+                                ];
+                                $colorClass = $statusColors[$unit['status']] ?? 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+                                ?>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?php echo $colorClass; ?>">
+                                    <?php echo ucfirst($unit['status']); ?>
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"><?php echo $unit['tenant_name'] ?: '-'; ?></td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <a href="/admin/units/<?php echo $unit['id']; ?>/edit" class="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-300 mr-3">Edit</a>
+                                <a href="#" class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300">Delete</a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
-
-<?php
-$content = ob_get_clean();
-
-// Include the admin dashboard layout
-include __DIR__ . '/../simple_layout.php';
-?>

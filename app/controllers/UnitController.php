@@ -33,19 +33,25 @@ class UnitController extends BaseController {
         // Get unit types for filter
         $unitTypes = $this->getUnitTypes();
         
-        $this->view('units.index', [
-            'admin' => $admin,
-            'stats' => $stats,
-            'units' => $units['data'],
-            'pagination' => $units['pagination'],
-            'properties' => $properties,
-            'unitTypes' => $unitTypes,
-            'search' => $search,
-            'status' => $status,
-            'type' => $type,
-            'property_id' => $property_id,
-            'currentView' => $view
-        ]);
+        // Initialize framework (anti-scattering compliant)
+        require_once __DIR__ . '/../../config/init_framework.php';
+        
+        // Set data through ViewManager (anti-scattering compliant)
+        \ViewManager::set('title', 'Units Management');
+        \ViewManager::set('user', $admin);
+        \ViewManager::set('stats', $stats);
+        \ViewManager::set('units', $units['data']);
+        \ViewManager::set('properties', $properties);
+        \ViewManager::set('unitTypes', $unitTypes);
+        \ViewManager::set('pagination', $units['pagination']);
+        \ViewManager::set('search', $search);
+        \ViewManager::set('status', $status);
+        \ViewManager::set('type', $type);
+        \ViewManager::set('property_id', $property_id);
+        \ViewManager::set('currentView', $view);
+        
+        // Render using ViewManager with admin dashboard layout (anti-scattering compliant)
+        echo \ViewManager::render('admin.units.list', [], 'admin.dashboard_layout');
     }
     
     public function create() {
@@ -55,11 +61,17 @@ class UnitController extends BaseController {
         $properties = $this->getProperties($admin['id']);
         $unitTypes = $this->getUnitTypes();
         
-        $this->view('units.create', [
-            'admin' => $admin,
-            'properties' => $properties,
-            'unitTypes' => $unitTypes
-        ]);
+        // Initialize framework (anti-scattering compliant)
+        require_once __DIR__ . '/../../config/init_framework.php';
+        
+        // Set data through ViewManager (anti-scattering compliant)
+        \ViewManager::set('title', 'Create Unit');
+        \ViewManager::set('user', $admin);
+        \ViewManager::set('properties', $properties);
+        \ViewManager::set('unitTypes', $unitTypes);
+        
+        // Render using ViewManager with admin dashboard layout (anti-scattering compliant)
+        echo \ViewManager::render('admin.units.create', [], 'admin.dashboard_layout');
     }
     
     public function store() {
@@ -264,8 +276,19 @@ class UnitController extends BaseController {
         $stmt->execute([$adminId]);
         $stats['occupied_units'] = $stmt->fetchColumn();
         
-        // Vacant units
-        $stats['vacant_units'] = $stats['total_units'] - $stats['occupied_units'];
+        // Available units
+        $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM units u 
+                               JOIN properties p ON u.property_id = p.id 
+                               WHERE p.admin_id = ? AND u.status = 'available' AND u.deleted_at IS NULL");
+        $stmt->execute([$adminId]);
+        $stats['vacant_units'] = $stmt->fetchColumn();
+        
+        // Maintenance units
+        $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM units u 
+                               JOIN properties p ON u.property_id = p.id 
+                               WHERE p.admin_id = ? AND u.status = 'maintenance' AND u.deleted_at IS NULL");
+        $stmt->execute([$adminId]);
+        $stats['maintenance_units'] = $stmt->fetchColumn();
         
         // Occupancy rate
         if ($stats['total_units'] > 0) {

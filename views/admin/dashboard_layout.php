@@ -6,6 +6,22 @@ require_once __DIR__ . '/../../config/bootstrap.php';
 $user = ViewManager::get('user');
 $notifications = ViewManager::get('notifications');
 $title = ViewManager::get('title', 'Admin Dashboard');
+
+// Get current page for navigation highlighting
+$currentPath = $_SERVER['REQUEST_URI'] ?? '';
+$isDashboard = strpos($currentPath, '/admin/dashboard') === 0 && strpos($currentPath, '/admin/dashboard/') === false;
+$isProperties = strpos($currentPath, '/admin/properties') === 0;
+$isUnits = strpos($currentPath, '/admin/units') === 0;
+$isTenants = strpos($currentPath, '/admin/tenants') === 0;
+$isPayments = strpos($currentPath, '/admin/payments') === 0;
+$isInvoices = strpos($currentPath, '/admin/invoices') === 0;
+$isFinances = strpos($currentPath, '/admin/finances') === 0;
+$isMaintenance = strpos($currentPath, '/admin/maintenance') === 0;
+$isCommunications = strpos($currentPath, '/admin/communications') === 0;
+$isDocuments = strpos($currentPath, '/admin/documents') === 0;
+$isReports = strpos($currentPath, '/admin/reports') === 0;
+$isSettings = strpos($currentPath, '/admin/settings') === 0;
+$isProfile = strpos($currentPath, '/admin/profile') === 0;
 ?>
 
 <!DOCTYPE html>
@@ -63,7 +79,7 @@ $title = ViewManager::get('title', 'Admin Dashboard');
                 <div class="flex-1 flex flex-col overflow-y-auto bg-white dark:bg-gray-800">
                     <nav class="flex-1 px-2 py-4 space-y-1">
                         <!-- Dashboard -->
-                        <a href="/admin/dashboard" class="bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <a href="/admin/dashboard" class="<?php echo $isDashboard ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <i class="fas fa-home mr-3"></i>
                             Dashboard
                         </a>
@@ -72,11 +88,11 @@ $title = ViewManager::get('title', 'Admin Dashboard');
                         <div class="pt-4 pb-2">
                             <span class="px-3 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400">Properties</span>
                         </div>
-                        <a href="/admin/properties" class="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <a href="/admin/properties" class="<?php echo $isProperties ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <i class="fas fa-building mr-3"></i>
                             Properties
                         </a>
-                        <a href="/admin/units" class="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <a href="/admin/units" class="<?php echo $isUnits ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <i class="fas fa-door-open mr-3"></i>
                             Units
                         </a>
@@ -85,7 +101,7 @@ $title = ViewManager::get('title', 'Admin Dashboard');
                         <div class="pt-4 pb-2">
                             <span class="px-3 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400">Tenants</span>
                         </div>
-                        <a href="/admin/tenants" class="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <a href="/admin/tenants" class="<?php echo $isTenants ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <i class="fas fa-users mr-3"></i>
                             Tenants
                         </a>
@@ -98,15 +114,15 @@ $title = ViewManager::get('title', 'Admin Dashboard');
                         <div class="pt-4 pb-2">
                             <span class="px-3 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400">Financial</span>
                         </div>
-                        <a href="/admin/payments" class="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <a href="/admin/payments" class="<?php echo $isPayments ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <i class="fas fa-credit-card mr-3"></i>
                             Payments
                         </a>
-                        <a href="/admin/invoices" class="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <a href="/admin/invoices" class="<?php echo $isInvoices ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <i class="fas fa-file-invoice mr-3"></i>
                             Invoices
                         </a>
-                        <a href="/admin/finances" class="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <a href="/admin/finances" class="<?php echo $isFinances ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <i class="fas fa-chart-line mr-3"></i>
                             Finances
                         </a>
@@ -115,15 +131,15 @@ $title = ViewManager::get('title', 'Admin Dashboard');
                         <div class="pt-4 pb-2">
                             <span class="px-3 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400">Operations</span>
                         </div>
-                        <a href="/admin/maintenance" class="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <a href="/admin/maintenance" class="<?php echo $isMaintenance ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <i class="fas fa-tools mr-3"></i>
                             Maintenance
                         </a>
-                        <a href="/admin/communications" class="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <a href="/admin/communications" class="<?php echo $isCommunications ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <i class="fas fa-envelope mr-3"></i>
                             Communications
                         </a>
-                        <a href="/admin/documents" class="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <a href="/admin/documents" class="<?php echo $isDocuments ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <i class="fas fa-folder mr-3"></i>
                             Documents
                         </a>
@@ -132,7 +148,7 @@ $title = ViewManager::get('title', 'Admin Dashboard');
                         <div class="pt-4 pb-2">
                             <span class="px-3 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400">Reports</span>
                         </div>
-                        <a href="/admin/reports" class="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <a href="/admin/reports" class="<?php echo $isReports ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <i class="fas fa-chart-bar mr-3"></i>
                             Reports
                         </a>
@@ -145,11 +161,11 @@ $title = ViewManager::get('title', 'Admin Dashboard');
                         <div class="pt-4 pb-2">
                             <span class="px-3 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400">Settings</span>
                         </div>
-                        <a href="/admin/settings" class="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <a href="/admin/settings" class="<?php echo $isSettings ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <i class="fas fa-cog mr-3"></i>
                             Settings
                         </a>
-                        <a href="/admin/profile" class="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <a href="/admin/profile" class="<?php echo $isProfile ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <i class="fas fa-user mr-3"></i>
                             Profile
                         </a>

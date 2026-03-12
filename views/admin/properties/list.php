@@ -5,14 +5,13 @@ require_once __DIR__ . '/../../../config/init_framework.php';
 // Load components through registry (anti-scattering compliant)
 ComponentRegistry::load('ui-components');
 
+// Get properties data from controller/DataProvider (anti-scattering compliant)
+$properties = ViewManager::get('properties') ?? DataProvider::get('properties');
+
 // Set data through ViewManager (anti-scattering compliant)
-ViewManager::set('title', 'Admin Page');
-ViewManager::set('user', [
-    'name' => 'Admin User',
-    'email' => 'admin@cornerstone.com',
-    'avatar' => null
-]);
-ViewManager::set('notifications', []);
+ViewManager::set('title', 'Properties Management');
+ViewManager::set('user', DataProvider::get('user'));
+ViewManager::set('notifications', DataProvider::get('notifications'));
 
 ob_start();
 ?>
@@ -103,7 +102,7 @@ ob_start();
 <!-- Properties Grid -->
 <div id="propertiesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
     <?php foreach ($properties as $property): ?>
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-200">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-200 cursor-pointer" onclick="previewProperty(<?php echo $property['id']; ?>)">
             <!-- Property Image -->
             <div class="relative h-48 bg-gray-200 dark:bg-gray-700">
                 <img src="<?php echo $property['image']; ?>" alt="<?php echo htmlspecialchars($property['name']); ?>" class="w-full h-full object-cover">
