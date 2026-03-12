@@ -31,11 +31,21 @@ class InvoiceController extends BaseController {
     
     public function create() {
         $admin = $this->requireAuth();
-        $this->view('simple.placeholder', [
-            'admin' => $admin,
-            'title' => 'Create Invoice',
-            'message' => 'Invoice creation form is coming soon.'
+        
+        // Load invoice creation page using anti-scattering compliant approach
+        require_once __DIR__ . '/../../config/bootstrap.php';
+        
+        // Set data through ViewManager
+        ViewManager::set('title', 'Create Invoice');
+        ViewManager::set('user', [
+            'name' => $admin['name'] ?? 'Admin User',
+            'email' => $admin['email'] ?? 'admin@cornerstone.com',
+            'avatar' => null
         ]);
+        ViewManager::set('notifications', []);
+        
+        // Include the invoice creation view
+        include __DIR__ . '/../../views/admin/invoices/create.php';
     }
     
     public function store() {
@@ -46,20 +56,42 @@ class InvoiceController extends BaseController {
     
     public function show($id) {
         $admin = $this->requireAuth();
-        $this->view('simple.placeholder', [
-            'admin' => $admin,
-            'title' => 'Invoice Details',
-            'message' => "Invoice details for ID: $id are coming soon."
+        
+        // Load invoice details page using anti-scattering compliant approach
+        require_once __DIR__ . '/../../config/bootstrap.php';
+        
+        // Set data through ViewManager
+        ViewManager::set('title', 'Invoice Details');
+        ViewManager::set('user', [
+            'name' => $admin['name'] ?? 'Admin User',
+            'email' => $admin['email'] ?? 'admin@cornerstone.com',
+            'avatar' => null
         ]);
+        ViewManager::set('notifications', []);
+        ViewManager::set('invoice_id', $id);
+        
+        // Include the invoice details view
+        include __DIR__ . '/../../views/admin/invoices/details.php';
     }
     
     public function edit($id) {
         $admin = $this->requireAuth();
-        $this->view('simple.placeholder', [
-            'admin' => $admin,
-            'title' => 'Edit Invoice',
-            'message' => "Invoice edit form for ID: $id is coming soon."
+        
+        // Load invoice edit page using anti-scattering compliant approach
+        require_once __DIR__ . '/../../config/bootstrap.php';
+        
+        // Set data through ViewManager
+        ViewManager::set('title', 'Edit Invoice');
+        ViewManager::set('user', [
+            'name' => $admin['name'] ?? 'Admin User',
+            'email' => $admin['email'] ?? 'admin@cornerstone.com',
+            'avatar' => null
         ]);
+        ViewManager::set('notifications', []);
+        ViewManager::set('invoice_id', $id);
+        
+        // Include the invoice edit view
+        include __DIR__ . '/../../views/admin/invoices/edit.php';
     }
     
     public function update($id) {
