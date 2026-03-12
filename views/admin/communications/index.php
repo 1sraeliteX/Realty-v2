@@ -1,18 +1,12 @@
 <?php
-// Initialize framework (anti-scattering compliant)
-require_once __DIR__ . '/../../../config/init_framework.php';
+// Initialize anti-scattering system
+require_once __DIR__ . '/../../../config/bootstrap.php';
 
-// Set data through ViewManager (anti-scattering compliant)
+// Set page title
 ViewManager::set('title', 'Communications');
-ViewManager::set('user', [
-    'name' => 'Admin User',
-    'email' => 'admin@cornerstone.com',
-    'avatar' => null
-]);
-ViewManager::set('notifications', []);
 
-// Mock data for communications (anti-scattering compliant - using ViewManager)
-ViewManager::set('communications', [
+// Get communications data from DataProvider (anti-scattering compliant)
+$communications = DataProvider::get('communications', [
     [
         'id' => 1,
         'subject' => 'Rent Payment Reminder',
@@ -45,28 +39,6 @@ ViewManager::set('communications', [
         'date' => '2024-01-13 09:45:00',
         'property' => 'Mountain Heights',
         'unit' => 'C-301'
-    ],
-    [
-        'id' => 4,
-        'subject' => 'Emergency Contact Update Required',
-        'recipient' => 'Emily Davis',
-        'type' => 'email',
-        'status' => 'pending',
-        'priority' => 'high',
-        'date' => '2024-01-12 16:20:00',
-        'property' => 'Sunset Apartments',
-        'unit' => 'A-102'
-    ],
-    [
-        'id' => 5,
-        'subject' => 'Community Event Invitation',
-        'recipient' => 'All Tenants',
-        'type' => 'broadcast',
-        'status' => 'sent',
-        'priority' => 'low',
-        'date' => '2024-01-11 11:00:00',
-        'property' => 'All Properties',
-        'unit' => 'Multiple'
     ]
 ]);
 
@@ -432,9 +404,7 @@ document.getElementById('newCommunicationForm').addEventListener('submit', funct
 // Capture content
 $content = ob_get_clean();
 
-// Set content for layout
+// Use ViewManager to render with the dashboard layout (anti-scattering compliant)
 ViewManager::set('content', $content);
-
-// Render using the dashboard layout
-include __DIR__ . '/../dashboard_layout.php';
+ViewManager::render('admin.dashboard_layout');
 ?>

@@ -138,28 +138,34 @@ ob_start();
                             <?php echo $request['category']; ?>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <?php 
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                            <?php
                             $priorityColors = [
-                                'low' => 'gray',
-                                'medium' => 'yellow', 
-                                'high' => 'orange',
-                                'urgent' => 'red'
+                                'low' => 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
+                                'medium' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200', 
+                                'high' => 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
+                                'urgent' => 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
                             ];
-                            $color = $priorityColors[$request['priority']] ?? 'gray';
-                            echo UIComponents::badge(ucfirst($request['priority']), $color);
-                            ?>
+                            $color = $priorityColors[$request['priority']] ?? 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
+                            echo $color;
+                            ?>">
+                            <?php echo ucfirst($request['priority']); ?>
+                        </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <?php 
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                            <?php
                             $statusColors = [
-                                'pending' => 'yellow',
-                                'in_progress' => 'blue',
-                                'completed' => 'green',
-                                'cancelled' => 'gray'
+                                'pending' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+                                'in_progress' => 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+                                'completed' => 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+                                'cancelled' => 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
                             ];
-                            $color = $statusColors[$request['status']] ?? 'gray';
-                            echo UIComponents::badge(ucfirst(str_replace('_', ' ', $request['status'])), $color);
-                            ?>
+                            $color = $statusColors[$request['status']] ?? 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
+                            echo $color;
+                            ?>">
+                            <?php echo ucfirst(str_replace('_', ' ', $request['status'])); ?>
+                        </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                             <?php echo date('M j, Y', strtotime($request['date'])); ?>
