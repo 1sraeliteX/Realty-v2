@@ -240,7 +240,7 @@ $content = ob_start();
 
 <?php
 $content = ob_get_clean();
-echo ViewManager::render('superadmin.superadmin_layout', ['content' => $content]);
+include 'superadmin_layout.php';
 ?>
 
 <script>

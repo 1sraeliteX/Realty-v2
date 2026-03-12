@@ -10,13 +10,13 @@ class SettingsController extends BaseController {
         require_once __DIR__ . '/../../config/bootstrap.php';
         
         // Set user data for ViewManager (anti-scattering compliant)
-        ViewManager::set('user', [
+        \ViewManager::set('user', [
             'name' => $admin['name'] ?? 'Admin User',
             'email' => $admin['email'] ?? 'admin@example.com'
         ]);
         
         // Centralize settings data in controller (anti-scattering compliant)
-        ViewManager::set('settings', [
+        \ViewManager::set('settings', [
             'general' => [
                 'site_name' => 'Cornerstone Realty',
                 'site_email' => 'admin@cornerstone.com',
@@ -58,7 +58,7 @@ class SettingsController extends BaseController {
         ]);
         
         // Set page title
-        ViewManager::set('title', 'Settings');
+        \ViewManager::set('title', 'Settings');
         
         // Include the settings view which handles its own rendering
         include __DIR__ . '/../../views/admin/settings/index.php';

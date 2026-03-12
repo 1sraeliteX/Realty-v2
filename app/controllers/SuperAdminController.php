@@ -101,7 +101,7 @@ class SuperAdminController extends BaseController {
             try {
                 $stmt = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) as total FROM payments WHERE status = ?");
                 $stmt->execute(['paid']);
-                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                $result = $stmt->fetch(\PDO::FETCH_ASSOC);
                 $stats['platform_revenue'] = $result['total'] ?? 0;
             } catch (Exception $e) {
                 // Log error and set default value

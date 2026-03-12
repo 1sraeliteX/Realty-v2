@@ -1,16 +1,14 @@
 <?php
 // Initialize anti-scattering system
-require_once __DIR__ . '/../../config/bootstrap.php';
+require_once __DIR__ . '/../../../config/bootstrap.php';
 
-// Anti-scattering compliance: Get centralized data from DataProvider
-$user = ViewManager::get('user');
-$notifications = ViewManager::get('notifications');
+// Anti-scattering compliance: Get centralized data from ViewManager
+$user = \ViewManager::get('user');
+$notifications = \ViewManager::get('notifications');
+$settings = \ViewManager::get('settings');
 
 // Set page title
-ViewManager::set('title', 'Settings');
-
-// Get settings data from DataProvider (anti-scattering compliant)
-$settings = DataProvider::get('settings');
+\ViewManager::set('title', 'Settings');
 
 // Build settings page content using UIComponents (anti-scattering compliant)
 ob_start();
@@ -334,7 +332,9 @@ document.addEventListener('DOMContentLoaded', function() {
 // Capture content and set it for layout rendering
 $content = ob_get_clean();
 
-// Use ViewManager to render with the dashboard layout (anti-scattering compliant)
-ViewManager::set('content', $content);
-ViewManager::render('admin.dashboard_layout');
+// Set content for layout (anti-scattering compliant)
+\ViewManager::set('content', $content);
+
+// Include the dashboard layout directly
+include __DIR__ . '/../dashboard_layout.php';
 ?>
