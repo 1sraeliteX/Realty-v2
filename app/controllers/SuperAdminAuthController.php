@@ -5,17 +5,9 @@ namespace App\Controllers;
 // Manually require the database configuration
 require_once __DIR__ . '/../../config/database.php';
 
-use App\Middleware\JwtMiddleware;
 use Config\Database;
 
 class SuperAdminAuthController extends BaseController {
-    private $jwtMiddleware;
-    
-    public function __construct() {
-        // Initialize database connection
-        parent::__construct(); // Call parent constructor to initialize db
-        $this->jwtMiddleware = new JwtMiddleware();
-    }
     
     public function showLogin() {
         // Check if super admin is already logged in
@@ -25,7 +17,7 @@ class SuperAdminAuthController extends BaseController {
         }
         
         // Show login form for super admin
-        $this->view('auth.login', [
+        $this->view('superadmin.login', [
             'userType' => 'superadmin',
             'loginAction' => '/superadmin/login',
             'title' => 'Super Admin Login'
@@ -74,16 +66,8 @@ class SuperAdminAuthController extends BaseController {
             
             // Handle API vs Web response
             if ($this->isApiRequest()) {
-                // Generate token for API
-                $token = $this->jwtMiddleware->generateToken([
-                    'id' => $user['id'],
-                    'email' => $user['email'],
-                    'role' => $user['role']
-                ]);
-                
                 $this->json([
                     'message' => 'Login successful',
-                    'token' => $token,
                     'user' => [
                         'id' => $user['id'],
                         'name' => $user['name'],
@@ -108,15 +92,6 @@ class SuperAdminAuthController extends BaseController {
         } else {
             header('Location: /superadmin/login');
             exit;
-        }
-    }
-    
-    public function me() {
-        $user = $this->jwtMiddleware->getCurrentUser();
-        if ($user && $user['role'] === 'super_admin') {
-            $this->json($user);
-        } else {
-            $this->json(['error' => 'Unauthorized'], 401);
         }
     }
 }

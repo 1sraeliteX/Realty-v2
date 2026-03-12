@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="no-js">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +7,20 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    
+    <!-- Blocking theme script - MUST be first to prevent FOIT -->
+    <script>
+        // Apply theme immediately before any CSS loads
+        (function() {
+            var theme = localStorage.getItem('theme');
+            // Default to dark if no preference saved (requirement #4)
+            if (theme === 'light') {
+                document.documentElement.classList.remove('dark');
+            } else {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio"></script>
@@ -40,87 +54,33 @@
     <!-- Local CSS files -->
     <link rel="stylesheet" href="/assets/css/fontawesome.css">
     <link rel="stylesheet" href="/assets/css/style.css">
-    
-    <script>
-        // Dark mode configuration
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-    </script>
-    <style>
-        /* Prevent theme flickering and ensure smooth transitions */
-        html {
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-        
-        /* Hide content briefly to prevent flash */
-        .no-js {
-            visibility: hidden;
-        }
-        
-        /* Ensure theme transitions are smooth */
-        * {
-            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-        }
-    </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900">
-    <script>
-        // Remove no-js class immediately
-        document.documentElement.classList.remove('no-js');
-    </script>
     <?php echo $content; ?>
 
     <!-- Toast Container -->
     <div id="toast-container" class="fixed top-4 right-4 z-50"></div>
 
     <script>
-        // Initialize dark mode immediately to prevent flickering
-        (function() {
-            const darkMode = localStorage.getItem('darkMode');
-            const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            if (darkMode === 'true' || (!darkMode && systemDark)) {
-                document.documentElement.classList.add('dark');
-            }
-        })();
-
-        // Theme synchronization across page navigation
-        window.addEventListener('themechange', (e) => {
-            // Ensure all iframes and components get the theme update
-            const iframes = document.querySelectorAll('iframe');
-            iframes.forEach(iframe => {
-                try {
-                    iframe.contentWindow.postMessage({
-                        type: 'themechange',
-                        isDark: e.detail.isDark
-                    }, '*');
-                } catch (err) {
-                    // Ignore cross-origin errors
-                }
-            });
-        });
-
-        // Listen for theme changes from parent (if in iframe)
-        window.addEventListener('message', (e) => {
-            if (e.data.type === 'themechange') {
-                document.documentElement.classList.toggle('dark', e.data.isDark);
-            }
-        });
-
-        // Prevent theme flickering on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            // Double-check theme is applied after DOM loads
-            const darkMode = localStorage.getItem('darkMode');
-            const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const shouldBeDark = darkMode === 'true' || (!darkMode && systemDark);
+        // Theme toggle functionality
+        function toggleTheme() {
+            const html = document.documentElement;
+            const isDark = html.classList.contains('dark');
             
-            if (shouldBeDark !== document.documentElement.classList.contains('dark')) {
-                document.documentElement.classList.toggle('dark', shouldBeDark);
+            if (isDark) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
             }
-        });
-
+            
+            // Dispatch custom event for components that need to react to theme changes
+            window.dispatchEvent(new CustomEvent('themechange', {
+                detail: { isDark: !isDark }
+            }));
+        }
+        
         // Toast notification function
         function showToast(message, type = 'success') {
             const toast = document.createElement('div');

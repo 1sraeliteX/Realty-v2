@@ -51,6 +51,7 @@ class ComponentRegistry {
     public static function init() {
         // Register core components
         self::register('ui-components', __DIR__ . '/../components/UIComponents.php');
+        self::register('theme-toggle', __DIR__ . '/../components/ThemeToggleComponent.php');
         self::register('attachment-component', __DIR__ . '/../components/AttachmentComponent.php', ['ui-components']);
         self::register('searchable-dropdown', __DIR__ . '/../components/SearchableDropdown.php', ['ui-components']);
         self::register('layout', __DIR__ . '/../views/layout.php', ['ui-components']);

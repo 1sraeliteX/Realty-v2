@@ -1,14 +1,15 @@
 <?php
-// Include UI Components
-require_once __DIR__ . '/../../../components/UIComponents.php';
+// Initialize anti-scattering system
+require_once __DIR__ . '/../../../config/bootstrap.php';
 
-$title = 'Tenants & Occupants';
-$pageTitle = 'Tenants & Occupants';
-$pageDescription = 'Manage tenants and room assignments in one place';
+// Set page data through ViewManager (anti-scattering compliant)
+ViewManager::set('title', 'Tenants & Occupants');
+ViewManager::set('pageTitle', 'Tenants & Occupants');
+ViewManager::set('pageDescription', 'Manage tenants and room assignments in one place');
 
-// Mock data for demonstration
-$tenants = [];
-$occupants = [];
+// Get centralized data from DataProvider
+$tenants = DataProvider::get('tenants', []);
+$occupants = DataProvider::get('occupants', []);
 
 // Stats calculations
 $totalOccupants = count($occupants);
@@ -16,23 +17,32 @@ $activeOccupants = count(array_filter($occupants, fn($o) => $o['status'] === 'ac
 $availableRooms = 12; // Mock data
 $totalProperties = 8; // Mock data
 
+// Store calculated stats in ViewManager
+ViewManager::set('stats', [
+    'totalOccupants' => $totalOccupants,
+    'activeOccupants' => $activeOccupants,
+    'availableRooms' => $availableRooms,
+    'totalProperties' => $totalProperties
+]);
+
+// Load UI components through ComponentRegistry (anti-scattering compliant)
+ComponentRegistry::load('ui-components');
+
+// Get data from ViewManager
+$title = ViewManager::get('title');
+$pageTitle = ViewManager::get('pageTitle');
+$pageDescription = ViewManager::get('pageDescription');
+$stats = ViewManager::get('stats');
+$tenants = DataProvider::get('tenants', []);
+$occupants = DataProvider::get('occupants', []);
+
+// Start output buffering for ViewManager
 ob_start();
 ?>
 
-<!-- Breadcrumbs -->
-<div class="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-4">
-    <a href="/admin/dashboard" class="hover:text-gray-700 dark:hover:text-gray-300">Dashboard</a>
-    <i class="fas fa-chevron-right mx-2 text-xs"></i>
-    <span class="text-gray-900 dark:text-white">Tenants Occupants</span>
-</div>
-
-<!-- Header with Actions -->
-<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
-    <div>
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Tenants & Occupants</h2>
-        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Manage tenants and room assignments in one place</p>
-    </div>
-    <div class="mt-4 sm:mt-0 flex space-x-3">
+<!-- Page Actions -->
+<div class="flex justify-end mb-6">
+    <div class="flex space-x-3">
         <button onclick="refreshData()" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
             <i class="fas fa-sync-alt mr-2"></i>
             Refresh
@@ -212,7 +222,7 @@ ob_start();
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <?php 
-        echo UIComponents::statsCard('Total', $totalOccupants, 'users', null, 'blue');
+        echo UIComponents::statsCard('Total Occupants', $totalOccupants, 'users', null, 'blue');
         echo UIComponents::statsCard('Active', $activeOccupants, 'home', null, 'green');
         echo UIComponents::statsCard('Available Rooms', $availableRooms, 'building', null, 'yellow');
         echo UIComponents::statsCard('Properties', $totalProperties, 'building', null, 'purple');
@@ -482,5 +492,6 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <?php
-$content = ob_get_clean();
+// Return the buffered content (anti-scattering compliant)
+echo ob_get_clean();
 ?>

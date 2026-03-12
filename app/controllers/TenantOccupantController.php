@@ -7,29 +7,58 @@ require_once __DIR__ . '/BaseController.php';
 class TenantOccupantController extends BaseController {
     
     public function index() {
-        // For now, we'll use mock data since this is a UI demonstration
-        $tenants = [];
-        $occupants = [];
+        // Initialize anti-scattering system
+        require_once __DIR__ . '/../../config/bootstrap.php';
         
-        // Pass data to the view
-        require_once __DIR__ . '/../../views/admin/tenants_occupants/index.php';
+        // Set data through DataProvider (anti-scattering compliant)
+        \DataProvider::set('tenants', []);
+        \DataProvider::set('occupants', []);
+        
+        // Set page metadata
+        \ViewManager::set('title', 'Tenants & Occupants');
+        \ViewManager::set('user', ['name' => 'Admin User', 'email' => 'admin@example.com']);
+        
+        // Render using ViewManager with dashboard layout
+        echo \ViewManager::render('admin.tenants_occupants.index', [], 'admin.dashboard_layout');
     }
     
     public function create() {
-        // Create new tenant/occupant page
-        require_once __DIR__ . '/../../views/admin/tenants_occupants/create.php';
+        // Initialize anti-scattering system
+        require_once __DIR__ . '/../../config/bootstrap.php';
+        
+        // Set page metadata
+        \ViewManager::set('title', 'Add New Tenant/Occupant');
+        
+        // Render using ViewManager
+        echo \ViewManager::render('admin.tenants_occupants.create');
     }
     
     public function show($id) {
-        // Show individual tenant/occupant details
-        $tenant = []; // Mock data - would fetch from database
-        require_once __DIR__ . '/../../views/admin/tenants_occupants/show.php';
+        // Initialize anti-scattering system
+        require_once __DIR__ . '/../../config/bootstrap.php';
+        
+        // Set mock data through DataProvider
+        \DataProvider::set('tenant', []);
+        
+        // Set page metadata
+        \ViewManager::set('title', 'Tenant/Occupant Details');
+        
+        // Render using ViewManager
+        echo \ViewManager::render('admin.tenants_occupants.show');
     }
     
     public function edit($id) {
-        // Edit tenant/occupant
-        $tenant = []; // Mock data - would fetch from database
-        require_once __DIR__ . '/../../views/admin/tenants_occupants/edit.php';
+        // Initialize anti-scattering system
+        require_once __DIR__ . '/../../config/bootstrap.php';
+        
+        // Set mock data through DataProvider
+        \DataProvider::set('tenant', []);
+        
+        // Set page metadata
+        \ViewManager::set('title', 'Edit Tenant/Occupant');
+        
+        // Render using ViewManager
+        echo \ViewManager::render('admin.tenants_occupants.edit');
     }
     
     public function store() {

@@ -12,11 +12,11 @@ return [
     'POST /admin/register' => 'AdminAuthController@register',
     'POST /admin/logout' => 'AdminAuthController@logout',
 
-    // Super Admin Authentication routes - COMMENTED OUT FOR DEVELOPMENT
-    // 'GET /superadmin' => 'SuperAdminAuthController@showLogin',
-    // 'GET /superadmin/login' => 'SuperAdminAuthController@showLogin',
-    // 'POST /superadmin/login' => 'SuperAdminAuthController@login',
-    // 'POST /superadmin/logout' => 'SuperAdminAuthController@logout',
+    // Super Admin Authentication routes
+    'GET /superadmin' => 'SuperAdminAuthController@showLogin',
+    'GET /superadmin/login' => 'SuperAdminAuthController@showLogin',
+    'POST /superadmin/login' => 'SuperAdminAuthController@login',
+    'POST /superadmin/logout' => 'SuperAdminAuthController@logout',
 
     // Admin Dashboard routes
     'GET /admin/dashboard' => 'AdminDashboardController@index',

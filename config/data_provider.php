@@ -41,7 +41,8 @@ class DataProvider {
             'tenantDocuments' => self::getTenantDocumentsData(),
             'tenantMaintenanceRequests' => self::getTenantMaintenanceRequestsData(),
             'amenities' => self::getAmenitiesData(),
-            'maintenanceHistory' => self::getMaintenanceHistoryData()
+            'maintenanceHistory' => self::getMaintenanceHistoryData(),
+            'occupants' => self::getOccupantData()
         ];
         
         self::$initialized = true;
@@ -172,36 +173,45 @@ class DataProvider {
         return [
             [
                 'id' => 1,
-                'name' => 'Alice Johnson',
+                'first_name' => 'Alice',
+                'last_name' => 'Johnson',
                 'email' => 'alice@example.com',
                 'phone' => '+1 234-567-8901',
-                'property' => 'Sunset Apartments',
-                'unit' => 'Unit 3A',
+                'property_name' => 'Sunset Apartments',
+                'property_id' => 1,
+                'unit_number' => 'Unit 3A',
                 'status' => 'active',
+                'lease_status' => 'active',
                 'rent_amount' => 1200,
                 'lease_end' => '2024-12-31',
                 'payment_status' => 'current'
             ],
             [
                 'id' => 2,
-                'name' => 'Bob Smith',
+                'first_name' => 'Bob',
+                'last_name' => 'Smith',
                 'email' => 'bob@example.com',
                 'phone' => '+1 234-567-8902',
-                'property' => 'Oak Villa Complex',
-                'unit' => 'Unit 2B',
+                'property_name' => 'Oak Villa Complex',
+                'property_id' => 2,
+                'unit_number' => 'Unit 2B',
                 'status' => 'active',
+                'lease_status' => 'expiring',
                 'rent_amount' => 1500,
                 'lease_end' => '2024-11-30',
                 'payment_status' => 'overdue'
             ],
             [
                 'id' => 3,
-                'name' => 'Carol Williams',
+                'first_name' => 'Carol',
+                'last_name' => 'Williams',
                 'email' => 'carol@example.com',
                 'phone' => '+1 234-567-8903',
-                'property' => 'Sunset Apartments',
-                'unit' => 'Unit 5C',
+                'property_name' => 'Sunset Apartments',
+                'property_id' => 1,
+                'unit_number' => 'Unit 5C',
                 'status' => 'active',
+                'lease_status' => 'active',
                 'rent_amount' => 1000,
                 'lease_end' => '2024-10-31',
                 'payment_status' => 'current'
@@ -888,6 +898,53 @@ class DataProvider {
         return [
             ['id' => 1, 'title' => 'Leaky Faucet', 'status' => 'resolved', 'priority' => 'medium', 'created_at' => '2023-12-15', 'resolved_at' => '2023-12-18'],
             ['id' => 2, 'title' => 'AC Not Working', 'status' => 'pending', 'priority' => 'high', 'created_at' => '2024-01-08', 'resolved_at' => null],
+        ];
+    }
+    
+    /**
+     * Occupant data
+     */
+    private static function getOccupantData() {
+        return [
+            [
+                'id' => 1,
+                'first_name' => 'James',
+                'last_name' => 'Wilson',
+                'email' => 'james.wilson@email.com',
+                'phone' => '(555) 234-5678',
+                'room_number' => '101',
+                'property_name' => 'Sunset Apartments',
+                'property_id' => 1,
+                'status' => 'active',
+                'move_in_date' => '2024-01-15',
+                'rent_amount' => 800
+            ],
+            [
+                'id' => 2,
+                'first_name' => 'Maria',
+                'last_name' => 'Garcia',
+                'email' => 'maria.garcia@email.com',
+                'phone' => '(555) 345-6789',
+                'room_number' => '205',
+                'property_name' => 'Oak Villa Complex',
+                'property_id' => 2,
+                'status' => 'active',
+                'move_in_date' => '2024-02-01',
+                'rent_amount' => 600
+            ],
+            [
+                'id' => 3,
+                'first_name' => 'David',
+                'last_name' => 'Chen',
+                'email' => 'david.chen@email.com',
+                'phone' => '(555) 456-7890',
+                'room_number' => '302',
+                'property_name' => 'Garden View Properties',
+                'property_id' => 3,
+                'status' => 'pending',
+                'move_in_date' => '2024-03-01',
+                'rent_amount' => 750
+            ]
         ];
     }
 }

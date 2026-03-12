@@ -12,7 +12,7 @@ $currentPath = $_SERVER['REQUEST_URI'] ?? '';
 $isDashboard = strpos($currentPath, '/admin/dashboard') === 0 && strpos($currentPath, '/admin/dashboard/') === false;
 $isProperties = strpos($currentPath, '/admin/properties') === 0;
 $isUnits = strpos($currentPath, '/admin/units') === 0;
-$isTenants = strpos($currentPath, '/admin/tenants') === 0;
+$isTenants = strpos($currentPath, '/admin/tenants') === 0 || strpos($currentPath, '/admin/tenants-occupants') === 0;
 $isPayments = strpos($currentPath, '/admin/payments') === 0;
 $isInvoices = strpos($currentPath, '/admin/invoices') === 0;
 $isFinances = strpos($currentPath, '/admin/finances') === 0;
@@ -30,6 +30,22 @@ $isProfile = strpos($currentPath, '/admin/profile') === 0;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $title ?? 'Real Estate Management'; ?></title>
+    
+    <!-- Blocking theme script - MUST be first to prevent FOIT -->
+    <script>
+        // Apply theme immediately before any CSS loads
+        (function() {
+            var theme = localStorage.getItem('theme');
+            // Default to dark if no preference saved (requirement #4)
+            if (theme === 'light') {
+                document.documentElement.classList.remove('dark');
+            } else {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -101,11 +117,7 @@ $isProfile = strpos($currentPath, '/admin/profile') === 0;
                         <div class="pt-4 pb-2">
                             <span class="px-3 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400">Tenants</span>
                         </div>
-                        <a href="/admin/tenants" class="<?php echo $isTenants ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-                            <i class="fas fa-users mr-3"></i>
-                            Tenants
-                        </a>
-                        <a href="/admin/tenants-occupants" class="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <a href="/admin/tenants-occupants" class="<?php echo $isTenants ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <i class="fas fa-user-friends mr-3"></i>
                             Tenants & Occupants
                         </a>
@@ -153,7 +165,7 @@ $isProfile = strpos($currentPath, '/admin/profile') === 0;
                             Reports
                         </a>
                         <a href="/admin/dashboard/reports" class="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-                            <i class="fas fa-analytics mr-3"></i>
+                            <i class="fas fa-chart-pie mr-3"></i>
                             Dashboard Reports
                         </a>
 
@@ -209,10 +221,18 @@ $isProfile = strpos($currentPath, '/admin/profile') === 0;
                         </div>
 
                         <!-- Dark mode toggle -->
-                        <button onclick="toggleDarkMode()" class="text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
-                            <i class="fas fa-moon dark:hidden"></i>
-                            <i class="fas fa-sun hidden dark:block"></i>
-                        </button>
+                        <?php
+                        // Use anti-scattering compliant theme toggle
+                        if (!class_exists('ComponentRegistry')) {
+                            require_once __DIR__ . '/../../config/bootstrap.php';
+                        }
+                        ComponentRegistry::load('theme-toggle');
+                        echo ThemeToggleComponent::render([
+                            'size' => 'text-lg',
+                            'class' => 'text-gray-500 hover:text-gray-600 dark:hover:text-gray-300',
+                            'id' => 'admin-theme-toggle'
+                        ]);
+                        ?>
 
                         <!-- Notifications -->
                         <button class="relative text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
@@ -220,14 +240,35 @@ $isProfile = strpos($currentPath, '/admin/profile') === 0;
                             <span class="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">3</span>
                         </button>
 
-                        <!-- User Profile -->
-                        <div class="flex items-center space-x-2">
-                            <div class="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center">
-                                <span class="text-white text-sm font-medium"><?php echo strtoupper(substr($user['name'], 0, 1)); ?></span>
-                            </div>
-                            <div class="hidden md:block">
-                                <p class="text-sm font-medium text-gray-700 dark:text-gray-200"><?php echo htmlspecialchars($user['name']); ?></p>
-                                <p class="text-xs text-primary-600 dark:text-primary-400">Administrator</p>
+                        <!-- User Profile Dropdown -->
+                        <div class="relative">
+                            <button id="user-menu-btn" class="flex items-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                                <div class="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center">
+                                    <span class="text-white text-sm font-medium"><?php echo strtoupper(substr($user['name'], 0, 1)); ?></span>
+                                </div>
+                                <span class="ml-2 text-sm font-medium hidden md:block"><?php echo htmlspecialchars($user['name']); ?></span>
+                                <i class="fas fa-chevron-down ml-2 text-xs"></i>
+                            </button>
+                            
+                            <!-- User Dropdown Menu -->
+                            <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                                <div class="p-3 border-b border-gray-200 dark:border-gray-700">
+                                    <p class="text-sm font-medium text-gray-900 dark:text-white"><?php echo htmlspecialchars($user['name']); ?></p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400"><?php echo htmlspecialchars($user['email']); ?></p>
+                                </div>
+                                <div class="py-1">
+                                    <a href="/admin/profile" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                        <i class="fas fa-user mr-2"></i> Profile
+                                    </a>
+                                    <a href="/admin/settings" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                        <i class="fas fa-cog mr-2"></i> Settings
+                                    </a>
+                                    <form method="POST" action="/admin/logout" class="block">
+                                        <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                            <i class="fas fa-right-from-bracket mr-2"></i> Sign out
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -280,18 +321,25 @@ $isProfile = strpos($currentPath, '/admin/profile') === 0;
             }, 3000);
         }
 
-        // Dark mode toggle
-        function toggleDarkMode() {
-            document.documentElement.classList.toggle('dark');
-            localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
+        // Theme toggle functionality
+        function toggleTheme() {
+            const html = document.documentElement;
+            const isDark = html.classList.contains('dark');
+            
+            if (isDark) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+            
+            // Dispatch custom event for components that need to react to theme changes
+            window.dispatchEvent(new CustomEvent('themechange', {
+                detail: { isDark: !isDark }
+            }));
         }
-
-        // Initialize dark mode
-        if (localStorage.getItem('darkMode') === 'true' ||
-            (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        }
-
+        
         // Sidebar toggle for mobile
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
@@ -305,6 +353,22 @@ $isProfile = strpos($currentPath, '/admin/profile') === 0;
 
         // Show PHP session messages as toasts
         document.addEventListener('DOMContentLoaded', function() {
+            // User dropdown functionality
+            const userMenuBtn = document.getElementById('user-menu-btn');
+            const userDropdown = document.getElementById('user-dropdown');
+            
+            userMenuBtn?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                userDropdown.classList.toggle('hidden');
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!userMenuBtn?.contains(e.target) && !userDropdown?.contains(e.target)) {
+                    userDropdown?.classList.add('hidden');
+                }
+            });
+
             <?php if (isset($_SESSION['success'])): ?>
                 showToast('<?php echo addslashes($_SESSION['success']); ?>', 'success');
                 <?php unset($_SESSION['success']); ?>
