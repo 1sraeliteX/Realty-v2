@@ -79,9 +79,9 @@ class UIComponents {
                     <div class=\"flex-shrink-0 $iconClass rounded-lg p-3\">
                         <i class=\"fas fa-$icon text-xl\"></i>
                     </div>
-                    <div class=\"ml-4\">
-                        <p class=\"text-sm font-medium text-gray-600 dark:text-gray-400\">$title</p>
-                        <p class=\"text-2xl font-bold text-gray-900 dark:text-white\">$value</p>
+                    <div class=\"ml-4 min-w-0 flex-1\">
+                        <p class=\"text-sm font-medium text-gray-600 dark:text-gray-400 truncate\">$title</p>
+                        <p class=\"text-2xl font-bold text-gray-900 dark:text-white truncate\">$value</p>
                         $trendHtml
                     </div>
                 </div>

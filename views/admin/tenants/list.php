@@ -118,9 +118,9 @@ ob_start();
                 <div class="absolute bottom-4 left-4 right-4">
                     <div class="flex items-center">
                         <?php echo UIComponents::avatar($tenant['first_name'] . ' ' . $tenant['last_name'], null, 'large'); ?>
-                        <div class="ml-3">
-                            <h3 class="text-lg font-semibold text-white"><?php echo htmlspecialchars($tenant['first_name'] . ' ' . $tenant['last_name']); ?></h3>
-                            <p class="text-sm text-gray-200">ID: #<?php echo str_pad($tenant['id'], 4, '0', STR_PAD_LEFT); ?></p>
+                        <div class="ml-3 min-w-0 flex-1">
+                            <h3 class="text-lg font-semibold text-white truncate"><?php echo htmlspecialchars($tenant['first_name'] . ' ' . $tenant['last_name']); ?></h3>
+                            <p class="text-sm text-gray-200 truncate">ID: #<?php echo str_pad($tenant['id'], 4, '0', STR_PAD_LEFT); ?></p>
                         </div>
                     </div>
                 </div>
@@ -129,17 +129,17 @@ ob_start();
             <!-- Tenant Details -->
             <div class="p-6">
                 <div class="flex items-start justify-between mb-4">
-                    <div class="flex-1">
-                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                            <i class="fas fa-envelope mr-1"></i>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2 truncate">
+                            <i class="fas fa-envelope mr-1 flex-shrink-0"></i>
                             <?php echo htmlspecialchars($tenant['email']); ?>
                         </p>
-                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                            <i class="fas fa-phone mr-1"></i>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2 truncate">
+                            <i class="fas fa-phone mr-1 flex-shrink-0"></i>
                             <?php echo htmlspecialchars($tenant['phone']); ?>
                         </p>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">
-                            <i class="fas fa-map-marker-alt mr-1"></i>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 truncate">
+                            <i class="fas fa-map-marker-alt mr-1 flex-shrink-0"></i>
                             <?php echo htmlspecialchars($tenant['property_name']); ?>, Unit <?php echo htmlspecialchars($tenant['unit_number']); ?>
                         </p>
                     </div>
@@ -171,13 +171,13 @@ ob_start();
                 
                 <!-- Lease Info -->
                 <div class="flex items-center justify-between mb-4">
-                    <div>
+                    <div class="min-w-0 flex-1 mr-4">
                         <p class="text-xs text-gray-500 dark:text-gray-400">Lease Period</p>
-                        <p class="text-sm font-medium text-gray-900 dark:text-white">
+                        <p class="text-sm font-medium text-gray-900 dark:text-white truncate">
                             <?php echo date('M j, Y', strtotime($tenant['lease_start'])); ?> - <?php echo date('M j, Y', strtotime($tenant['lease_end'])); ?>
                         </p>
                     </div>
-                    <div class="text-right">
+                    <div class="text-right flex-shrink-0">
                         <p class="text-xs text-gray-500 dark:text-gray-400">Time Remaining</p>
                         <p class="text-sm font-medium text-primary-600 dark:text-primary-400">
                             <?php 

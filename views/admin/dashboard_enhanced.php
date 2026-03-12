@@ -106,18 +106,18 @@ $newApplications = ViewManager::get('newApplications', []);
             $statusColor = arr_get($property, 'status') === 'occupied' ? 'success' : (arr_get($property, 'status') === 'available' ? 'info' : 'warning');
             $propertiesContent .= "
                 <div class=\"flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-pointer\" onclick=\"window.location.href='/admin/properties/" . arr_get($property, 'id') . "'\">
-                    <div class=\"flex items-center space-x-4\">
-                        <img src=\"" . arr_escape($property, 'image') . "\" alt=\"" . arr_escape($property, 'name') . "\" class=\"w-16 h-16 rounded-lg object-cover\">
-                        <div>
-                            <h4 class=\"text-sm font-semibold text-gray-900 dark:text-white\">" . arr_escape($property, 'name') . "</h4>
-                            <p class=\"text-xs text-gray-500 dark:text-gray-400\">" . arr_escape($property, 'address') . "</p>
+                    <div class=\"flex items-center space-x-4 min-w-0 flex-1\">
+                        <img src=\"" . arr_escape($property, 'image') . "\" alt=\"" . arr_escape($property, 'name') . "\" class=\"w-16 h-16 rounded-lg object-cover flex-shrink-0\">
+                        <div class=\"min-w-0 flex-1\">
+                            <h4 class=\"text-sm font-semibold text-gray-900 dark:text-white truncate\">" . arr_escape($property, 'name') . "</h4>
+                            <p class=\"text-xs text-gray-500 dark:text-gray-400 truncate\">" . arr_escape($property, 'address') . "</p>
                             <div class=\"flex items-center mt-1 text-xs text-gray-500 dark:text-gray-400 space-x-3\">
-                                <span><i class=\"fas fa-door-open mr-1\"></i>" . arr_get($property, 'unit_count', 0) . " units</span>
-                                <span><i class=\"fas fa-users mr-1\"></i>" . arr_get($property, 'occupied_units', 0) . " occupied</span>
+                                <span class=\"flex-shrink-0\"><i class=\"fas fa-door-open mr-1\"></i>" . arr_get($property, 'unit_count', 0) . " units</span>
+                                <span class=\"flex-shrink-0\"><i class=\"fas fa-users mr-1\"></i>" . arr_get($property, 'occupied_units', 0) . " occupied</span>
                             </div>
                         </div>
                     </div>
-                    <div class=\"text-right\">
+                    <div class=\"text-right flex-shrink-0 ml-4\">
                         " . UIComponents::badge(ucfirst(arr_get($property, 'status')), $statusColor, 'small') . "
                         <div class=\"mt-2 text-xs text-gray-500 dark:text-gray-400\">" . arr_escape($property, 'type') . "</div>
                     </div>
@@ -155,9 +155,9 @@ $newApplications = ViewManager::get('newApplications', []);
                         <i class=\"fas fa-$icon text-primary-600 dark:text-primary-400 text-xs\"></i>
                     </div>
                     <div class=\"flex-1 min-w-0\">
-                        <p class=\"text-sm text-gray-900 dark:text-white\">{$description}</p>";
+                        <p class=\"text-sm text-gray-900 dark:text-white truncate\">{$description}</p>";
             if (arr_get($activity, 'property_name')) {
-                $activitiesContent .= "<p class=\"text-xs text-gray-500 dark:text-gray-400 mt-1\">Property: " . arr_escape($activity, 'property_name') . "</p>";
+                $activitiesContent .= "<p class=\"text-xs text-gray-500 dark:text-gray-400 mt-1 truncate\">Property: " . arr_escape($activity, 'property_name') . "</p>";
             }
             $activitiesContent .= "<p class=\"text-xs text-gray-500 dark:text-gray-400 mt-1\">" . formatActivityTime($time) . "</p>
                     </div>

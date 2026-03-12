@@ -1,6 +1,6 @@
 <?php
 // Initialize anti-scattering system
-require_once $_SERVER['DOCUMENT_ROOT'] . '/../config/bootstrap.php';
+require_once __DIR__ . '/../../config/bootstrap.php';
 
 // Get centralized data from DataProvider (anti-scattering compliant)
 $user = ViewManager::get('user');

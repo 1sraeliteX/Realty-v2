@@ -62,8 +62,10 @@ ob_start();
 <!-- Mobile sidebar backdrop -->
 <div id="sidebarBackdrop" class="fixed inset-0 z-40 bg-gray-600 bg-opacity-75 lg:hidden hidden"></div>
 
+<!-- Main Flex Container -->
+<div class="flex min-h-screen bg-gray-50 dark:bg-gray-900">
 <!-- Sidebar -->
-<aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out lg:static lg:inset-0">
+<aside id="sidebar" class="flex-shrink-0 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out lg:static lg:inset-0">
     <div class="flex flex-col h-full">
         <!-- Logo -->
         <div class="flex items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-gray-700">
@@ -163,7 +165,8 @@ ob_start();
 </aside>
 
 <!-- Main Content -->
-<div class="lg:ml-64 flex flex-col min-h-screen">
+<!-- Main Content -->
+<div class="flex-1 overflow-y-auto">
     <!-- Top Navigation -->
     <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-30">
         <div class="flex items-center justify-between px-4 sm:px-6 lg:px-8 h-16">
@@ -450,6 +453,8 @@ ob_start();
         </div>
     </main>
 </div>
+    <!-- Close Main Flex Container -->
+    </div>
 
 <script>
 // Sidebar functionality

@@ -121,8 +121,8 @@ ob_start();
             <!-- Property Details -->
             <div class="p-6">
                 <div class="flex items-start justify-between mb-2">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white"><?php echo htmlspecialchars($property['name']); ?></h3>
-                    <div class="flex space-x-1">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white truncate min-w-0 flex-1 pr-2"><?php echo htmlspecialchars($property['name']); ?></h3>
+                    <div class="flex space-x-1 flex-shrink-0">
                         <button onclick="editProperty(<?php echo $property['id']; ?>)" class="text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">
                             <i class="fas fa-edit"></i>
                         </button>
@@ -132,8 +132,8 @@ ob_start();
                     </div>
                 </div>
                 
-                <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                    <i class="fas fa-map-marker-alt mr-1"></i>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-4 truncate">
+                    <i class="fas fa-map-marker-alt mr-1 flex-shrink-0"></i>
                     <?php echo htmlspecialchars($property['address']); ?>
                 </p>
                 
