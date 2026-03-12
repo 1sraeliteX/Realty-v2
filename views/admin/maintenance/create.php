@@ -377,7 +377,9 @@ $isMaintenance = strpos($currentPath, '/admin/maintenance') === 0;
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Estimated Cost</label>
                     <div class="relative">
-                        <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400">$</span>
+                        <div class="absolute inset-y-0 left-0 flex items-center justify-center w-8 pointer-events-none">
+                            <span class="text-gray-500 dark:text-gray-400">$</span>
+                        </div>
                         <input 
                             type="number" 
                             name="estimated_cost"
