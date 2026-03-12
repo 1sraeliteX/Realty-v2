@@ -109,7 +109,7 @@ return [
     'POST /admin/documents/{id}/delete' => 'DocumentController@delete',
 
     // Admin Dashboard Reports routes
-    'GET /admin/dashboard/reports' => 'ReportController@dashboardReports',
+    'GET /admin/dashboard/reports' => 'AdminDashboardController@reports',
     
     // Admin Reports routes
     'GET /admin/reports' => 'ReportController@index',

@@ -1,12 +1,32 @@
 <?php
 // Initialize framework (anti-scattering compliant)
 require_once __DIR__ . '/../../../config/init_framework.php';
+require_once __DIR__ . '/../../../config/database.php';
 
 // Load components through registry (anti-scattering compliant)
 ComponentRegistry::load('ui-components');
 
-// Get properties data from controller/DataProvider (anti-scattering compliant)
-$properties = ViewManager::get('properties') ?? DataProvider::get('properties');
+// Get properties data from controller (anti-scattering compliant)
+// Use ViewManager data from controller, fallback to database if not set
+$properties = ViewManager::get('properties');
+if (!$properties) {
+    // Fallback: fetch directly from database if ViewManager doesn't have data
+    $db = \Config\Database::getInstance();
+    
+    // Get current admin from session
+    $adminId = $_SESSION['admin_id'] ?? null;
+    if ($adminId) {
+        $sql = "SELECT p.*, 
+                       (SELECT COUNT(*) FROM units u WHERE u.property_id = p.id AND u.deleted_at IS NULL) as unit_count,
+                       (SELECT COUNT(*) FROM units u WHERE u.property_id = p.id AND u.status = 'occupied' AND u.deleted_at IS NULL) as occupied_units
+                FROM properties p 
+                WHERE p.admin_id = ? AND p.deleted_at IS NULL
+                ORDER BY p.created_at DESC";
+        $properties = $db->fetchAll($sql, [$adminId]);
+    } else {
+        $properties = [];
+    }
+}
 
 // Set data through ViewManager (anti-scattering compliant)
 ViewManager::set('title', 'Properties Management');
@@ -105,16 +125,28 @@ ob_start();
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-200 cursor-pointer" onclick="previewProperty(<?php echo $property['id']; ?>)">
             <!-- Property Image -->
             <div class="relative h-48 bg-gray-200 dark:bg-gray-700">
-                <img src="<?php echo $property['image']; ?>" alt="<?php echo htmlspecialchars($property['name']); ?>" class="w-full h-full object-cover">
+                <?php 
+                // Handle image display - use first image from JSON if available, otherwise placeholder
+                $imagePath = '/assets/images/property-placeholder.jpg';
+                if (!empty($property['images'])) {
+                    $images = json_decode($property['images'], true);
+                    if (is_array($images) && !empty($images[0])) {
+                        $imagePath = '/storage/uploads/properties/' . $images[0];
+                    }
+                }
+                ?>
+                <img src="<?php echo $imagePath; ?>" alt="<?php echo htmlspecialchars($property['name']); ?>" class="w-full h-full object-cover">
                 <div class="absolute top-2 right-2">
                     <?php 
-                    $statusColor = $property['status'] === 'occupied' ? 'success' : 
-                                 ($property['status'] === 'available' ? 'info' : 'warning');
-                    echo UIComponents::badge(ucfirst($property['status']), $statusColor, 'small'); 
+                    // Map database status to display status
+                    $displayStatus = $property['status'] === 'active' ? 'available' : $property['status'];
+                    $statusColor = $displayStatus === 'active' ? 'success' : 
+                                 ($displayStatus === 'inactive' ? 'info' : 'warning');
+                    echo UIComponents::badge(ucfirst($displayStatus), $statusColor, 'small'); 
                     ?>
                 </div>
                 <div class="absolute top-2 left-2">
-                    <?php echo UIComponents::badge($property['type'], 'gray', 'small'); ?>
+                    <?php echo UIComponents::badge(ucfirst($property['type']), 'gray', 'small'); ?>
                 </div>
             </div>
             
@@ -153,12 +185,26 @@ ob_start();
                 <div class="flex items-center justify-between mb-4">
                     <div>
                         <p class="text-xs text-gray-500 dark:text-gray-400">Monthly Revenue</p>
-                        <p class="text-lg font-semibold text-gray-900 dark:text-white">$<?php echo number_format($property['monthly_revenue'], 0); ?></p>
+                        <p class="text-lg font-semibold text-gray-900 dark:text-white">
+                            $<?php 
+                            // Calculate monthly revenue from occupied units * rent_price (if yearly, divide by 12)
+                            $monthlyRevenue = 0;
+                            if ($property['occupied_units'] > 0 && !empty($property['rent_price'])) {
+                                // rent_price might be yearly, so convert to monthly
+                                $monthlyRevenue = ($property['rent_price'] / 12) * $property['occupied_units'];
+                            }
+                            echo number_format($monthlyRevenue, 0);
+                            ?>
+                        </p>
                     </div>
                     <div class="text-right">
                         <p class="text-xs text-gray-500 dark:text-gray-400">Occupancy Rate</p>
                         <p class="text-lg font-semibold text-primary-600 dark:text-primary-400">
-                            <?php echo round(($property['occupied_units'] / $property['unit_count']) * 100, 1); ?>%
+                            <?php 
+                            $occupancyRate = ($property['unit_count'] > 0) ? 
+                                round(($property['occupied_units'] / $property['unit_count']) * 100, 1) : 0;
+                            echo $occupancyRate; 
+                            ?>%
                         </p>
                     </div>
                 </div>

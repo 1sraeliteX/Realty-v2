@@ -9,6 +9,7 @@
 require_once __DIR__ . '/components_registry.php';
 require_once __DIR__ . '/view_manager.php';
 require_once __DIR__ . '/data_provider.php';
+require_once __DIR__ . '/ArrayHelper.php';
 
 // Initialize the system
 ComponentRegistry::init();

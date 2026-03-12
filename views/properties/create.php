@@ -29,7 +29,7 @@ $propertyTypes = include __DIR__ . '/../../config/property_types.php';
 </div>
 
 <!-- Main Form Container -->
-<form id="property-form" class="space-y-8" method="POST" action="/properties" enctype="multipart/form-data">
+<form id="property-form" class="space-y-8" method="POST" action="/admin/properties" enctype="multipart/form-data">
     
     <!-- Section 1: Basic Information -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">

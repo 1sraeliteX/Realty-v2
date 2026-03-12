@@ -2,9 +2,6 @@
 
 namespace App\Controllers;
 
-use DataProvider;
-use ViewManager;
-
 class PropertyController extends BaseController {
     public function index() {
         // Initialize framework (anti-scattering compliant)
@@ -21,15 +18,15 @@ class PropertyController extends BaseController {
         // Load property type helper and get data
         require_once __DIR__ . '/../../config/property_type_helper.php';
         
-        // Set data in DataProvider (anti-scattering compliant)
-        DataProvider::set('property_category_options', getCategoryOptions());
-        DataProvider::set('property_type_options', getPropertyTypeOptions());
+        // Set data in ViewManager (anti-scattering compliant)
+        \ViewManager::set('property_category_options', getCategoryOptions());
+        \ViewManager::set('property_type_options', getPropertyTypeOptions());
         
         // Set view data in ViewManager (anti-scattering compliant)
-        ViewManager::set('search', $search);
-        ViewManager::set('type', $type);
-        ViewManager::set('category', $category);
-        ViewManager::set('status', $status);
+        \ViewManager::set('search', $search);
+        \ViewManager::set('type', $type);
+        \ViewManager::set('category', $category);
+        \ViewManager::set('status', $status);
         
         // Build query
         $where = ["p.admin_id = ?", "p.deleted_at IS NULL"];
@@ -73,9 +70,14 @@ class PropertyController extends BaseController {
         
         $result = $this->paginate($sql, $page, 10, $params);
         
+        // Debug: Log the SQL query and results
+        error_log("Property Query SQL: " . $sql);
+        error_log("Property Query Params: " . json_encode($params));
+        error_log("Property Query Results: " . json_encode($result));
+        
         // Set data in ViewManager (anti-scattering compliant)
-        ViewManager::set('properties', $result['data']);
-        ViewManager::set('pagination', $result['pagination']);
+        \ViewManager::set('properties', $result['data']);
+        \ViewManager::set('pagination', $result['pagination']);
         
         // Always use dashboard layout for properties
         $this->view('admin.dashboard_layout', [
@@ -188,6 +190,10 @@ class PropertyController extends BaseController {
         ];
 
         $propertyId = $this->db->insert('properties', $propertyData);
+        
+        // Debug: Log property creation
+        error_log("Property Creation Data: " . json_encode($propertyData));
+        error_log("Property Creation ID: " . $propertyId);
 
         // Log activity
         $this->logActivity($admin['id'], 'create', "Created property: {$mappedData['property_name']}", 'property', $propertyId);
@@ -199,7 +205,7 @@ class PropertyController extends BaseController {
             ], 201);
         } else {
             $_SESSION['success'] = 'Property created successfully!';
-            $this->redirect('/properties');
+            $this->redirect('/admin/properties');
         }
     }
 
@@ -220,7 +226,7 @@ class PropertyController extends BaseController {
                 $this->json(['error' => 'Property not found'], 404);
             } else {
                 $_SESSION['error'] = 'Property not found';
-                $this->redirect('/properties');
+                $this->redirect('/admin/properties');
             }
         }
 
@@ -258,7 +264,7 @@ class PropertyController extends BaseController {
         
         if (!$property) {
             $_SESSION['error'] = 'Property not found';
-            $this->redirect('/properties');
+            $this->redirect('/admin/properties');
         }
 
         $this->view('admin.dashboard_layout', [
@@ -281,7 +287,7 @@ class PropertyController extends BaseController {
                 $this->json(['error' => 'Property not found'], 404);
             } else {
                 $_SESSION['error'] = 'Property not found';
-                $this->redirect('/properties');
+                $this->redirect('/admin/properties');
             }
         }
 
@@ -368,7 +374,7 @@ class PropertyController extends BaseController {
             $this->json(['message' => 'Property updated successfully']);
         } else {
             $_SESSION['success'] = 'Property updated successfully!';
-            $this->redirect('/properties');
+            $this->redirect('/admin/properties');
         }
     }
 
@@ -384,7 +390,7 @@ class PropertyController extends BaseController {
                 $this->json(['error' => 'Property not found'], 404);
             } else {
                 $_SESSION['error'] = 'Property not found';
-                $this->redirect('/properties');
+                $this->redirect('/admin/properties');
             }
         }
 
@@ -398,7 +404,7 @@ class PropertyController extends BaseController {
             $this->json(['message' => 'Property deleted successfully']);
         } else {
             $_SESSION['success'] = 'Property deleted successfully!';
-            $this->redirect('/properties');
+            $this->redirect('/admin/properties');
         }
     }
 

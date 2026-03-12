@@ -19,7 +19,6 @@ $isFinances = strpos($currentPath, '/admin/finances') === 0;
 $isMaintenance = strpos($currentPath, '/admin/maintenance') === 0;
 $isCommunications = strpos($currentPath, '/admin/communications') === 0;
 $isDocuments = strpos($currentPath, '/admin/documents') === 0;
-$isReports = strpos($currentPath, '/admin/reports') === 0;
 $isSettings = strpos($currentPath, '/admin/settings') === 0;
 $isProfile = strpos($currentPath, '/admin/profile') === 0;
 ?>
@@ -156,19 +155,6 @@ $isProfile = strpos($currentPath, '/admin/profile') === 0;
                             Documents
                         </a>
 
-                        <!-- Reports Section -->
-                        <div class="pt-4 pb-2">
-                            <span class="px-3 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400">Reports</span>
-                        </div>
-                        <a href="/admin/reports" class="<?php echo $isReports ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-                            <i class="fas fa-chart-bar mr-3"></i>
-                            Reports
-                        </a>
-                        <a href="/admin/dashboard/reports" class="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-                            <i class="fas fa-chart-pie mr-3"></i>
-                            Dashboard Reports
-                        </a>
-
                         <!-- Settings Section -->
                         <div class="pt-4 pb-2">
                             <span class="px-3 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400">Settings</span>
@@ -180,6 +166,15 @@ $isProfile = strpos($currentPath, '/admin/profile') === 0;
                         <a href="/admin/profile" class="<?php echo $isProfile ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <i class="fas fa-user mr-3"></i>
                             Profile
+                        </a>
+
+                        <!-- Dashboard Reports -->
+                        <div class="pt-4 pb-2">
+                            <span class="px-3 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400">Dashboard</span>
+                        </div>
+                        <a href="/admin/dashboard/reports" class="<?php echo (strpos($currentPath, '/admin/dashboard/reports') === 0) ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                            <i class="fas fa-chart-pie mr-3"></i>
+                            Dashboard Reports
                         </a>
 
                         <!-- Logout Button -->

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notification Bell Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/fontawesome.css">
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen">
+        <!-- Test navbar with notification bell -->
+        <nav class="bg-white shadow-lg">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex items-center">
+                        <h1 class="text-xl font-semibold text-gray-800">Notification Test</h1>
+                    </div>
+                    
+                    <div class="flex items-center space-x-4">
+                        <!-- Notifications -->
+                        <div class="relative">
+                            <button id="notification-bell-btn" class="relative text-gray-500 hover:text-gray-600">
+                                <i class="fas fa-bell text-xl"></i>
+                                <span class="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">3</span>
+                            </button>
+                            
+                            <!-- Notifications Dropdown Menu -->
+                            <div id="notification-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                                <div class="p-3 border-b border-gray-200">
+                                    <h3 class="text-sm font-medium text-gray-900">Notifications</h3>
+                                </div>
+                                <div class="max-h-96 overflow-y-auto">
+                                    <div class="p-3 hover:bg-gray-50 border-b border-gray-100">
+                                        <div class="flex items-start space-x-3">
+                                            <div class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                                <i class="fas fa-user text-blue-600 text-xs"></i>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <p class="text-sm text-gray-900 font-medium">New tenant application received</p>
+                                                <p class="text-xs text-gray-500 mt-1">5 minutes ago</p>
+                                            </div>
+                                            <div class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="p-3 hover:bg-gray-50 border-b border-gray-100">
+                                        <div class="flex items-start space-x-3">
+                                            <div class="flex-shrink-0 w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                                                <i class="fas fa-exclamation-triangle text-yellow-600 text-xs"></i>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <p class="text-sm text-gray-900">Rent payment overdue for Unit 3A</p>
+                                                <p class="text-xs text-gray-500 mt-1">1 hour ago</p>
+                                            </div>
+                                            <div class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="p-3 hover:bg-gray-50 border-b border-gray-100">
+                                        <div class="flex items-start space-x-3">
+                                            <div class="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                                <i class="fas fa-check-circle text-green-600 text-xs"></i>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <p class="text-sm text-gray-900">Maintenance request completed</p>
+                                                <p class="text-xs text-gray-500 mt-1">2 hours ago</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-2 border-t border-gray-200">
+                                    <a href="#" class="block w-full text-center px-3 py-2 text-sm text-blue-600 hover:bg-gray-100 rounded">
+                                        View all notifications
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- User Profile Dropdown -->
+                        <div class="relative">
+                            <button id="user-menu-btn" class="flex items-center text-gray-700">
+                                <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                                    <span class="text-white text-sm font-medium">A</span>
+                                </div>
+                                <i class="fas fa-chevron-down ml-2 text-xs"></i>
+                            </button>
+                            
+                            <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                                <div class="p-3 border-b border-gray-200">
+                                    <p class="text-sm font-medium text-gray-900">Admin User</p>
+                                    <p class="text-xs text-gray-500">admin@example.com</p>
+                                </div>
+                                <div class="py-1">
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        <i class="fas fa-user mr-2"></i> Profile
+                                    </a>
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        <i class="fas fa-cog mr-2"></i> Settings
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        
+        <!-- Test Content -->
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-lg font-medium text-gray-900 mb-4">Notification Bell Test</h2>
+                <div class="space-y-4">
+                    <div class="p-4 bg-green-50 rounded-lg">
+                        <h3 class="text-sm font-medium text-green-800">✅ Test Steps:</h3>
+                        <ol class="mt-2 text-sm text-green-700 list-decimal list-inside space-y-1">
+                            <li>Click the bell icon - dropdown should open</li>
+                            <li>Click outside - dropdown should close</li>
+                            <li>Click user menu - notification dropdown should close, user dropdown should open</li>
+                            <li>Click bell again - user dropdown should close, notification dropdown should open</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="p-4 bg-blue-50 rounded-lg">
+                        <h3 class="text-sm font-medium text-blue-800">🔍 Expected Features:</h3>
+                        <ul class="mt-2 text-sm text-blue-700 list-disc list-inside space-y-1">
+                            <li>Bell icon with red badge (3)</li>
+                            <li>Dropdown opens on click</li>
+                            <li>Shows notification items with icons and timestamps</li>
+                            <li>Unread items have blue dot indicator</li>
+                            <li>"View all notifications" link at bottom</li>
+                            <li>Proper z-index (appears above other elements)</li>
+                            <li>Doesn't interfere with user dropdown</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // User dropdown functionality
+            const userMenuBtn = document.getElementById('user-menu-btn');
+            const userDropdown = document.getElementById('user-dropdown');
+            
+            userMenuBtn?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                userDropdown.classList.toggle('hidden');
+                // Close notification dropdown when opening user dropdown
+                notificationDropdown?.classList.add('hidden');
+            });
+            
+            // Notification dropdown functionality
+            const notificationBellBtn = document.getElementById('notification-bell-btn');
+            const notificationDropdown = document.getElementById('notification-dropdown');
+            
+            notificationBellBtn?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                notificationDropdown.classList.toggle('hidden');
+                // Close user dropdown when opening notification dropdown
+                userDropdown?.classList.add('hidden');
+            });
+            
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!userMenuBtn?.contains(e.target) && !userDropdown?.contains(e.target)) {
+                    userDropdown?.classList.add('hidden');
+                }
+                if (!notificationBellBtn?.contains(e.target) && !notificationDropdown?.contains(e.target)) {
+                    notificationDropdown?.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

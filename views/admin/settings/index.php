@@ -53,26 +53,26 @@ ob_start();
     </div>
 
     <!-- Settings Navigation -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
-        <div class="border-b border-gray-200 dark:border-gray-700">
-            <nav class="flex space-x-8 px-6" aria-label="Settings tabs">
-                <button onclick="showTab('general')" class="settings-tab py-4 px-1 border-b-2 font-medium text-sm border-primary-500 text-primary-600 dark:text-primary-400" data-tab="general">
-                    <i class="fas fa-cog mr-2"></i>General
-                </button>
-                <button onclick="showTab('email')" class="settings-tab py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300" data-tab="email">
-                    <i class="fas fa-envelope mr-2"></i>Email
-                </button>
-                <button onclick="showTab('security')" class="settings-tab py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300" data-tab="security">
-                    <i class="fas fa-shield-alt mr-2"></i>Security
-                </button>
-                <button onclick="showTab('notifications')" class="settings-tab py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300" data-tab="notifications">
-                    <i class="fas fa-bell mr-2"></i>Notifications
-                </button>
-                <button onclick="showTab('appearance')" class="settings-tab py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300" data-tab="appearance">
-                    <i class="fas fa-palette mr-2"></i>Appearance
-                </button>
-            </nav>
-        </div>
+    <div class="bg-white dark:bg-gray-800 rounded-full shadow-sm border border-gray-200 dark:border-gray-700 mb-6 px-2 py-2">
+        <nav class="flex space-x-1" aria-label="Settings tabs">
+            <button onclick="showTab('general')" class="settings-tab flex items-center px-4 py-2 rounded-full text-sm font-medium text-black bg-green-100 dark:bg-green-900/30" data-tab="general">
+                <i class="fas fa-cog mr-2"></i>General
+                <span class="ml-2 w-5 h-5 bg-green-600 dark:bg-green-500 text-white text-xs rounded-full flex items-center justify-center">4</span>
+            </button>
+            <button onclick="showTab('email')" class="settings-tab flex items-center px-4 py-2 rounded-full text-sm font-medium text-black hover:bg-gray-100 dark:hover:bg-gray-700" data-tab="email">
+                <i class="fas fa-envelope mr-2"></i>Email
+            </button>
+            <button onclick="showTab('security')" class="settings-tab flex items-center px-4 py-2 rounded-full text-sm font-medium text-black hover:bg-gray-100 dark:hover:bg-gray-700" data-tab="security">
+                <i class="fas fa-shield-alt mr-2"></i>Security
+            </button>
+            <button onclick="showTab('notifications')" class="settings-tab flex items-center px-4 py-2 rounded-full text-sm font-medium text-black hover:bg-gray-100 dark:hover:bg-gray-700" data-tab="notifications">
+                <i class="fas fa-bell mr-2"></i>Notifications
+            </button>
+            <button onclick="showTab('appearance')" class="settings-tab flex items-center px-4 py-2 rounded-full text-sm font-medium text-black hover:bg-gray-100 dark:hover:bg-gray-700" data-tab="appearance">
+                <i class="fas fa-palette mr-2"></i>Appearance
+            </button>
+        </nav>
+    </div>
 
         <!-- Settings Form -->
         <form id="settings-form" method="POST" action="/admin/settings" class="p-6">
@@ -289,8 +289,14 @@ function showTab(tabName) {
     
     // Remove active state from all tab buttons
     document.querySelectorAll('.settings-tab').forEach(btn => {
-        btn.classList.remove('border-primary-500', 'text-primary-600', 'dark:text-primary-400');
-        btn.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'dark:text-gray-400', 'dark:hover:text-gray-300');
+        btn.classList.remove('bg-green-100', 'dark:bg-green-900/30');
+        btn.classList.add('hover:bg-gray-100', 'dark:hover:bg-gray-700');
+        
+        // Remove badge from all tabs
+        const badge = btn.querySelector('span');
+        if (badge) {
+            badge.remove();
+        }
     });
     
     // Show selected tab
@@ -298,8 +304,16 @@ function showTab(tabName) {
     
     // Add active state to selected tab button
     const activeBtn = document.querySelector(`[data-tab="${tabName}"]`);
-    activeBtn.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'dark:text-gray-400', 'dark:hover:text-gray-300');
-    activeBtn.classList.add('border-primary-500', 'text-primary-600', 'dark:text-primary-400');
+    activeBtn.classList.remove('hover:bg-gray-100', 'dark:hover:bg-gray-700');
+    activeBtn.classList.add('bg-green-100', 'dark:bg-green-900/30');
+    
+    // Add badge to active tab (only for General tab in this example)
+    if (tabName === 'general') {
+        const badge = document.createElement('span');
+        badge.className = 'ml-2 w-5 h-5 bg-green-600 dark:bg-green-500 text-white text-xs rounded-full flex items-center justify-center';
+        badge.textContent = '4';
+        activeBtn.appendChild(badge);
+    }
 }
 
 // Reset settings to defaults

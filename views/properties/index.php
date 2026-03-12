@@ -13,6 +13,10 @@ $type = ViewManager::get('type') ?? '';
 $category = ViewManager::get('category') ?? '';
 $status = ViewManager::get('status') ?? '';
 
+// Debug: Log view data
+error_log("View Properties Data: " . json_encode($properties));
+error_log("View Pagination Data: " . json_encode($pagination));
+
 // Get property type data from DataProvider
 $categoryOptions = DataProvider::get('property_category_options') ?? [];
 $allPropertyTypes = DataProvider::get('property_type_options') ?? [];
@@ -25,7 +29,7 @@ ViewManager::set('pageTitle', 'Properties Management');
 <!-- Header Actions -->
 <div class="flex justify-between items-center mb-6">
     <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Properties</h1>
-    <a href="/properties/create" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+    <a href="/admin/properties/create" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
         <i class="fas fa-plus mr-2"></i>Add Property
     </a>
 </div>
@@ -105,7 +109,7 @@ ViewManager::set('pageTitle', 'Properties Management');
                                 <p class="text-gray-500 dark:text-gray-400 mb-6 max-w-md mx-auto">
                                     You haven't added any properties yet. Start by adding your first property.
                                 </p>
-                                <a href="/properties/create" class="inline-flex items-center px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+                                <a href="/admin/properties/create" class="inline-flex items-center px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
                                     <i class="fas fa-plus mr-2"></i>
                                     Add Your First Property
                                 </a>
@@ -212,13 +216,13 @@ foreach ($allPropertyTypes as $type) {
                                             <i class="fas fa-ellipsis-v"></i>
                                         </button>
                                         <div id="menu-<?php echo $property['id']; ?>" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10">
-                                            <a href="/properties/<?php echo $property['id']; ?>/units" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                            <a href="/admin/properties/<?php echo $property['id']; ?>/units" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
                                                 <i class="fas fa-door-open mr-2"></i>Manage Units
                                             </a>
-                                            <a href="/properties/<?php echo $property['id']; ?>/tenants" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                            <a href="/admin/properties/<?php echo $property['id']; ?>/tenants" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
                                                 <i class="fas fa-users mr-2"></i>View Tenants
                                             </a>
-                                            <a href="/properties/<?php echo $property['id']; ?>/payments" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                            <a href="/admin/properties/<?php echo $property['id']; ?>/payments" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
                                                 <i class="fas fa-dollar-sign mr-2"></i>Payment History
                                             </a>
                                         </div>
@@ -279,11 +283,11 @@ foreach ($allPropertyTypes as $type) {
 <!-- JavaScript for interactive functionality -->
 <script>
 function viewProperty(id) {
-    window.location.href = '/properties/' + id;
+    window.location.href = '/admin/properties/' + id;
 }
 
 function editProperty(id) {
-    window.location.href = '/properties/' + id + '/edit';
+    window.location.href = '/admin/properties/' + id + '/edit';
 }
 
 function deleteProperty(id, name) {
@@ -291,7 +295,7 @@ function deleteProperty(id, name) {
         // Create form for deletion
         const form = document.createElement('form');
         form.method = 'POST';
-        form.action = '/properties/' + id + '/delete';
+        form.action = '/admin/properties/' + id + '/delete';
         
         const csrfToken = document.createElement('input');
         csrfToken.type = 'hidden';

@@ -9,15 +9,8 @@ use Config\Database;
 
 class SuperAdminController extends BaseController {
     public function index() {
-        // Temporarily bypass authentication for development
-        $admin = [
-            'id' => 4,
-            'name' => 'Super Administrator',
-            'email' => 'superadmin@cornerstone.com',
-            'role' => 'super_admin'
-        ];
-        
-        // $admin = $this->requireSuperAdmin();
+        // Require super admin authentication
+        $admin = $this->requireSuperAdmin();
         
         // Get platform statistics
         $stats = $this->getPlatformStats();
@@ -37,15 +30,8 @@ class SuperAdminController extends BaseController {
     }
 
     public function admins() {
-        // Temporarily bypass authentication for development
-        $admin = [
-            'id' => 4,
-            'name' => 'Super Administrator',
-            'email' => 'superadmin@cornerstone.com',
-            'role' => 'super_admin'
-        ];
-        
-        // $admin = $this->requireSuperAdmin();
+        // Require super admin authentication
+        $admin = $this->requireSuperAdmin();
         
         $admins = $this->getAllAdmins();
         
@@ -56,15 +42,8 @@ class SuperAdminController extends BaseController {
     }
 
     public function exportData() {
-        // Temporarily bypass authentication for development
-        $admin = [
-            'id' => 4,
-            'name' => 'Super Administrator',
-            'email' => 'superadmin@cornerstone.com',
-            'role' => 'super_admin'
-        ];
-        
-        // $admin = $this->requireSuperAdmin();
+        // Require super admin authentication
+        $admin = $this->requireSuperAdmin();
         
         $format = $_GET['format'] ?? 'json';
         $data = $this->getPlatformExportData();

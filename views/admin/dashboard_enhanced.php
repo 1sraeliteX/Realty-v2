@@ -1,5 +1,6 @@
 <?php
-// Framework components are auto-loaded by ViewManager (anti-scattering compliant)
+// Anti-scattering compliant framework initialization
+require_once __DIR__ . '/../../config/bootstrap.php';
 
 // Get data from ViewManager (anti-scattering compliant)
 $stats = ViewManager::get('stats', [
@@ -10,29 +11,62 @@ $stats = ViewManager::get('stats', [
     'monthly_revenue' => 0,
     'occupied_units' => 0,
     'pending_payments' => 0,
-    'maintenanceRequests' => 0,
-    'newApplications' => 0
+    'pending_maintenance' => 0,
+    'new_applications' => 0
 ]);
 $recentProperties = ViewManager::get('recentProperties', []);
 $activities = ViewManager::get('recentActivities', []);
 $revenueData = ViewManager::get('revenueData', []);
 $maintenanceRequests = ViewManager::get('maintenanceRequests', []);
 $newApplications = ViewManager::get('newApplications', []);
+$upcomingTasks = ViewManager::get('upcomingTasks', []);
+
+// Helper functions for dashboard (anti-scattering compliant - isolated in view)
+function formatAmount($amount) {
+    if ($amount >= 1000000000) {
+        return 'N' . number_format($amount / 1000000000, 2) . 'B';
+    } elseif ($amount >= 1000000) {
+        return 'N' . number_format($amount / 1000000, 2) . 'M';
+    } elseif ($amount >= 1000) {
+        return 'N' . number_format($amount / 1000, 1) . 'K';
+    } else {
+        return 'N' . number_format($amount);
+    }
+}
+
+function calculateTrend($current, $previous) {
+    if ($previous == 0) return 0;
+    return round((($current - $previous) / $previous) * 100, 1);
+}
 ?>
 
 <!-- Dashboard Overview -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-    <?php echo UIComponents::statsCard('Total Properties', arr_get($stats, 'total_properties'), 'home', 12.5, 'primary'); ?>
-    <?php echo UIComponents::statsCard('Total Units', arr_get($stats, 'total_units'), 'door-open', 8.3, 'blue'); ?>
-    <?php echo UIComponents::statsCard('Active Tenants', arr_get($stats, 'active_tenants'), 'users', 15.2, 'green'); ?>
-    <?php echo UIComponents::statsCard('Occupancy Rate', arr_get($stats, 'occupancy_rate') . '%', 'percentage', 2.1, 'yellow'); ?>
+    <?php 
+    // Get real trend calculations from DataProvider (anti-scattering compliant)
+    $trends = DataProvider::get('dashboard_trends', [
+        'property_trend' => 0,
+        'units_trend' => 0, 
+        'tenants_trend' => 0,
+        'occupancy_trend' => 0,
+        'revenue_trend' => 0
+    ]);
+    
+    echo UIComponents::statsCard('Total Properties', number_format($stats['total_properties']), 'home', $trends['property_trend'], 'primary'); 
+    echo UIComponents::statsCard('Total Units', number_format($stats['total_units']), 'door-open', $trends['units_trend'], 'blue'); 
+    echo UIComponents::statsCard('Active Tenants', number_format($stats['active_tenants']), 'users', $trends['tenants_trend'], 'green'); 
+    echo UIComponents::statsCard('Occupancy Rate', $stats['occupancy_rate'] . '%', 'percentage', $trends['occupancy_trend'], 'yellow'); 
+    ?>
 </div>
 
 <!-- Secondary Stats Row -->
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <?php echo UIComponents::statsCard('Monthly Revenue', 'N' . number_format(arr_get($stats, 'monthly_revenue', 0) / 1000000, 2) . 'M', 'money-bill-wave', 8.7, 'green'); ?>
-    <?php echo UIComponents::statsCard('Occupied Units', arr_get($stats, 'occupied_units'), 'check-circle', 3.4, 'blue'); ?>
-    <?php echo UIComponents::statsCard('Pending Payments', arr_get($stats, 'pending_payments'), 'exclamation-triangle', -25.0, 'red'); ?>
+    <?php 
+    // Format monthly revenue with proper thousand/million suffix (anti-scattering compliant)
+    echo UIComponents::statsCard('Monthly Revenue', formatAmount($stats['monthly_revenue']), 'money-bill-wave', $trends['revenue_trend'], 'green'); 
+    echo UIComponents::statsCard('Occupied Units', number_format($stats['occupied_units']), 'check-circle', $trends['units_trend'], 'blue'); 
+    echo UIComponents::statsCard('Pending Payments', number_format($stats['pending_payments']), 'exclamation-triangle', -25.0, 'red'); 
+    ?>
 </div>
 
 <!-- Charts and Actions Row -->
@@ -176,7 +210,7 @@ $newApplications = ViewManager::get('newApplications', []);
 </div>
 
 <!-- Additional Dashboard Widgets -->
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
     <!-- Maintenance Requests -->
     <?php 
     echo UIComponents::card(
@@ -258,6 +292,14 @@ $newApplications = ViewManager::get('newApplications', []);
         '<h3 class="text-lg font-medium text-gray-900 dark:text-white">New Applications</h3>',
         '<span class="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 text-xs font-medium px-2.5 py-0.5 rounded-full">' . arr_get($stats, 'newApplications', 0) . ' pending</span>'
     ); ?>
+
+    <!-- Notes Section -->
+    <?php 
+    // Load notes component (anti-scattering compliant)
+    ComponentRegistry::load('notes-component');
+    $notes = NotesComponent::getNotes();
+    echo NotesComponent::render($notes);
+    ?>
 
     <!-- Upcoming Tasks -->
     <?php 
@@ -386,6 +428,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
+<!-- Load Notes Component JavaScript (anti-scattering compliant) -->
+<?php
+ComponentRegistry::load('notes-component');
+echo NotesComponent::renderScript();
+?>
 
 <?php
 // Helper function for formatting activity time

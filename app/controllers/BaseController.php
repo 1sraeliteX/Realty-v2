@@ -185,7 +185,7 @@ class BaseController {
             if ($this->isApiRequest()) {
                 $this->json(['error' => 'Forbidden - Super Admin access required'], 403);
             } else {
-                $this->redirect('/admin/dashboard');
+                $this->redirect('/superadmin/login');
             }
         }
         return $admin;

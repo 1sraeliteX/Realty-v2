@@ -55,30 +55,26 @@ ob_start();
 </div>
 
 <!-- Add Property Form -->
-<form id="addPropertyForm" class="space-y-8">
+<form id="addPropertyForm" action="/admin/properties" method="POST" enctype="multipart/form-data" class="space-y-8">
     <!-- Step 1: Basic Information -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-6">Basic Information</h3>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <?php echo UIComponents::input('property_name', 'Property Name', 'text', '', 'Enter property name', true); ?>
+            <?php echo UIComponents::input('name', 'Property Name', 'text', '', 'Enter property name', true); ?>
             <?php echo UIComponents::input('address', 'Address', 'text', '', 'Enter full address', true); ?>
-            <?php echo UIComponents::input('city', 'City', 'text', '', 'Enter city', true); ?>
-            <?php echo UIComponents::input('state', 'State', 'text', '', 'Enter state', true); ?>
-            <?php echo UIComponents::input('zip_code', 'ZIP Code', 'text', '', 'Enter ZIP code', true); ?>
-            <?php echo UIComponents::input('country', 'Country', 'text', 'United States', 'Enter country'); ?>
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
             <?php 
             echo UIComponents::select(
-                'property_type',
+                'type',
                 'Property Type',
                 [
                     '' => 'Select type',
-                    '1 Room Apartment' => '1 Room Apartment',
-                    'Self Contained' => 'Self Contained',
-                    'Multi-Unit' => 'Multi-Unit'
+                    'residential' => 'Residential',
+                    'commercial' => 'Commercial',
+                    'mixed' => 'Mixed Use'
                 ],
                 '',
                 true
@@ -90,15 +86,19 @@ ob_start();
                 'Status',
                 [
                     '' => 'Select status',
-                    'available' => 'Available',
-                    'occupied' => 'Occupied',
-                    'maintenance' => 'Under Maintenance'
+                    'active' => 'Active',
+                    'inactive' => 'Inactive',
+                    'maintenance' => 'Maintenance'
                 ],
-                '',
+                'active',
                 true
             ); ?>
             
             <?php echo UIComponents::input('year_built', 'Year Built', 'number', '', 'e.g., 2018'); ?>
+        </div>
+        
+        <div class="mt-6">
+            <?php echo UIComponents::textarea('description', 'Description', '', 'Property description and features'); ?>
         </div>
     </div>
 
@@ -106,12 +106,17 @@ ob_start();
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-6">Property Details</h3>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <?php echo UIComponents::input('total_units', 'Total Units', 'number', '', 'Number of units', true); ?>
-            <?php echo UIComponents::input('size_sqft', 'Total Size (sq ft)', 'number', '', 'Total square footage'); ?>
-            <?php echo UIComponents::input('lot_size', 'Lot Size (acres)', 'number', '', 'Lot size in acres'); ?>
-            <?php echo UIComponents::input('parking_spaces', 'Parking Spaces', 'number', '', 'Number of parking spaces'); ?>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <?php echo UIComponents::input('bedrooms', 'Bedrooms', 'number', '', 'Number of bedrooms'); ?>
+            <?php echo UIComponents::input('bathrooms', 'Bathrooms', 'number', '', 'Number of bathrooms'); ?>
+            <?php echo UIComponents::input('kitchens', 'Kitchens', 'number', '1', 'Number of kitchens'); ?>
         </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            <?php echo UIComponents::input('parking', 'Parking Spaces', 'number', '0', 'Number of parking spaces'); ?>
+            <?php echo UIComponents::input('category', 'Category', 'text', '', 'Property category'); ?>
+        </div>
+    </div>
         
         <div class="mt-6">
             <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -214,7 +219,7 @@ ob_start();
             <p class="text-xs text-gray-500 dark:text-gray-400">
                 PNG, JPG, GIF up to 10MB each. Maximum 10 images.
             </p>
-            <input type="file" id="property_images" name="property_images[]" multiple accept="image/*" class="hidden">
+            <input type="file" id="property_images" name="images[]" multiple accept="image/*" class="hidden">
             <button type="button" onclick="document.getElementById('property_images').click()" class="mt-4 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 text-sm">
                 Select Images
             </button>
@@ -253,7 +258,7 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         
         // Basic validation
-        const requiredFields = ['property_name', 'address', 'city', 'state', 'zip_code', 'property_type', 'status', 'total_units', 'purchase_price'];
+        const requiredFields = ['name', 'address', 'type', 'status', 'rent_price'];
         let isValid = true;
         
         requiredFields.forEach(fieldName => {
@@ -274,13 +279,38 @@ document.addEventListener('DOMContentLoaded', function() {
         // Show loading state
         setLoading(true);
         
-        // Simulate API call
-        setTimeout(function() {
-            showToast('Property added successfully!', 'success');
-            setTimeout(() => {
-                window.location.href = '/admin/dashboard/properties';
-            }, 1500);
-        }, 2000);
+        // Create FormData for file upload
+        const formData = new FormData(form);
+        
+        // Submit to server
+        fetch('/admin/properties', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            setLoading(false);
+            if (data.errors) {
+                // Handle validation errors
+                Object.keys(data.errors).forEach(field => {
+                    const input = document.querySelector(`[name="${field}"]`);
+                    if (input) {
+                        input.classList.add('border-red-500');
+                    }
+                });
+                showToast('Please correct the errors and try again', 'error');
+            } else {
+                showToast('Property added successfully!', 'success');
+                setTimeout(() => {
+                    window.location.href = '/admin/properties';
+                }, 1500);
+            }
+        })
+        .catch(error => {
+            setLoading(false);
+            showToast('Error adding property. Please try again.', 'error');
+            console.error('Error:', error);
+        });
     });
 
     // Image upload handling
