@@ -274,7 +274,8 @@ $isMaintenance = strpos($currentPath, '/admin/maintenance') === 0;
                         <option value="">Select Tenant (Optional)</option>';
     
     foreach ($tenants ?? [] as $tenant) {
-        $basicInfoContent .= '<option value="' . htmlspecialchars($tenant['id']) . '">' . htmlspecialchars($tenant['name']) . '</option>';
+        $tenantName = ($tenant['first_name'] ?? '') . ' ' . ($tenant['last_name'] ?? '');
+        $basicInfoContent .= '<option value="' . htmlspecialchars($tenant['id']) . '">' . htmlspecialchars(trim($tenantName)) . '</option>';
     }
     
     $basicInfoContent .= '</select>
