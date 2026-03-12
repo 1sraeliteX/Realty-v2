@@ -2,14 +2,31 @@
 
 namespace App\Controllers;
 
+use DataProvider;
+use ViewManager;
+
 class InvoiceController extends BaseController {
     public function index() {
         $admin = $this->requireAuth();
-        $this->view('simple.placeholder', [
-            'admin' => $admin,
-            'title' => 'Invoices',
-            'message' => 'Invoice management module is coming soon.'
-        ]);
+        
+        // Load invoice data using anti-scattering compliant approach
+        require_once __DIR__ . '/../../config/bootstrap.php';
+        
+        // Get data from centralized provider
+        $invoices = DataProvider::get('invoices');
+        $stats = DataProvider::get('invoice_stats');
+        $user = DataProvider::get('user');
+        $notifications = DataProvider::get('notifications');
+        
+        // Set data through ViewManager
+        ViewManager::set('title', 'Invoices Management');
+        ViewManager::set('invoices', $invoices);
+        ViewManager::set('stats', $stats);
+        ViewManager::set('user', $user);
+        ViewManager::set('notifications', $notifications);
+        
+        // Include the invoice list view
+        include __DIR__ . '/../../views/admin/invoices/list.php';
     }
     
     public function create() {

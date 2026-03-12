@@ -12,6 +12,12 @@ class MaintenanceController extends BaseController {
     public function index() {
         $admin = $this->requireAuth();
         
+        // Initialize framework (anti-scattering compliant)
+        require_once __DIR__ . '/../../config/bootstrap.php';
+        
+        // Load components through registry (anti-scattering compliant)
+        \ComponentRegistry::load('ui-components');
+        
         // Get data from centralized provider (anti-scattering compliant)
         $maintenanceRequests = DataProvider::get('maintenance');
         
@@ -23,13 +29,22 @@ class MaintenanceController extends BaseController {
             'completed' => count(array_filter($maintenanceRequests, fn($r) => $r['status'] === 'completed'))
         ];
         
-        $this->view('admin.maintenance.list', [
-            'admin' => $admin,
-            'title' => 'Maintenance Management',
-            'pageTitle' => 'Maintenance Management',
-            'maintenanceStats' => $maintenanceStats,
-            'maintenanceRequests' => $maintenanceRequests
-        ]);
+        // Get data from centralized provider (anti-scattering compliant)
+        $user = DataProvider::get('user');
+        $notifications = DataProvider::get('notifications');
+        
+        // Set data through ViewManager (anti-scattering compliant)
+        ViewManager::set('user', $user);
+        ViewManager::set('notifications', $notifications);
+        ViewManager::set('title', 'Maintenance Management');
+        ViewManager::set('pageTitle', 'Maintenance Management');
+        ViewManager::set('pageDescription', 'Track and manage maintenance requests');
+        ViewManager::set('maintenanceStats', $maintenanceStats);
+        ViewManager::set('maintenanceRequests', $maintenanceRequests);
+        ViewManager::set('admin', $admin);
+        
+        // Include the maintenance list view (which includes dashboard layout)
+        include __DIR__ . '/../../views/admin/maintenance/list.php';
     }
     
     public function create() {

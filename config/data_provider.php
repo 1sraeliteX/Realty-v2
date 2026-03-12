@@ -24,6 +24,7 @@ class DataProvider {
             'tenants' => self::getTenantData(),
             'payments' => self::getPaymentData(),
             'invoices' => self::getInvoiceData(),
+            'invoice_stats' => self::getInvoiceStats(),
             'maintenance' => self::getMaintenanceData(),
             'reports' => self::getReportData(),
             'documents' => self::getDocumentData(),
@@ -267,9 +268,10 @@ class DataProvider {
         return [
             [
                 'id' => 1,
-                'tenant' => 'Alice Johnson',
-                'property' => 'Sunset Apartments',
-                'unit' => 'Unit 3A',
+                'invoice_number' => 'INV-001',
+                'tenant_name' => 'Alice Johnson',
+                'property_name' => 'Sunset Apartments',
+                'unit_number' => 'Unit 3A',
                 'amount' => 1200,
                 'due_date' => '2024-10-01',
                 'status' => 'paid',
@@ -277,14 +279,59 @@ class DataProvider {
             ],
             [
                 'id' => 2,
-                'tenant' => 'Bob Smith',
-                'property' => 'Oak Villa Complex',
-                'unit' => 'Unit 2B',
+                'invoice_number' => 'INV-002',
+                'tenant_name' => 'Bob Smith',
+                'property_name' => 'Oak Villa Complex',
+                'unit_number' => 'Unit 2B',
                 'amount' => 1500,
                 'due_date' => '2024-10-01',
                 'status' => 'overdue',
                 'items' => ['Monthly Rent - September 2024']
+            ],
+            [
+                'id' => 3,
+                'invoice_number' => 'INV-003',
+                'tenant_name' => 'Carol Davis',
+                'property_name' => 'Sunset Apartments',
+                'unit_number' => 'Unit 1B',
+                'amount' => 1100,
+                'due_date' => '2024-10-15',
+                'status' => 'pending',
+                'items' => ['Monthly Rent - October 2024']
             ]
+        ];
+    }
+    
+    /**
+     * Invoice statistics
+     */
+    private static function getInvoiceStats() {
+        $invoices = self::getInvoiceData();
+        
+        $total = count($invoices);
+        $pending = 0;
+        $paid = 0;
+        $overdue = 0;
+        
+        foreach ($invoices as $invoice) {
+            switch ($invoice['status']) {
+                case 'pending':
+                    $pending++;
+                    break;
+                case 'paid':
+                    $paid++;
+                    break;
+                case 'overdue':
+                    $overdue++;
+                    break;
+            }
+        }
+        
+        return [
+            'total_invoices' => $total,
+            'pending' => $pending,
+            'paid' => $paid,
+            'overdue' => $overdue
         ];
     }
     

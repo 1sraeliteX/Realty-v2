@@ -1,6 +1,6 @@
 <?php
 // Initialize framework (anti-scattering compliant)
-require_once $_SERVER['DOCUMENT_ROOT'] . '/../config/bootstrap.php';
+require_once __DIR__ . '/../../../config/bootstrap.php';
 
 // Load components through registry (anti-scattering compliant)
 ComponentRegistry::load('ui-components');
