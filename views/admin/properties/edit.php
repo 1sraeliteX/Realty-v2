@@ -1,9 +1,13 @@
 <?php
-// Include UI Components
-require_once __DIR__ . '/../../components/UIComponents.php';
+// Initialize framework (anti-scattering compliant)
+require_once __DIR__ . '/../../../config/init_framework.php';
 
-$title = 'Edit Property';
-$pageTitle = 'Edit Property Information';
+// Load components through registry (anti-scattering compliant)
+ComponentRegistry::load('ui-components');
+
+// Set page data through ViewManager (anti-scattering compliant)
+ViewManager::set('title', 'Edit Property');
+ViewManager::set('pageTitle', 'Edit Property Information');
 
 $content = ob_start();
 ?>
@@ -112,6 +116,7 @@ $content = ob_start();
 <?php
 $content = ob_get_clean();
 
-// Include the admin dashboard layout
-include __DIR__ . '/../simple_layout.php';
+// Use ViewManager for rendering (anti-scattering compliant)
+ViewManager::set('content', $content);
+echo ViewManager::render('admin.dashboard_layout');
 ?>

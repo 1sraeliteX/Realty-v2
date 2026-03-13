@@ -310,6 +310,6 @@ $content = ob_get_clean();
 // Set content for layout (anti-scattering compliant)
 ViewManager::set('content', $content);
 
-// Include the dashboard layout
-include __DIR__ . '/../dashboard_layout.php';
+// Use ViewManager for rendering (anti-scattering compliant)
+echo ViewManager::render('admin.dashboard_layout');
 ?>

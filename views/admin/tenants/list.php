@@ -365,5 +365,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <?php
 $content = ob_get_clean();
-include __DIR__ . '/../simple_layout.php';
+
+// Use ViewManager for rendering (anti-scattering compliant)
+ViewManager::set('content', $content);
+echo ViewManager::render('admin.dashboard_layout');
 ?>
