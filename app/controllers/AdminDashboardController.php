@@ -431,79 +431,57 @@ class AdminDashboardController extends BaseController {
     }
     
     private function getMaintenanceRequests($adminId, $limit = 5) {
-        // Return mock data for now to avoid database errors
-        return [
-            [
-                'id' => 1,
-                'title' => 'HVAC Repair',
-                'priority' => 'urgent',
-                'property_name' => 'Sunset Apartments',
-                'unit_number' => '5A',
-                'created_at' => date('Y-m-d H:i:s', strtotime('-2 hours'))
-            ],
-            [
-                'id' => 2,
-                'title' => 'Plumbing Issue',
-                'priority' => 'medium',
-                'property_name' => 'Downtown Plaza',
-                'unit_number' => '2B',
-                'created_at' => date('Y-m-d H:i:s', strtotime('-5 hours'))
-            ]
-        ];
+        try {
+            $pdo = \Config\Database::getInstance()->getConnection();
+            $stmt = $pdo->prepare("SELECT mr.*, p.name as property_name, u.unit_number
+                                   FROM maintenance_requests mr
+                                   LEFT JOIN properties p ON mr.property_id = p.id
+                                   LEFT JOIN units u ON mr.unit_id = u.id
+                                   WHERE p.admin_id = ? 
+                                   ORDER BY mr.created_at DESC 
+                                   LIMIT ?");
+            $stmt->execute([$adminId, $limit]);
+            return $stmt->fetchAll();
+        } catch (Exception $e) {
+            error_log("Error fetching maintenance requests: " . $e->getMessage());
+            return [];
+        }
     }
     
     private function getNewApplications($adminId, $limit = 5) {
-        // Return mock data for now to avoid database errors
-        return [
-            [
-                'id' => 1,
-                'first_name' => 'Sarah',
-                'last_name' => 'Johnson',
-                'property_name' => 'Sunset Apartments',
-                'unit_number' => '3C',
-                'status' => 'pending',
-                'created_at' => date('Y-m-d H:i:s', strtotime('-1 day'))
-            ],
-            [
-                'id' => 2,
-                'first_name' => 'Mike',
-                'last_name' => 'Chen',
-                'property_name' => 'Riverside Complex',
-                'unit_number' => '1A',
-                'status' => 'pending',
-                'created_at' => date('Y-m-d H:i:s', strtotime('-2 days'))
-            ]
-        ];
+        try {
+            $pdo = \Config\Database::getInstance()->getConnection();
+            $stmt = $pdo->prepare("SELECT ta.*, p.name as property_name, u.unit_number
+                                   FROM tenant_applications ta
+                                   LEFT JOIN properties p ON ta.property_id = p.id
+                                   LEFT JOIN units u ON ta.unit_id = u.id
+                                   WHERE p.admin_id = ? AND ta.status = 'pending'
+                                   ORDER BY ta.created_at DESC 
+                                   LIMIT ?");
+            $stmt->execute([$adminId, $limit]);
+            return $stmt->fetchAll();
+        } catch (Exception $e) {
+            error_log("Error fetching new applications: " . $e->getMessage());
+            return [];
+        }
     }
     
     private function getUpcomingTasks($adminId, $limit = 5) {
-        // Return mock data for now to avoid database errors
-        return [
-            [
-                'id' => 1,
-                'title' => 'Inspect Unit 4B',
-                'property_name' => 'Riverside Complex',
-                'unit_number' => '4B',
-                'due_date' => date('Y-m-d'),
-                'task_type' => 'maintenance'
-            ],
-            [
-                'id' => 2,
-                'title' => 'Send rent reminders',
-                'property_name' => 'All Properties',
-                'unit_number' => 'N/A',
-                'due_date' => date('Y-m-d', strtotime('+1 day')),
-                'task_type' => 'admin'
-            ],
-            [
-                'id' => 3,
-                'title' => 'Property tax filing',
-                'property_name' => 'All Properties',
-                'unit_number' => 'N/A',
-                'due_date' => date('Y-m-d', strtotime('+1 week')),
-                'task_type' => 'admin'
-            ]
-        ];
+        try {
+            $pdo = \Config\Database::getInstance()->getConnection();
+            $stmt = $pdo->prepare("SELECT t.*, p.name as property_name, u.unit_number
+                                   FROM tasks t
+                                   LEFT JOIN properties p ON t.property_id = p.id
+                                   LEFT JOIN units u ON t.unit_id = u.id
+                                   WHERE p.admin_id = ? AND t.due_date >= CURDATE()
+                                   ORDER BY t.due_date ASC 
+                                   LIMIT ?");
+            $stmt->execute([$adminId, $limit]);
+            return $stmt->fetchAll();
+        } catch (Exception $e) {
+            error_log("Error fetching upcoming tasks: " . $e->getMessage());
+            return [];
+        }
     }
     
     public function getActivityIcon($action) {
