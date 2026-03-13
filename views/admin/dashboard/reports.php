@@ -1,33 +1,87 @@
 <?php
-// Helper functions for dashboard (anti-scattering compliant - isolated in view)
-function formatAmount($amount) {
-    if ($amount >= 1000000000) {
-        return 'N' . number_format($amount / 1000000000, 2) . 'B';
-    } elseif ($amount >= 1000000) {
-        return 'N' . number_format($amount / 1000000, 2) . 'M';
-    } elseif ($amount >= 1000) {
-        return 'N' . number_format($amount / 1000, 1) . 'K';
-    } else {
-        return 'N' . number_format($amount);
-    }
-}
+// Initialize anti-scattering system
+require_once __DIR__ . '/../../../config/bootstrap.php';
 
-function calculateTrend($current, $previous) {
-    if ($previous == 0) return 0;
-    return round((($current - $previous) / $previous) * 100, 1);
-}
+// Get centralized data from ViewManager (anti-scattering compliant)
+$user = ViewManager::get('user');
+$stats = ViewManager::get('stats');
+$dashboard_trends = ViewManager::get('dashboard_trends');
+$recentActivities = ViewManager::get('recentActivities');
+$recentProperties = ViewManager::get('recentProperties');
+$revenueData = ViewManager::get('revenueData');
+$maintenanceRequests = ViewManager::get('maintenanceRequests');
+$newApplications = ViewManager::get('newApplications');
+$upcomingTasks = ViewManager::get('upcomingTasks');
+$title = ViewManager::get('title', 'Dashboard Reports');
+
+// Get current page for navigation highlighting
+$currentPath = $_SERVER['REQUEST_URI'] ?? '';
+$isDashboardReports = strpos($currentPath, '/admin/dashboard/reports') === 0;
 ?>
 
-<!-- Page Header with Breadcrumb -->
-<div class="mb-6">
-    <nav class="flex" aria-label="Breadcrumb">
-        <ol class="inline-flex items-center space-x-1 md:space-x-3">
-            <li class="inline-flex items-center">
-                <a href="/admin/dashboard" class="text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400 inline-flex items-center text-sm font-medium">
-                    <i class="fas fa-home mr-2"></i>
-                    Dashboard
-                </a>
-            </li>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo $title; ?></title>
+    
+    <!-- Blocking theme script - MUST be first to prevent FOIT -->
+    <script>
+        // Apply theme immediately before any CSS loads
+        (function() {
+            var theme = localStorage.getItem('theme');
+            // Default to dark if no preference saved (requirement #4)
+            if (theme === 'light') {
+                document.documentElement.classList.remove('dark');
+            } else {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        },
+                        dark: {
+                            50: '#0f172a',
+                            100: '#1e293b',
+                            200: '#334155',
+                            300: '#475569',
+                            400: '#64748b',
+                            500: '#6b7280',
+                            600: '#7c3aed',
+                            700: '#8b5cf6',
+                            800: '#94a3b8',
+                            900: '#a855f7',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="/assets/css/fontawesome.css">
+</head>
+<body class="bg-gray-50 dark:bg-gray-900">
             <li>
                 <div class="flex items-center">
                     <i class="fas fa-chevron-right text-gray-400 mx-2"></i>

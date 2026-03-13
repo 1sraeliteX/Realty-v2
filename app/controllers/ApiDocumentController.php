@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 class ApiDocumentController extends BaseController {
     public function index() {
-        $admin = $this->requireAuth();
+        $admin = $this->requireApiAuth();
         
         // Initialize framework (anti-scattering compliant)
         require_once __DIR__ . '/../../config/bootstrap.php';

@@ -42,6 +42,21 @@ return [
     'POST /api/admin/invoices' => 'ApiInvoiceController@store',
     'PUT /api/admin/invoices/{id}' => 'ApiInvoiceController@update',
 
+    // Admin Maintenance endpoints
+    'GET /api/admin/maintenance' => 'ApiMaintenanceController@index',
+    'POST /api/admin/maintenance' => 'ApiMaintenanceController@store',
+    'PUT /api/admin/maintenance/{id}' => 'ApiMaintenanceController@update',
+
+    // Admin Communication endpoints
+    'GET /api/admin/communications' => 'ApiCommunicationController@index',
+    'POST /api/admin/communications' => 'ApiCommunicationController@store',
+    'PUT /api/admin/communications/{id}' => 'ApiCommunicationController@update',
+
+    // Admin Document endpoints
+    'GET /api/admin/documents' => 'ApiDocumentController@index',
+    'POST /api/admin/documents' => 'ApiDocumentController@store',
+    'PUT /api/admin/documents/{id}' => 'ApiDocumentController@update',
+
     // Admin Dashboard endpoints
     'GET /api/admin/dashboard/stats' => 'ApiDashboardController@stats',
     'GET /api/admin/dashboard/revenue' => 'ApiDashboardController@revenue',

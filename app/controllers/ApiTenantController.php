@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 class ApiTenantController extends BaseController {
     public function index() {
-        $admin = $this->requireAuth();
+        $admin = $this->requireApiAuth();
         
         // Initialize framework (anti-scattering compliant)
         require_once __DIR__ . '/../../config/bootstrap.php';
@@ -51,8 +51,9 @@ class ApiTenantController extends BaseController {
         $tenants = $this->db->query($sql, $params)->fetchAll();
         
         // Get total count for pagination
-        $countSql = "SELECT COUNT(*) FROM tenants t WHERE " . implode(' AND ', array_slice($where, 0, 2));
-        $total = $this->db->query($countSql, array_slice($params, 0, 2))->fetchColumn();
+        $countSql = "SELECT COUNT(*) FROM tenants t WHERE " . implode(' AND ', $where);
+        $countParams = array_slice($params, 0, count($params) - 2); // Remove limit and offset
+        $total = $this->db->query($countSql, $countParams)->fetchColumn();
         
         $this->json([
             'success' => true,

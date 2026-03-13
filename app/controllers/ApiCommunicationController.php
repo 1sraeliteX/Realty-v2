@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 class ApiCommunicationController extends BaseController {
     public function index() {
-        $admin = $this->requireAuth();
+        $admin = $this->requireApiAuth();
         
         // Initialize framework (anti-scattering compliant)
         require_once __DIR__ . '/../../config/bootstrap.php';
@@ -17,7 +17,7 @@ class ApiCommunicationController extends BaseController {
         $recipientId = $_GET['recipient_id'] ?? '';
         
         // Build query
-        $where = ["c.admin_id = ?", "c.deleted_at IS NULL"];
+        $where = ["c.admin_id = ?"];
         $params = [$admin['id']];
         
         if (!empty($search)) {
@@ -36,15 +36,12 @@ class ApiCommunicationController extends BaseController {
             $params[] = $recipientId;
         }
         
-        // Get communications with sender and recipient info
+        // Get communications with recipient info
         $sql = "SELECT c.*, 
-                        s.name as sender_name,
-                        s.email as sender_email,
-                        r.name as recipient_name,
-                        r.email as recipient_email
-                 FROM communications c
-                 LEFT JOIN admins s ON c.sender_id = s.id
-                 LEFT JOIN tenants r ON c.recipient_id = r.id
+                        t.name as tenant_name,
+                        t.email as tenant_email
+                 FROM messages c
+                 LEFT JOIN tenants t ON c.recipient_id = t.id
                  WHERE " . implode(' AND ', $where) . "
                  ORDER BY c.created_at DESC
                  LIMIT ? OFFSET ?";
@@ -55,8 +52,9 @@ class ApiCommunicationController extends BaseController {
         $communications = $this->db->query($sql, $params)->fetchAll();
         
         // Get total count for pagination
-        $countSql = "SELECT COUNT(*) FROM communications c WHERE " . implode(' AND ', $where);
-        $total = $this->db->query($countSql, $params)->fetchColumn();
+        $countSql = "SELECT COUNT(*) FROM messages c LEFT JOIN tenants t ON c.recipient_id = t.id WHERE " . implode(' AND ', $where);
+        $countParams = array_slice($params, 0, count($params) - 2); // Remove limit and offset
+        $total = $this->db->query($countSql, $countParams)->fetchColumn();
         
         $this->json([
             'success' => true,

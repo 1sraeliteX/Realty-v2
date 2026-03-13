@@ -179,6 +179,21 @@ class BaseController {
         return $admin;
     }
 
+    protected function requireApiAuth() {
+        // For API requests, use JWT authentication
+        if ($this->isApiRequest()) {
+            $jwtMiddleware = new \App\Middleware\JwtMiddleware();
+            $user = $jwtMiddleware->getCurrentUser();
+            if (!$user) {
+                $this->json(['error' => 'Unauthorized'], 401);
+            }
+            return $user;
+        }
+        
+        // For non-API requests, fall back to session auth
+        return $this->requireAuth();
+    }
+
     protected function requireSuperAdmin() {
         $admin = $this->requireAuth();
         if ($admin['role'] !== 'super_admin') {
@@ -189,6 +204,55 @@ class BaseController {
             }
         }
         return $admin;
+    }
+
+    protected function isAdmin() {
+        $admin = $this->getCurrentAdmin();
+        return $admin && ($admin['role'] === 'admin' || $admin['role'] === 'super_admin');
+    }
+
+    protected function isSuperAdmin() {
+        $admin = $this->getCurrentAdmin();
+        return $admin && $admin['role'] === 'super_admin';
+    }
+
+    protected function verifyAdminOwnership($adminId, $allowSuperAdmin = true) {
+        $currentAdmin = $this->requireAuth();
+        
+        // Superadmin can access all data if allowed
+        if ($allowSuperAdmin && $currentAdmin['role'] === 'super_admin') {
+            return true;
+        }
+        
+        // Regular admin can only access their own data
+        if ($currentAdmin['id'] != $adminId) {
+            if ($this->isApiRequest()) {
+                $this->json(['error' => 'Forbidden - You can only access your own data'], 403);
+            } else {
+                $this->redirect('/admin/dashboard');
+            }
+        }
+        
+        return true;
+    }
+
+    protected function getAdminIdForQuery() {
+        $admin = $this->getCurrentAdmin();
+        return $admin ? $admin['id'] : null;
+    }
+
+    protected function getAdminFilter($allowSuperAdmin = false) {
+        $admin = $this->getCurrentAdmin();
+        if (!$admin) {
+            return null;
+        }
+        
+        // Superadmin can see all data if allowed
+        if ($allowSuperAdmin && $admin['role'] === 'super_admin') {
+            return null; // No admin filter for superadmin
+        }
+        
+        return $admin['id']; // Regular admin sees only their data
     }
 
     protected function isApiRequest() {

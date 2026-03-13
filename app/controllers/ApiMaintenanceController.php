@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 class ApiMaintenanceController extends BaseController {
     public function index() {
-        $admin = $this->requireAuth();
+        $admin = $this->requireApiAuth();
         
         // Initialize framework (anti-scattering compliant)
         require_once __DIR__ . '/../../config/bootstrap.php';
@@ -18,7 +18,7 @@ class ApiMaintenanceController extends BaseController {
         $propertyId = $_GET['property_id'] ?? '';
         
         // Build query
-        $where = ["m.admin_id = ?", "m.deleted_at IS NULL"];
+        $where = ["m.admin_id = ?"];
         $params = [$admin['id']];
         
         if (!empty($search)) {
@@ -63,8 +63,9 @@ class ApiMaintenanceController extends BaseController {
         $requests = $this->db->query($sql, $params)->fetchAll();
         
         // Get total count for pagination
-        $countSql = "SELECT COUNT(*) FROM maintenance_requests m WHERE " . implode(' AND ', $where);
-        $total = $this->db->query($countSql, $params)->fetchColumn();
+        $countSql = "SELECT COUNT(*) FROM maintenance_requests m LEFT JOIN tenants t ON m.tenant_id = t.id LEFT JOIN properties pr ON m.property_id = pr.id LEFT JOIN units u ON m.unit_id = u.id WHERE " . implode(' AND ', $where);
+        $countParams = array_slice($params, 0, count($params) - 2); // Remove limit and offset
+        $total = $this->db->query($countSql, $countParams)->fetchColumn();
         
         $this->json([
             'success' => true,

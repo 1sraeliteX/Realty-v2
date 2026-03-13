@@ -15,20 +15,13 @@ class PropertyController extends BaseController {
         $category = $_GET['category'] ?? '';
         $status = $_GET['status'] ?? '';
         
-        // Load property type helper and get data
-        require_once __DIR__ . '/../../config/property_type_helper.php';
-        
-        // Set data in ViewManager (anti-scattering compliant)
-        \ViewManager::set('property_category_options', getCategoryOptions());
-        \ViewManager::set('property_type_options', getPropertyTypeOptions());
-        
         // Set view data in ViewManager (anti-scattering compliant)
         \ViewManager::set('search', $search);
         \ViewManager::set('type', $type);
         \ViewManager::set('category', $category);
         \ViewManager::set('status', $status);
         
-        // Build query
+        // Build query with admin filtering (reverted to direct admin_id for reliability)
         $where = ["p.admin_id = ?", "p.deleted_at IS NULL"];
         $params = [$admin['id']];
         
@@ -44,7 +37,8 @@ class PropertyController extends BaseController {
         }
         
         if (!empty($category)) {
-            require_once __DIR__ . '/../../config/property_type_helper.php';
+            // Load property type helper through component registry (anti-scattering compliant)
+            ComponentRegistry::load('property-type-helper');
             $categoryTypes = getPropertiesByCategory($category);
             if (!empty($categoryTypes)) {
                 $placeholders = str_repeat('?,', count($categoryTypes));
@@ -75,16 +69,27 @@ class PropertyController extends BaseController {
         error_log("Property Query Params: " . json_encode($params));
         error_log("Property Query Results: " . json_encode($result));
         
-        // Set data in ViewManager (anti-scattering compliant)
+        // Set data in ViewManager for dashboard layout compatibility (anti-scattering compliant)
         \ViewManager::set('properties', $result['data']);
         \ViewManager::set('pagination', $result['pagination']);
+        \ViewManager::set('search', $search);
+        \ViewManager::set('type', $type);
+        \ViewManager::set('category', $category);
+        \ViewManager::set('status', $status);
         
         // Always use dashboard layout for properties
         $this->view('admin.dashboard_layout', [
             'admin' => $admin,
             'title' => 'Properties',
             'pageTitle' => 'Properties Management',
-            'content' => $this->renderView('properties.index')
+            'content' => $this->renderView('properties.index', [
+                'properties' => $result['data'],
+                'pagination' => $result['pagination'],
+                'search' => $search,
+                'type' => $type,
+                'category' => $category,
+                'status' => $status
+            ])
         ]);
     }
 

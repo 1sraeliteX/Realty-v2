@@ -5,13 +5,13 @@ require_once __DIR__ . '/../../config/init_framework.php';
 // Load components through registry (anti-scattering compliant)
 ComponentRegistry::load('ui-components');
 
-// Get data from centralized provider (anti-scattering compliant)
-$properties = ViewManager::get('properties') ?? [];
-$pagination = ViewManager::get('pagination') ?? [];
-$search = ViewManager::get('search') ?? '';
-$type = ViewManager::get('type') ?? '';
-$category = ViewManager::get('category') ?? '';
-$status = ViewManager::get('status') ?? '';
+// Get data from controller parameters first, then ViewManager as fallback (anti-scattering compliant)
+$properties = $properties ?? ViewManager::get('properties') ?? [];
+$pagination = $pagination ?? ViewManager::get('pagination') ?? [];
+$search = $search ?? ViewManager::get('search') ?? '';
+$type = $type ?? ViewManager::get('type') ?? '';
+$category = $category ?? ViewManager::get('category') ?? '';
+$status = $status ?? ViewManager::get('status') ?? '';
 
 // Debug: Log view data
 error_log("View Properties Data: " . json_encode($properties));
@@ -54,7 +54,8 @@ ViewManager::set('pageTitle', 'Properties Management');
                 <option value="">All Types</option>
                 <?php
                 if ($category) {
-                    require_once __DIR__ . '/../../config/property_type_helper.php';
+                    // Load property type helper through component registry (anti-scattering compliant)
+                    ComponentRegistry::load('property-type-helper');
                     $categoryTypes = getPropertiesByCategory($category);
                     foreach ($categoryTypes as $type): ?>
                         <option value="<?php echo $type['value']; ?>" <?php echo $type === $type['value'] ? 'selected' : ''; ?>><?php echo htmlspecialchars($type['label']); ?></option>

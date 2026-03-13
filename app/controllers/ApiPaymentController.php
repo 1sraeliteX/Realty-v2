@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 class ApiPaymentController extends BaseController {
     public function index() {
-        $admin = $this->requireAuth();
+        $admin = $this->requireApiAuth();
         
         // Initialize framework (anti-scattering compliant)
         require_once __DIR__ . '/../../config/bootstrap.php';
@@ -18,7 +18,7 @@ class ApiPaymentController extends BaseController {
         $propertyId = $_GET['property_id'] ?? '';
         
         // Build query
-        $where = ["p.admin_id = ?", "p.deleted_at IS NULL"];
+        $where = ["p.admin_id = ?"];
         $params = [$admin['id']];
         
         if (!empty($search)) {
@@ -64,8 +64,9 @@ class ApiPaymentController extends BaseController {
         $payments = $this->db->query($sql, $params)->fetchAll();
         
         // Get total count for pagination
-        $countSql = "SELECT COUNT(*) FROM payments p WHERE " . implode(' AND ', $where);
-        $total = $this->db->query($countSql, $params)->fetchColumn();
+        $countSql = "SELECT COUNT(*) FROM payments p LEFT JOIN tenants t ON p.tenant_id = t.id LEFT JOIN properties pr ON t.property_id = pr.id LEFT JOIN units u ON t.unit_id = u.id WHERE " . implode(' AND ', $where);
+        $countParams = array_slice($params, 0, count($params) - 2); // Remove limit and offset
+        $total = $this->db->query($countSql, $countParams)->fetchColumn();
         
         $this->json([
             'success' => true,

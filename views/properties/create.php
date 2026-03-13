@@ -17,7 +17,7 @@ $propertyTypes = include __DIR__ . '/../../config/property_types.php';
 
 <!-- Back Navigation -->
 <div class="mb-6">
-    <a href="/properties" class="inline-flex items-center text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors">
+    <a href="/admin/properties" class="inline-flex items-center text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors">
         <i class="fas fa-arrow-left mr-2"></i>
         Back to Properties
     </a>
@@ -318,7 +318,7 @@ $propertyTypes = include __DIR__ . '/../../config/property_types.php';
 
     <!-- Action Buttons -->
     <div class="flex justify-end space-x-4">
-        <button type="button" onclick="window.location.href='/properties'" class="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+        <button type="button" onclick="window.location.href='/admin/properties'" class="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
             Cancel
         </button>
         <button type="submit" id="submit-btn" class="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 flex items-center">
@@ -617,7 +617,7 @@ document.getElementById('property-form').addEventListener('submit', function(e) 
         requestOptions.headers.Authorization = `Bearer ${token}`;
     }
     
-    fetch('/properties', requestOptions)
+    fetch('/admin/properties', requestOptions)
     .then(response => {
         // Check if response is JSON
         const contentType = response.headers.get('content-type');
@@ -652,7 +652,7 @@ document.getElementById('property-form').addEventListener('submit', function(e) 
         
         // Redirect to properties list
         setTimeout(() => {
-            window.location.href = '/properties';
+            window.location.href = '/admin/properties';
         }, 1500);
     })
     .catch(error => {
