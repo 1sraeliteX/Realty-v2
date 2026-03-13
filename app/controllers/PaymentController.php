@@ -343,22 +343,146 @@ class PaymentController extends BaseController {
     
     public function edit($id) {
         $admin = $this->requireAuth();
-        $this->view('simple.placeholder', [
-            'admin' => $admin,
-            'title' => 'Edit Payment',
-            'message' => "Payment edit form for ID: $id is coming soon."
+        
+        // Initialize framework (anti-scattering compliant)
+        require_once __DIR__ . '/../../config/bootstrap.php';
+        
+        // Get database connection
+        $pdo = \Config\Database::getInstance()->getConnection();
+        
+        // Get payment details
+        $stmt = $pdo->prepare("
+            SELECT p.*, t.name as tenant_name, pr.name as property_name, u.unit_number
+            FROM payments p
+            LEFT JOIN tenants t ON p.tenant_id = t.id
+            LEFT JOIN properties pr ON p.property_id = pr.id
+            LEFT JOIN units u ON t.unit_id = u.id
+            WHERE p.id = ? AND p.admin_id = ?
+        ");
+        $stmt->execute([$id, $admin['id']]);
+        $payment = $stmt->fetch();
+        
+        if (!$payment) {
+            $_SESSION['error'] = 'Payment not found';
+            $this->redirect('/admin/payments');
+            return;
+        }
+        
+        // Get tenants for selection
+        $tenantsSql = "SELECT id, name FROM tenants WHERE admin_id = ? AND deleted_at IS NULL ORDER BY name";
+        $tenants = $this->db->query($tenantsSql, [$admin['id']])->fetchAll();
+        
+        // Get properties for selection
+        $propertiesSql = "SELECT id, name FROM properties WHERE admin_id = ? AND deleted_at IS NULL ORDER BY name";
+        $properties = $this->db->query($propertiesSql, [$admin['id']])->fetchAll();
+        
+        // Set data for view (anti-scattering compliant)
+        \ViewManager::set('payment', $payment);
+        \ViewManager::set('tenants', $tenants);
+        \ViewManager::set('properties', $properties);
+        \ViewManager::set('user', [
+            'name' => $admin['name'] ?? 'Admin User',
+            'email' => $admin['email'] ?? 'admin@cornerstone.com',
+            'avatar' => null
         ]);
+        \ViewManager::set('title', 'Edit Payment');
+        
+        // Include the edit view
+        include __DIR__ . '/../../views/admin/payments/edit.php';
     }
     
     public function update($id) {
         $admin = $this->requireAuth();
-        $_SESSION['info'] = 'Payment update is not yet implemented.';
-        $this->redirect('/admin/payments');
+        
+        // Initialize framework (anti-scattering compliant)
+        require_once __DIR__ . '/../../config/bootstrap.php';
+        
+        // Check if payment exists and belongs to admin
+        $payment = $this->db->query("SELECT id FROM payments WHERE id = ? AND admin_id = ? AND deleted_at IS NULL", 
+                                         [$id, $admin['id']])->fetch();
+        
+        if (!$payment) {
+            $_SESSION['error'] = 'Payment not found';
+            $this->redirect('/admin/payments');
+            return;
+        }
+        
+        // Validate required fields
+        $required = ['tenant_id', 'amount', 'payment_type', 'payment_method'];
+        foreach ($required as $field) {
+            if (empty($_POST[$field])) {
+                $_SESSION['error'] = "Field '$field' is required";
+                $this->redirect("/admin/payments/$id/edit");
+                return;
+            }
+        }
+        
+        try {
+            // Build update query dynamically
+            $updateFields = [];
+            $params = [];
+            
+            $allowedFields = ['tenant_id', 'property_id', 'amount', 'payment_type', 'payment_method', 
+                              'due_date', 'payment_date', 'status', 'notes'];
+            
+            foreach ($allowedFields as $field) {
+                if (isset($_POST[$field])) {
+                    $updateFields[] = "$field = ?";
+                    $params[] = $_POST[$field];
+                }
+            }
+            
+            if (!empty($updateFields)) {
+                $params[] = $id;
+                $params[] = $admin['id'];
+                
+                $sql = "UPDATE payments SET " . implode(', ', $updateFields) . ", updated_at = NOW() WHERE id = ? AND admin_id = ?";
+                $this->db->query($sql, $params);
+            }
+            
+            $_SESSION['success'] = 'Payment updated successfully';
+            $this->redirect('/admin/payments');
+            
+        } catch (Exception $e) {
+            $_SESSION['error'] = 'Failed to update payment: ' . $e->getMessage();
+            $this->redirect("/admin/payments/$id/edit");
+        }
     }
     
     public function delete($id) {
         $admin = $this->requireAuth();
-        $_SESSION['info'] = 'Payment deletion is not yet implemented.';
-        $this->redirect('/admin/payments');
+        
+        // Initialize framework (anti-scattering compliant)
+        require_once __DIR__ . '/../../config/bootstrap.php';
+        
+        // Check if payment exists and belongs to admin
+        $payment = $this->db->query("SELECT id FROM payments WHERE id = ? AND admin_id = ? AND deleted_at IS NULL", 
+                                         [$id, $admin['id']])->fetch();
+        
+        if (!$payment) {
+            $_SESSION['error'] = 'Payment not found';
+            $this->redirect('/admin/payments');
+            return;
+        }
+        
+        try {
+            $this->db->beginTransaction();
+            
+            // Soft delete payment
+            $this->db->query("UPDATE payments SET deleted_at = NOW() WHERE id = ?", [$id]);
+            
+            // Soft delete associated receipts
+            $this->db->query("UPDATE payment_receipts SET deleted_at = NOW() WHERE payment_id = ?", [$id]);
+            
+            $this->db->commit();
+            
+            $_SESSION['success'] = 'Payment deleted successfully';
+            $this->redirect('/admin/payments');
+            
+        } catch (Exception $e) {
+            $this->db->rollBack();
+            $_SESSION['error'] = 'Failed to delete payment: ' . $e->getMessage();
+            $this->redirect('/admin/payments');
+        }
     }
 }
