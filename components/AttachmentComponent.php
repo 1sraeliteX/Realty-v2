@@ -361,10 +361,109 @@ class AttachmentComponentJS {
                     return;
                 }
                 
-                // Show previews
-                if (config.preview) {
-                    this.showPreviews(validFiles, config);
+                // Upload files to server
+                this.uploadFiles(validFiles, config);
+            }
+            
+            // Upload files to server
+            static uploadFiles(validFiles, config) {
+                const formData = new FormData();
+                
+                // Add files to form data
+                validFiles.forEach((file, index) => {
+                    formData.append('files[]', file);
+                });
+                
+                // Show progress
+                const progressBar = document.getElementById(`${config.id}-progress`);
+                if (progressBar) {
+                    progressBar.classList.remove('hidden');
+                    const bar = progressBar.querySelector('.bg-primary-600');
+                    if (bar) bar.style.width = '0%';
                 }
+                
+                // Upload to server
+                fetch('/upload.php', {
+                    method: 'POST',
+                    body: formData,
+                    xhr: () => {
+                        const xhr = new XMLHttpRequest();
+                        xhr.upload.addEventListener('progress', (e) => {
+                            if (e.lengthComputable) {
+                                const percentComplete = (e.loaded / e.total) * 100;
+                                const bar = progressBar?.querySelector('.bg-primary-600');
+                                if (bar) bar.style.width = percentComplete + '%';
+                            }
+                        });
+                        return xhr;
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Hide progress
+                    if (progressBar) {
+                        progressBar.classList.add('hidden');
+                    }
+                    
+                    if (data.success) {
+                        // Show previews of uploaded files
+                        if (config.preview) {
+                            this.showUploadedPreviews(data.files, config);
+                        }
+                        this.showToast('Files uploaded successfully!', 'success');
+                    } else {
+                        this.showToast(data.message || 'Upload failed', 'error');
+                    }
+                })
+                .catch(error => {
+                    // Hide progress
+                    if (progressBar) {
+                        progressBar.classList.add('hidden');
+                    }
+                    this.showToast('Upload failed: ' + error.message, 'error');
+                });
+            }
+            
+            static showUploadedPreviews(uploadedFiles, config) {
+                const previewContainer = document.getElementById(`${config.id}-preview`);
+                if (!previewContainer) return;
+                
+                previewContainer.classList.remove('hidden');
+                previewContainer.innerHTML = '';
+                
+                uploadedFiles.forEach((file, index) => {
+                    const preview = this.createUploadedPreview(file, index, config);
+                    previewContainer.appendChild(preview);
+                });
+            }
+            
+            static createUploadedPreview(file, index, config) {
+                const div = document.createElement('div');
+                div.className = 'relative bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4';
+                
+                const fileType = this.getFileType(file.name);
+                const isImage = fileType === 'image';
+                
+                div.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <div class="flex-shrink-0 w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                            ${isImage ? 
+                                `<img src="${file.path}" class="w-full h-full object-cover rounded-lg">` :
+                                `<i class="${this.getFileIcon(fileType)} text-lg text-gray-400 dark:text-gray-500"></i>`
+                            }
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-gray-900 dark:text-white truncate">${file.name}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">${this.formatFileSize(file.size)}</p>
+                        </div>
+                        <button onclick="this.parentElement.parentElement.remove()" 
+                                class="flex-shrink-0 text-red-500 hover:text-red-700 dark:hover:text-red-400">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+                
+                return div;
             }
             
             static showPreviews(files, config) {

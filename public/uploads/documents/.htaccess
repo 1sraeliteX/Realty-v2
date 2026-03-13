@@ -1,0 +1,31 @@
+# Allow access to uploaded documents
+Options +Indexes
+
+# Set proper MIME types
+<Files "*.pdf">
+    ForceType application/pdf
+</Files>
+
+<Files "*.jpg">
+    ForceType image/jpeg
+</Files>
+
+<Files "*.jpeg">
+    ForceType image/jpeg
+</Files>
+
+<Files "*.png">
+    ForceType image/png
+</Files>
+
+# Prevent script execution
+<FilesMatch "\.(php|phtml|php3|php4|php5|pl|py|cgi|sh|exe)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Set cache headers for images
+<FilesMatch "\.(jpg|jpeg|png|gif)$">
+    ExpiresActive On
+    ExpiresDefault "access plus 1 month"
+</FilesMatch>
