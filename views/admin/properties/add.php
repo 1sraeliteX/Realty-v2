@@ -1,9 +1,16 @@
 <?php
+// Anti-Scattering Compliance: Use framework bootstrap
+require_once __DIR__ . '/../../../config/bootstrap.php';
+
 // Load UIComponents for form rendering (anti-scattering compliant)
 ComponentRegistry::load('ui-components');
 
 // Load AutoFillComponent using ComponentRegistry
 ComponentRegistry::load('autofill-component');
+
+// Set up view data
+ViewManager::set('title', 'Add Property');
+ViewManager::set('user', $admin);
 ?>
 
 <!-- Form Header -->
@@ -43,22 +50,12 @@ ComponentRegistry::load('autofill-component');
 </div>
 
 <?php
-// Anti-Scattering Compliance: Use framework bootstrap
-require_once __DIR__ . '/../../../config/bootstrap.php';
-
 // Get admin user
 $admin = $admin ?? null;
 if (!$admin) {
     header('Location: /admin/login');
     exit;
 }
-
-// Set page data
-ViewManager::set('title', 'Add Property');
-ViewManager::set('user', $admin);
-
-// Load AutoFillComponent using ComponentRegistry
-ComponentRegistry::load('autofill-component');
 ?>
 
 <!-- Add Property Form -->
@@ -66,12 +63,40 @@ ComponentRegistry::load('autofill-component');
     
     <?php
     // Add auto-fill button at the top
-    \Components\AutoFillComponent::generateAutoFillButton(
-        'addPropertyForm', 
-        \Components\AutoFillComponent::getPropertyFillData(),
-        'Auto-Fill Property Form',
-        'bg-purple-600 hover:bg-purple-700 text-white'
-    );
+    try {
+        echo "<!-- DEBUG: About to call AutoFillComponent -->\n";
+        
+        // Check if class exists in current scope
+        if (class_exists('Components\AutoFillComponent')) {
+            echo "<!-- DEBUG: AutoFillComponent class exists -->\n";
+            \Components\AutoFillComponent::generateAutoFillButton(
+                'addPropertyForm', 
+                \Components\AutoFillComponent::getPropertyFillData(),
+                'Auto-Fill Property Form',
+                'bg-purple-600 hover:bg-purple-700 text-white'
+            );
+            echo "<!-- DEBUG: AutoFillComponent call completed -->\n";
+        } else {
+            echo "<!-- DEBUG: AutoFillComponent class does not exist, trying to load again -->\n";
+            ComponentRegistry::load('autofill-component');
+            if (class_exists('Components\AutoFillComponent')) {
+                echo "<!-- DEBUG: AutoFillComponent class exists after reload -->\n";
+                \Components\AutoFillComponent::generateAutoFillButton(
+                    'addPropertyForm', 
+                    \Components\AutoFillComponent::getPropertyFillData(),
+                    'Auto-Fill Property Form',
+                    'bg-purple-600 hover:bg-purple-700 text-white'
+                );
+                echo "<!-- DEBUG: AutoFillComponent call completed after reload -->\n";
+            } else {
+                echo "<!-- DEBUG: AutoFillComponent class still does not exist -->\n";
+            }
+        }
+    } catch (Exception $e) {
+        echo "<!-- DEBUG: AutoFillComponent error: " . $e->getMessage() . " -->\n";
+    } catch (Error $e) {
+        echo "<!-- DEBUG: AutoFillComponent fatal error: " . $e->getMessage() . " -->\n";
+    }
     ?>
     <!-- Step 1: Basic Information -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-8">
@@ -86,7 +111,7 @@ ComponentRegistry::load('autofill-component');
                 <?php echo UIComponents::input('address', 'Address', 'text', '', 'Enter full address', true); ?>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                 <?php 
                 // Load property types from configuration
                 $propertyTypes = require_once __DIR__ . '/../../../config/property_types.php';
@@ -116,7 +141,9 @@ ComponentRegistry::load('autofill-component');
                     'active',
                     true
                 ); ?>
-                
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                 <?php echo UIComponents::input('year_built', 'Year Built', 'number', '', 'e.g., 2018'); ?>
                 
                 <?php 
@@ -250,13 +277,13 @@ ComponentRegistry::load('autofill-component');
         </div>
     </div>
 
-    <!-- Step 3: Monthly Revenue and Expenses (Optional) -->
+    <!-- Step 3: Revenue and Expenses (Optional) -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-8">
         <div class="p-6">
             <div class="flex items-center justify-between mb-6">
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white flex items-center">
                     <i class="fas fa-dollar-sign mr-2 text-primary-600"></i>
-                    Monthly Revenue and Expenses
+                    Revenue and Expenses
                     <span class="ml-2 text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">Optional</span>
                 </h3>
                 <div class="flex items-center">
@@ -273,11 +300,11 @@ ComponentRegistry::load('autofill-component');
             <div id="pricingContent">
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <?php echo UIComponents::input('monthly_revenue', 'Expected Monthly Revenue', 'number', '', 'e.g., 28800'); ?>
+                <?php echo UIComponents::input('monthly_revenue', 'Expected Yearly Revenue', 'number', '', 'e.g., 28800'); ?>
                 <?php echo UIComponents::input('annual_expenses', 'Annual Expenses', 'number', '', 'e.g., 50000'); ?>
             </div>
             
-            <div id="pricingAdditionalContent" class="hidden px-6 pb-6">
+            <div id="pricingAdditionalContent" class="hidden pb-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
                 <?php echo UIComponents::input('property_tax', 'Annual Property Tax', 'number', '', 'e.g., 30000'); ?>
                 <?php echo UIComponents::input('insurance', 'Annual Insurance', 'number', '', 'e.g., 12000'); ?>
@@ -295,7 +322,6 @@ ComponentRegistry::load('autofill-component');
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white flex items-center">
                     <i class="fas fa-money-bill-wave mr-2 text-primary-600"></i>
                     Rent Record Information
-                    <span class="ml-2 text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">Optional</span>
                 </h3>
                 <div class="flex items-center">
                     <label class="flex items-center cursor-pointer">
@@ -366,26 +392,6 @@ ComponentRegistry::load('autofill-component');
                         >
                     </div>
                 </div>
-
-                <!-- Late Fee -->
-                <div>
-                    <label for="late_fee" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Late Fee
-                    </label>
-                    <div class="relative">
-                        <span class="absolute left-3 top-2.5 text-gray-500 dark:text-gray-400">₦</span>
-                        <input 
-                            type="number" 
-                            id="late_fee" 
-                            name="late_fee" 
-                            min="0"
-                            step="0.01"
-                            placeholder="0.00"
-                            class="w-full pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                        >
-                    </div>
-                </div>
-            </div>
             </div>
         </div>
     </div>
@@ -481,10 +487,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         // Validate numeric fields only if pricing is not skipped
-        const numericFields = skipPricing ? ['bedrooms', 'bathrooms', 'kitchens'] : ['bedrooms', 'bathrooms', 'kitchens', 'purchase_price', 'current_value', 'monthly_revenue'];
+        const numericFields = skipPricing ? ['bedrooms', 'bathrooms', 'kitchens'] : ['bedrooms', 'bathrooms', 'kitchens', 'monthly_revenue', 'annual_expenses'];
         
         // Validate rent record fields only if rent record is not skipped
-        const rentRecordFields = skipRentRecord ? [] : ['monthly_rent', 'security_deposit', 'late_fee'];
+        const rentRecordFields = skipRentRecord ? [] : ['monthly_rent', 'security_deposit'];
         
         // Combine all numeric fields for validation
         const allNumericFields = [...numericFields, ...rentRecordFields];
@@ -695,7 +701,7 @@ document.addEventListener('DOMContentLoaded', function() {
             icon.classList.add('fa-chevron-down');
             
             // Clear pricing field validation errors
-            const pricingFields = ['purchase_price', 'current_value', 'monthly_revenue', 'annual_expenses', 'property_tax', 'insurance', 'maintenance_fee', 'monthly_rent', 'security_deposit', 'late_fee'];
+            const pricingFields = ['monthly_revenue', 'annual_expenses', 'property_tax', 'insurance', 'maintenance_fee', 'monthly_rent', 'security_deposit'];
             pricingFields.forEach(fieldName => {
                 const field = document.querySelector(`[name="${fieldName}"]`);
                 if (field) {
@@ -741,7 +747,7 @@ document.addEventListener('DOMContentLoaded', function() {
             icon.classList.add('fa-chevron-down');
             
             // Clear rent record field validation errors
-            const rentRecordFields = ['monthly_rent', 'security_deposit', 'late_fee'];
+            const rentRecordFields = ['monthly_rent', 'security_deposit'];
             rentRecordFields.forEach(fieldName => {
                 const field = document.querySelector(`[name="${fieldName}"]`);
                 if (field) {

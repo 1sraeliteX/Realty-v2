@@ -15,7 +15,8 @@
         "psr-4": {
             "App\\": "app/",
             "Config\\": "config/",
-            "Database\\": "database/"
+            "Database\\": "database/",
+            "Components\\": "app/components/"
         }
     },
     "require-dev": {

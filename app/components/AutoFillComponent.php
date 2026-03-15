@@ -1,5 +1,7 @@
 <?php
 
+namespace Components;
+
 class AutoFillComponent {
     
     /**
@@ -175,4 +177,3 @@ class AutoFillComponent {
         ];
     }
 }
-?>

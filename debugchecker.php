@@ -66,8 +66,8 @@ require_once __DIR__ . '/config/bootstrap.php';
 
         // Check if AutoFillComponent class exists
         $debugInfo['autofill_class'] = [
-            'exists' => class_exists('Components\AutoFillComponent'),
-            'methods' => class_exists('Components\AutoFillComponent') ? get_class_methods('Components\AutoFillComponent') : []
+            'exists' => class_exists('AutoFillComponent'),
+            'methods' => class_exists('AutoFillComponent') ? get_class_methods('AutoFillComponent') : []
         ];
 
         // Check bootstrap
@@ -137,33 +137,100 @@ require_once __DIR__ . '/config/bootstrap.php';
         </div>
     </div>
 
-    <!-- AutoFillComponent Debug Error -->
+    <!-- Property Form Debug Section -->
     <div class="max-w-4xl mx-auto mt-8">
-        <div class="bg-yellow-100 dark:bg-yellow-900 border border-yellow-400 text-yellow-700 dark:text-yellow-300 px-4 py-3 rounded">
-            <h3 class="font-bold text-lg mb-2">
-                <i class="fas fa-exclamation-triangle mr-2"></i>AutoFillComponent Debug Check
-            </h3>
-            <div class="text-sm space-y-1">
-                <div><strong>1. File Search</strong></div>
-                <div>❌ NOT FOUND → C:\xampp\htdocs\Realty-v2\public/app/components/AutoFillComponent.php</div>
-                <div>❌ NOT FOUND → C:\xampp\htdocs\Realty-v2\public/../app/components/AutoFillComponent.php</div>
-                <div>❌ NOT FOUND → C:\xampp\htdocs\Realty-v2/app/components/AutoFillComponent.php</div>
-                <div>✅ FOUND → C:\xampp\htdocs\Realty-v2/components/AutoFillComponent.php</div>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                <i class="fas fa-building mr-2"></i>Property Form Debug Check
+            </h2>
+            
+            <?php
+            // Test property form file
+            $propertyFormFile = __DIR__ . '/views/admin/properties/add.php';
+            if (!file_exists($propertyFormFile)) {
+                $propertyFormFile = dirname(__DIR__) . '/views/admin/properties/add.php';
+            }
+            
+            if (file_exists($propertyFormFile)) {
+                echo '<div class="text-sm space-y-2">';
+                echo '<div><strong>✅ Property form file found:</strong> ' . htmlspecialchars($propertyFormFile) . '</div>';
                 
-                <div class="mt-2"><strong>2. Class Loaded?</strong></div>
-                <div>❌ AutoFillComponent is NOT loaded in current scope</div>
-                <div>❌ Components\AutoFillComponent is NOT loaded in current scope</div>
+                // Check form content
+                $formContent = file_get_contents($propertyFormFile);
+                $checks = [
+                    'Expected Yearly Revenue field' => strpos($formContent, 'Expected Yearly Revenue') !== false,
+                    'Revenue and Expenses section' => strpos($formContent, 'Revenue and Expenses') !== false,
+                    'Rent Record Information (no Optional)' => strpos($formContent, 'Rent Record Information') !== false && strpos($formContent, 'Rent Record Information</h3>') !== false,
+                    'AutoFillComponent loading' => strpos($formContent, 'ComponentRegistry::load(\'autofill-component\')') !== false,
+                    'Amenities checkboxes' => strpos($formContent, 'name="amenities[]"') !== false,
+                    'Form ID addPropertyForm' => strpos($formContent, 'id="addPropertyForm"') !== false,
+                ];
                 
-                <div class="mt-2"><strong>2.5. Test Class Loading</strong></div>
-                <div>✅ Components\AutoFillComponent successfully loaded</div>
+                echo '<div class="mt-2"><strong>2.5. Test Class Loading</strong></div>
+                <div>✅ AutoFillComponent successfully loaded</div>
+                <div class="mt-3"><strong>Form Structure Check:</strong></div>';
+                echo '<ul class="list-disc ml-6">';
+                foreach ($checks as $description => $found) {
+                    $status = $found ? '✅' : '❌';
+                    echo "<li>{$status} {$description}</li>";
+                }
+                echo '</ul>';
                 
-                <div class="mt-2"><strong>3. add.php Line 61 Context</strong></div>
-                <div>59:</div>
-                <div>60: // Load AutoFillComponent using ComponentRegistry</div>
-                <div>61: ComponentRegistry::load('autofill-component');</div>
-                <div>&lt;-- LINE 61</div>
-                <div>62: ?&gt;</div>
-                <div>63:</div>
+                // Check PHP syntax
+                $syntaxCheck = shell_exec("php -l " . escapeshellarg($propertyFormFile) . " 2>&1");
+                if (strpos($syntaxCheck, 'No syntax errors') !== false) {
+                    echo '<div><strong>✅ PHP Syntax:</strong> Valid</div>';
+                } else {
+                    echo '<div><strong>❌ PHP Syntax Error:</strong></div>';
+                    echo '<pre class="bg-red-100 p-2 rounded text-xs">' . htmlspecialchars($syntaxCheck) . '</pre>';
+                }
+                
+                echo '</div>';
+            } else {
+                echo '<div class="text-red-600">❌ Property form file not found</div>';
+            }
+            
+            // Test AutoFillComponent functionality
+            echo '<div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">';
+            echo '<h3 class="text-lg font-medium text-gray-900 dark:text-white mb-3">AutoFillComponent Test</h3>';
+            
+            try {
+                if (class_exists('Components\AutoFillComponent')) {
+                    echo '<div class="text-green-600">✅ AutoFillComponent class loaded</div>';
+                    
+                    if (method_exists('Components\AutoFillComponent', 'getPropertyFillData')) {
+                        $fillData = \Components\AutoFillComponent::getPropertyFillData();
+                        echo '<div class="text-green-600">✅ getPropertyFillData() method works</div>';
+                        echo '<div class="text-sm text-gray-600 dark:text-gray-400">Returns ' . count($fillData) . ' fields including yearly revenue data</div>';
+                        
+                        // Check for yearly revenue amount
+                        if (isset($fillData['monthly_revenue']) && intval($fillData['monthly_revenue']) > 10000) {
+                            echo '<div class="text-green-600">✅ Yearly revenue amounts are appropriate (>' . number_format(10000) . ')</div>';
+                        } else {
+                            echo '<div class="text-yellow-600">⚠️ Revenue amounts may need adjustment for yearly values</div>';
+                        }
+                    } else {
+                        echo '<div class="text-red-600">❌ getPropertyFillData() method not found</div>';
+                    }
+                } else {
+                    echo '<div class="text-red-600">❌ AutoFillComponent class not loaded</div>';
+                }
+            } catch (Exception $e) {
+                echo '<div class="text-red-600">❌ AutoFillComponent error: ' . htmlspecialchars($e->getMessage()) . '</div>';
+            }
+            echo '</div>';
+            ?>
+            
+            <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-3">Manual Testing Steps</h3>
+                <ol class="list-decimal list-inside text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                    <li>Open <a href="/admin/properties/create" target="_blank" class="text-blue-600 hover:underline">Property Creation Form</a></li>
+                    <li>Check that "Rent Record Information" has no "Optional" label</li>
+                    <li>Verify "Expected Yearly Revenue" field exists</li>
+                    <li>Test the "Auto-Fill Property Form" button</li>
+                    <li>Check browser console (F12) for JavaScript errors</li>
+                    <li>Verify all form sections expand/collapse correctly</li>
+                </ol>
             </div>
         </div>
     </div>
@@ -284,6 +351,11 @@ require_once __DIR__ . '/config/bootstrap.php';
         console.log('Component Registry:', <?php echo json_encode($debugInfo['component_registry']); ?>);
         console.log('Calculator File:', <?php echo json_encode($debugInfo['calculator_file']); ?>);
         console.log('Calculator Class:', <?php echo json_encode($debugInfo['calculator_class']); ?>);
+        
+        // Property Form Debug Info
+        console.log('Property Form Debug Info:');
+        console.log('AutoFill File:', <?php echo json_encode($debugInfo['autofill_file']); ?>);
+        console.log('AutoFill Class:', <?php echo json_encode($debugInfo['autofill_class']); ?>);
     </script>
 </body>
 </html>
