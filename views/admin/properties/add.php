@@ -1,26 +1,9 @@
 <?php
-// Initialize framework (anti-scattering compliant)
-require_once __DIR__ . '/../../../config/init_framework.php';
+// Anti-scattering compliant framework initialization
+require_once __DIR__ . '/../../../config/bootstrap.php';
 
-// Load components through registry (anti-scattering compliant)
+// Load UIComponents for form rendering (anti-scattering compliant)
 ComponentRegistry::load('ui-components');
-
-// Set data through ViewManager (anti-scattering compliant)
-ViewManager::set('title', 'Add Property');
-ViewManager::set('pageTitle', 'Add New Property');
-ViewManager::set('pageDescription', 'Add a new property to your portfolio');
-
-// Mock user data for sidebar (anti-scattering compliant)
-ViewManager::set('user', [
-    'name' => 'Admin User',
-    'email' => 'admin@cornerstone.com',
-    'avatar' => null
-]);
-
-// Mock notifications for dashboard (anti-scattering compliant)
-ViewManager::set('notifications', []);
-
-ob_start();
 ?>
 
 <!-- Form Header -->
@@ -408,8 +391,3 @@ dropZone.addEventListener('drop', function(e) {
     }
 });
 </script>
-
-<?php
-$content = ob_get_clean();
-include '../dashboard_layout.php';
-?>

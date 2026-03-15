@@ -77,32 +77,31 @@ class PropertyController extends BaseController {
         \ViewManager::set('category', $category);
         \ViewManager::set('status', $status);
         
-        // Always use dashboard layout for properties
-        $this->view('admin.dashboard_layout', [
-            'admin' => $admin,
-            'title' => 'Properties',
-            'pageTitle' => 'Properties Management',
-            'content' => $this->renderView('properties.index', [
-                'properties' => $result['data'],
-                'pagination' => $result['pagination'],
-                'search' => $search,
-                'type' => $type,
-                'category' => $category,
-                'status' => $status
-            ])
-        ]);
+        // Capture properties list content (anti-scattering compliant)
+        ob_start();
+        include __DIR__ . '/../../views/admin/properties/list.php';
+        $content = ob_get_clean();
+        
+        // Set content and render with layout (anti-scattering compliant)
+        \ViewManager::set('content', $content);
+        echo \ViewManager::render('admin.dashboard_layout');
     }
 
     public function create() {
         $admin = $this->requireAuth();
         
-        // Always use dashboard layout for properties
-        $this->view('admin.dashboard_layout', [
-            'admin' => $admin,
-            'title' => 'Add Property',
-            'pageTitle' => 'Add New Property',
-            'content' => $this->renderView('properties.create')
-        ]);
+        // Set data through ViewManager (anti-scattering compliant)
+        \ViewManager::set('title', 'Add Property');
+        \ViewManager::set('user', $admin);
+        
+        // Capture create property content (anti-scattering compliant)
+        ob_start();
+        include __DIR__ . '/../../views/admin/properties/add.php';
+        $content = ob_get_clean();
+        
+        // Set content and render with layout (anti-scattering compliant)
+        \ViewManager::set('content', $content);
+        echo \ViewManager::render('admin.dashboard_layout');
     }
 
     public function store() {

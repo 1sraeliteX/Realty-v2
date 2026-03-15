@@ -1,19 +1,21 @@
 <?php
-// Initialize framework (anti-scattering compliant)
-require_once __DIR__ . '/../../../config/init_framework.php';
-require_once __DIR__ . '/../../../config/database.php';
+// Anti-scattering compliant framework initialization
+require_once __DIR__ . '/../../../config/bootstrap.php';
 
-// Load components through registry (anti-scattering compliant)
+// Load UIComponents for badge rendering (anti-scattering compliant)
 ComponentRegistry::load('ui-components');
 
-// Get properties data from controller (anti-scattering compliant)
-// Use ViewManager data from controller, fallback to database if not set
-$properties = ViewManager::get('properties');
-if (!$properties) {
-    // Fallback: fetch directly from database if ViewManager doesn't have data
+// Get properties data from ViewManager (anti-scattering compliant)
+$properties = ViewManager::get('properties', []);
+$pagination = ViewManager::get('pagination', []);
+$search = ViewManager::get('search', '');
+$type = ViewManager::get('type', '');
+$category = ViewManager::get('category', '');
+$status = ViewManager::get('status', '');
+
+// If no properties data, fetch from database as fallback
+if (empty($properties)) {
     $db = \Config\Database::getInstance();
-    
-    // Get current admin from session
     $adminId = $_SESSION['admin_id'] ?? null;
     if ($adminId) {
         $sql = "SELECT p.*, 
@@ -23,17 +25,8 @@ if (!$properties) {
                 WHERE p.admin_id = ? AND p.deleted_at IS NULL
                 ORDER BY p.created_at DESC";
         $properties = $db->fetchAll($sql, [$adminId]);
-    } else {
-        $properties = [];
     }
 }
-
-// Set data through ViewManager (anti-scattering compliant)
-ViewManager::set('title', 'Properties Management');
-ViewManager::set('user', DataProvider::get('user'));
-ViewManager::set('notifications', DataProvider::get('notifications'));
-
-ob_start();
 ?>
 
 
@@ -340,13 +333,3 @@ function goToPage(page) {
     showToast(`Loading page ${page}...`, 'info');
 }
 </script>
-
-<?php
-$content = ob_get_clean();
-include '../simple_layout.php';
-?>
-
-<?php
-$content = ob_get_clean();
-include '../dashboard_layout.php';
-?>
