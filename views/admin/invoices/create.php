@@ -2,6 +2,9 @@
 // Initialize framework (anti-scattering compliant)
 require_once __DIR__ . '/../../../config/bootstrap.php';
 
+// Load AutoFillComponent using ComponentRegistry
+ComponentRegistry::load('autofill-component');
+
 // Set data through ViewManager (anti-scattering compliant)
 ViewManager::set('title', 'Create Invoice');
 ViewManager::set('user', [
@@ -60,6 +63,16 @@ ob_start();
 <!-- Form Container -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
     <form id="invoiceForm" onsubmit="submitInvoiceForm(event)">
+        
+        <?php
+        // Add auto-fill button
+        AutoFillComponent::generateAutoFillButton(
+            'invoiceForm', 
+            AutoFillComponent::getInvoiceFillData(),
+            'Auto-Fill Invoice Form',
+            'bg-purple-600 hover:bg-purple-700 text-white'
+        );
+        ?>
         <div class="p-6">
             <div class="mb-6">
                 <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Invoice Information</h2>

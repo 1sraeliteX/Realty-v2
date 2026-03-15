@@ -2,6 +2,9 @@
 // Initialize framework (anti-scattering compliant)
 require_once __DIR__ . '/../../../config/bootstrap.php';
 
+// Load AutoFillComponent using ComponentRegistry
+ComponentRegistry::load('autofill-component');
+
 // Set data through ViewManager (anti-scattering compliant)
 ViewManager::set('title', $title ?? 'Create Maintenance Request');
 ViewManager::set('pageTitle', $pageTitle ?? 'Create Maintenance Request');
@@ -34,7 +37,16 @@ ob_start();
 </div>
 
 <!-- Form -->
-<form method="POST" action="/admin/maintenance" class="space-y-6">
+<form id="maintenanceForm" method="POST" action="/admin/maintenance" class="space-y-6">
+    <?php
+    // Add auto-fill button
+    AutoFillComponent::generateAutoFillButton(
+        'maintenanceForm', 
+        AutoFillComponent::getMaintenanceFillData(),
+        'Auto-Fill Maintenance Form',
+        'bg-purple-600 hover:bg-purple-700 text-white'
+    );
+    ?>
     <?php 
     // Get data from ViewManager (anti-scattering compliant)
     $properties = $properties ?? [];

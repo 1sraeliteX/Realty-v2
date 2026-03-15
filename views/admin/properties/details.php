@@ -1,12 +1,18 @@
 <?php
 // Initialize framework (anti-scattering compliant)
-require_once __DIR__ . '/../../../config/init_framework.php';
+require_once __DIR__ . '/../../../config/bootstrap.php';
 
 // Load components through registry (anti-scattering compliant)
 ComponentRegistry::load('ui-components');
 
+// Get data from centralized provider (anti-scattering compliant)
+$property = ViewManager::get('property') ?? DataProvider::get('property');
+$units = ViewManager::get('units') ?? DataProvider::get('units');
+$maintenanceRequests = ViewManager::get('maintenance_requests') ?? DataProvider::get('maintenance_requests');
+$rentRecords = ViewManager::get('rent_records') ?? DataProvider::get('rent_records');
+
 // Set data through ViewManager (anti-scattering compliant)
-ViewManager::set('title', 'Admin Page');
+ViewManager::set('title', 'Property Details');
 ViewManager::set('user', [
     'name' => 'Admin User',
     'email' => 'admin@cornerstone.com',
@@ -18,10 +24,13 @@ ob_start();
 ?>
 
 
+<!-- Main Content with Proper Margins -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
 <!-- Back Button and Actions -->
 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
     <div class="flex items-center space-x-4 mb-4 sm:mb-0">
-        <a href="/admin/dashboard/properties" class="inline-flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
+        <a href="/admin/properties" class="inline-flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
             <i class="fas fa-arrow-left mr-2"></i>
             Back to Properties
         </a>
@@ -47,6 +56,46 @@ ob_start();
     </div>
 </div>
 
+<!-- Property Images Gallery -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+    <div class="p-6">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Property Images</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Main Image -->
+            <div class="md:col-span-2 lg:col-span-2">
+                <div class="relative h-64 md:h-80 rounded-lg overflow-hidden">
+                    <img src="<?php echo $property['image']; ?>" alt="<?php echo htmlspecialchars($property['name']); ?>" class="w-full h-full object-cover">
+                    <div class="absolute top-2 right-2">
+                        <button class="bg-white/90 dark:bg-gray-800/90 p-2 rounded-full shadow-lg hover:bg-white dark:hover:bg-gray-800">
+                            <i class="fas fa-expand text-gray-700 dark:text-gray-300"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Thumbnail Gallery -->
+            <div class="space-y-4">
+                <div class="relative h-24 rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity">
+                    <img src="<?php echo $property['image']; ?>" alt="Property view 1" class="w-full h-full object-cover">
+                </div>
+                <div class="relative h-24 rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity">
+                    <img src="https://picsum.photos/seed/property2/400/300.jpg" alt="Property view 2" class="w-full h-full object-cover">
+                </div>
+                <div class="relative h-24 rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity">
+                    <img src="https://picsum.photos/seed/property3/400/300.jpg" alt="Property view 3" class="w-full h-full object-cover">
+                </div>
+                <button class="w-full h-24 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center hover:border-primary-500 dark:hover:border-primary-400 transition-colors">
+                    <div class="text-center">
+                        <i class="fas fa-plus text-gray-400 dark:text-gray-500 mb-1"></i>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Add Photo</p>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
 <!-- Property Header with Image -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-8">
     <div class="relative h-64 md:h-96">
@@ -63,7 +112,7 @@ ob_start();
 </div>
 
 <!-- Property Information Tabs -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow mb-8">
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-8">
     <div class="border-b border-gray-200 dark:border-gray-700">
         <nav class="flex space-x-8 px-6" aria-label="Tabs">
             <button onclick="switchTab('overview')" class="tab-btn py-4 px-1 border-b-2 font-medium text-sm border-primary-500 text-primary-600" data-tab="overview">
@@ -142,41 +191,68 @@ ob_start();
                     </div>
                 </div>
 
-                <!-- Performance Stats -->
+                <!-- Pricing Information -->
                 <div class="space-y-6">
                     <div>
-                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Performance</h3>
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Pricing Information</h3>
                         <div class="space-y-4">
                             <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Occupancy Rate</span>
-                                    <span class="text-lg font-bold text-primary-600 dark:text-primary-400"><?php echo round(($property['occupied_units'] / $property['unit_count']) * 100, 1); ?>%</span>
-                                </div>
-                                <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
-                                    <div class="bg-primary-600 h-2 rounded-full" style="width: <?php echo ($property['occupied_units'] / $property['unit_count']) * 100; ?>%"></div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Purchase Price</span>
+                                    <span class="text-lg font-bold text-gray-900 dark:text-white">$<?php echo number_format($property['purchase_price'], 0); ?></span>
                                 </div>
                             </div>
-
                             <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Monthly Revenue</span>
-                                    <span class="text-lg font-bold text-green-600 dark:text-green-400">$<?php echo number_format($property['monthly_revenue'], 0); ?></span>
+                                    <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Current Value</span>
+                                    <span class="text-lg font-bold text-green-600 dark:text-green-400">$<?php echo number_format($property['current_value'], 0); ?></span>
                                 </div>
                             </div>
-
                             <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Annual Revenue</span>
-                                    <span class="text-lg font-bold text-green-600 dark:text-green-400">$<?php echo number_format($property['monthly_revenue'] * 12, 0); ?></span>
+                                    <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Average Rent/Unit</span>
+                                    <span class="text-lg font-bold text-blue-600 dark:text-blue-400">$<?php echo number_format($property['monthly_revenue'] / max($property['unit_count'], 1), 0); ?></span>
                                 </div>
                             </div>
-
                             <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-sm font-medium text-gray-600 dark:text-gray-400">ROI</span>
-                                    <span class="text-lg font-bold text-blue-600 dark:text-blue-400">13.8%</span>
+                                    <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Price per Sq Ft</span>
+                                    <span class="text-lg font-bold text-purple-600 dark:text-purple-400">$<?php echo number_format($property['current_value'] / max($property['size_sqft'], 1), 0); ?></span>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Rent Records -->
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Recent Rent Records</h3>
+                        <div class="space-y-3">
+                            <?php foreach (array_slice($rentRecords ?? [], 0, 5) as $record): ?>
+                            <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900 dark:text-white"><?php echo htmlspecialchars($record['unit']); ?></p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400"><?php echo htmlspecialchars($record['tenant']); ?></p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-sm font-bold text-green-600 dark:text-green-400">$<?php echo number_format($record['amount'], 0); ?></p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400"><?php echo date('M j, Y', strtotime($record['date'])); ?></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php endforeach; ?>
+                            <?php if (empty($rentRecords ?? [])): ?>
+                            <div class="text-center py-4">
+                                <i class="fas fa-receipt text-gray-300 dark:text-gray-600 text-2xl mb-2"></i>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">No rent records available</p>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                        <div class="mt-4">
+                            <a href="/admin/properties/<?php echo $property['id']; ?>/rent-records" class="inline-flex items-center text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400">
+                                View all rent records
+                                <i class="fas fa-arrow-right ml-1"></i>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -346,6 +422,9 @@ ob_start();
             </div>
         </div>
     </div>
+</div>
+
+<!-- Close Main Container -->
 </div>
 
 <script>

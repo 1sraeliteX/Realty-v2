@@ -169,27 +169,31 @@ ob_start();
                     </div>
                 </div>
                 
-                <!-- Lease Info -->
-                <div class="flex items-center justify-between mb-4">
-                    <div class="min-w-0 flex-1 mr-4">
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Lease Period</p>
-                        <p class="text-sm font-medium text-gray-900 dark:text-white truncate">
-                            <?php echo date('M j, Y', strtotime($tenant['lease_start'])); ?> - <?php echo date('M j, Y', strtotime($tenant['lease_end'])); ?>
-                        </p>
-                    </div>
-                    <div class="text-right flex-shrink-0">
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Time Remaining</p>
-                        <p class="text-sm font-medium text-primary-600 dark:text-primary-400">
+                <!-- Rent Duration Progress Bar -->
+                <div class="mb-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Rent Duration Progress</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">
                             <?php 
                             $daysRemaining = (strtotime($tenant['lease_end']) - strtotime(date('Y-m-d'))) / 86400;
-                            if ($daysRemaining > 0) {
-                                echo max(0, floor($daysRemaining)) . ' days';
-                            } else {
-                                echo 'Expired';
-                            }
+                            $totalDays = (strtotime($tenant['lease_end']) - strtotime($tenant['lease_start'])) / 86400;
+                            $daysPassed = $totalDays - $daysRemaining;
+                            $progressPercent = $totalDays > 0 ? max(0, min(100, ($daysPassed / $totalDays) * 100)) : 0;
+                            echo max(0, floor($daysRemaining)) . ' days left';
                             ?>
                         </p>
                     </div>
+                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                        <div class="h-2 rounded-full transition-all duration-300 <?php 
+                            if ($progressPercent >= 90) echo 'bg-red-500';
+                            elseif ($progressPercent >= 75) echo 'bg-yellow-500';
+                            elseif ($progressPercent >= 50) echo 'bg-blue-500';
+                            else echo 'bg-green-500';
+                        ?>" style="width: <?php echo $progressPercent; ?>%"></div>
+                    </div>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        <?php echo date('M j, Y', strtotime($tenant['lease_start'])); ?> - <?php echo date('M j, Y', strtotime($tenant['lease_end'])); ?>
+                    </p>
                 </div>
                 
                 <!-- Action Buttons -->

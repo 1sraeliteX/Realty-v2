@@ -176,6 +176,10 @@ $isProfile = strpos($currentPath, '/profile') === 0;
                             <i class="fas fa-user mr-3"></i>
                             Profile
                         </a>
+                        <button onclick="openCalculator()" class="w-full text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                            <i class="fas fa-calculator mr-3"></i>
+                            Calculator
+                        </button>
 
                         <!-- Logout Button -->
                         <div class="pt-4 pb-2">
@@ -458,5 +462,8 @@ $isProfile = strpos($currentPath, '/profile') === 0;
             <?php endif; ?>
         });
     </script>
+    
+    <!-- Include Calculator Component -->
+    <?php \ComponentRegistry::load('calculator-component'); ?>
 </body>
 </html>

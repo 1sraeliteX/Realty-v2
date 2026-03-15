@@ -113,22 +113,30 @@ class PropertyController extends BaseController {
         // Initialize framework (anti-scattering compliant)
         require_once __DIR__ . '/../../config/bootstrap.php';
         
-        // Use the view method with correct path
-        $this->view('admin/properties/add', [
-            'title' => 'Add Property',
-            'user' => $admin
-        ]);
+        // Load UIComponents for proper styling
+        \ComponentRegistry::load('ui-components');
+        
+        // Load the property form content
+        ob_start();
+        include __DIR__ . '/../../views/admin/properties/add.php';
+        $content = ob_get_clean();
+        
+        // Set content for the layout
+        \ViewManager::set('content', $content);
+        
+        // Include the admin layout with the property form
+        include __DIR__ . '/../../views/admin/dashboard_layout.php';
     }
 
     public function store() {
         $admin = $this->requireAuth();
         $data = $this->getPostData();
         
-        // Handle both regular form submission and AJAX mapped field names
+        // Handle form field mapping - the form uses 'name' and 'type' fields
         $mappedData = [
-            'property_name' => $data['name'] ?? $data['property_name'] ?? '',
+            'property_name' => $data['name'] ?? '',
             'address' => $data['address'] ?? '',
-            'property_type' => $data['type'] ?? $data['property_type'] ?? '',
+            'property_type' => $data['type'] ?? '',
             'yearly_rent' => $data['rent_price'] ?? $data['yearly_rent'] ?? '',
             'year_built' => $data['year_built'] ?? '',
             'rooms' => $data['bedrooms'] ?? $data['rooms'] ?? '',
@@ -145,7 +153,13 @@ class PropertyController extends BaseController {
         $required = ['property_name', 'address', 'property_type', 'water_availability'];
         $errors = $this->validateRequired($mappedData, $required);
         
+        // Debug: Log validation results
+        error_log("Property Form Validation - Required fields: " . json_encode($required));
+        error_log("Property Form Validation - Mapped data: " . json_encode($mappedData));
+        error_log("Property Form Validation - Errors: " . json_encode($errors));
+        
         if (!empty($errors)) {
+            error_log("Property creation failed - validation errors: " . json_encode($errors));
             if ($this->isApiRequest()) {
                 $this->json(['errors' => $errors], 422);
             } else {
@@ -153,6 +167,7 @@ class PropertyController extends BaseController {
                 $_SESSION['old'] = $mappedData;
                 $this->redirect('/admin/properties/create');
             }
+            return; // Add return to stop execution
         }
         
         // Handle file uploads
@@ -211,8 +226,21 @@ class PropertyController extends BaseController {
 
         $propertyId = $this->db->insert('properties', $propertyData);
         
-        // Debug: Log property creation
+        // Debug: Log property creation attempt
         error_log("Property Creation Data: " . json_encode($propertyData));
+        
+        if (!$propertyId) {
+            error_log("Property creation failed - database insertion returned false");
+            if ($this->isApiRequest()) {
+                $this->json(['error' => 'Failed to create property in database'], 500);
+            } else {
+                $_SESSION['error'] = 'Failed to create property. Please try again.';
+                $_SESSION['old'] = $mappedData;
+                $this->redirect('/admin/properties/create');
+            }
+            return;
+        }
+        
         error_log("Property Creation ID: " . $propertyId);
 
         // Log activity

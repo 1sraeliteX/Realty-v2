@@ -1,15 +1,15 @@
 <?php
 require_once 'C:/xampp/htdocs/Realty-v2/config/bootstrap.php';
 session_start();
-
 echo "<pre>";
-echo "Classes available after bootstrap:\n";
-$classes = get_declared_classes();
-$relevant = array_filter($classes, function($c) {
-    return stripos($c, 'data') !== false || 
-           stripos($c, 'db') !== false ||
-           stripos($c, 'pdo') !== false ||
-           stripos($c, 'config') !== false;
-});
-foreach ($relevant as $c) echo $c . "\n";
+echo "admin id: ";
+echo $_SESSION['admin']['id'] ?? 'NOT SET';
+echo "\n";
+echo "admin name: ";
+echo $_SESSION['admin']['name'] ?? 'NOT SET';
+echo "\n";
+$f = 'C:/xampp/htdocs/Realty-v2/config/database.php';
+echo "DB file exists: ";
+echo file_exists($f) ? 'YES' : 'NO';
+echo "\n";
 echo "</pre>";

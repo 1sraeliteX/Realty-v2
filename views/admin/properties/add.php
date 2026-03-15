@@ -1,9 +1,9 @@
 <?php
-// Anti-scattering compliant framework initialization
-require_once __DIR__ . '/../../../config/bootstrap.php';
-
 // Load UIComponents for form rendering (anti-scattering compliant)
 ComponentRegistry::load('ui-components');
+
+// Load AutoFillComponent using ComponentRegistry
+ComponentRegistry::load('autofill-component');
 ?>
 
 <!-- Form Header -->
@@ -27,208 +27,319 @@ ComponentRegistry::load('ui-components');
         <div class="flex-1 h-px bg-gray-300 dark:bg-gray-600 mx-4"></div>
         <div class="flex items-center">
             <div class="w-8 h-8 bg-gray-300 dark:bg-gray-600 text-gray-500 rounded-full flex items-center justify-center text-sm font-medium">3</div>
-            <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">Pricing</span>
+            <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">Revenue & Expenses</span>
         </div>
         <div class="flex-1 h-px bg-gray-300 dark:bg-gray-600 mx-4"></div>
         <div class="flex items-center">
             <div class="w-8 h-8 bg-gray-300 dark:bg-gray-600 text-gray-500 rounded-full flex items-center justify-center text-sm font-medium">4</div>
+            <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">Rent Record</span>
+        </div>
+        <div class="flex-1 h-px bg-gray-300 dark:bg-gray-600 mx-4"></div>
+        <div class="flex items-center">
+            <div class="w-8 h-8 bg-gray-300 dark:bg-gray-600 text-gray-500 rounded-full flex items-center justify-center text-sm font-medium">5</div>
             <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">Images</span>
         </div>
     </div>
 </div>
 
+<?php
+// Anti-Scattering Compliance: Use framework bootstrap
+require_once __DIR__ . '/../../../config/bootstrap.php';
+
+// Get admin user
+$admin = $admin ?? null;
+if (!$admin) {
+    header('Location: /admin/login');
+    exit;
+}
+
+// Set page data
+ViewManager::set('title', 'Add Property');
+ViewManager::set('user', $admin);
+
+// Load AutoFillComponent using ComponentRegistry
+ComponentRegistry::load('autofill-component');
+?>
+
 <!-- Add Property Form -->
 <form id="addPropertyForm" action="/admin/properties" method="POST" enctype="multipart/form-data" class="space-y-8">
+    
+    <?php
+    // Add auto-fill button at the top
+    \Components\AutoFillComponent::generateAutoFillButton(
+        'addPropertyForm', 
+        \Components\AutoFillComponent::getPropertyFillData(),
+        'Auto-Fill Property Form',
+        'bg-purple-600 hover:bg-purple-700 text-white'
+    );
+    ?>
     <!-- Step 1: Basic Information -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-6 flex items-center">
-            <i class="fas fa-info-circle mr-2 text-primary-600"></i>
-            Basic Information
-        </h3>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <?php echo UIComponents::input('name', 'Property Name', 'text', '', 'Enter property name', true); ?>
-            <?php echo UIComponents::input('address', 'Address', 'text', '', 'Enter full address', true); ?>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-            <?php 
-            echo UIComponents::select(
-                'type',
-                'Property Type',
-                [
-                    '' => 'Select type',
-                    'residential' => 'Residential',
-                    'commercial' => 'Commercial',
-                    'mixed' => 'Mixed Use'
-                ],
-                '',
-                true
-            ); ?>
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-8">
+        <div class="p-6">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-6 flex items-center">
+                <i class="fas fa-info-circle mr-2 text-primary-600"></i>
+                Basic Information
+            </h3>
             
-            <?php 
-            echo UIComponents::select(
-                'status',
-                'Status',
-                [
-                    '' => 'Select status',
-                    'active' => 'Active',
-                    'inactive' => 'Inactive',
-                    'maintenance' => 'Maintenance'
-                ],
-                'active',
-                true
-            ); ?>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <?php echo UIComponents::input('name', 'Property Name', 'text', '', 'Enter property name', true); ?>
+                <?php echo UIComponents::input('address', 'Address', 'text', '', 'Enter full address', true); ?>
+            </div>
             
-            <?php echo UIComponents::input('year_built', 'Year Built', 'number', '', 'e.g., 2018'); ?>
-        </div>
-        
-        <div class="mt-6">
-            <?php echo UIComponents::textarea('description', 'Description', '', 'Property description and features'); ?>
-        </div>
-    </div>
-
-    <!-- Step 2: Property Details -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-6 flex items-center">
-            <i class="fas fa-building mr-2 text-primary-600"></i>
-            Property Details
-        </h3>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <?php echo UIComponents::input('bedrooms', 'Bedrooms', 'number', '', 'Number of bedrooms'); ?>
-            <?php echo UIComponents::input('bathrooms', 'Bathrooms', 'number', '', 'Number of bathrooms'); ?>
-            <?php echo UIComponents::input('kitchens', 'Kitchens', 'number', '1', 'Number of kitchens'); ?>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-            <?php echo UIComponents::input('parking', 'Parking Spaces', 'number', '0', 'Number of parking spaces'); ?>
-            <?php echo UIComponents::input('category', 'Category', 'text', '', 'Property category'); ?>
-        </div>
-    </div>
-        
-        <div class="mt-6">
-            <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Description
-            </label>
-            <textarea 
-                id="description" 
-                name="description" 
-                rows="4"
-                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                placeholder="Describe the property, features, location benefits, etc."
-            ></textarea>
-        </div>
-        
-        <!-- Amenities -->
-        <div class="mt-6">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Amenities
-            </label>
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                <label class="flex items-center">
-                    <input type="checkbox" name="amenities[]" value="Swimming Pool" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
-                    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Swimming Pool</span>
-                </label>
-                <label class="flex items-center">
-                    <input type="checkbox" name="amenities[]" value="Fitness Center" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
-                    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Fitness Center</span>
-                </label>
-                <label class="flex items-center">
-                    <input type="checkbox" name="amenities[]" value="Secured Parking" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
-                    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Secured Parking</span>
-                </label>
-                <label class="flex items-center">
-                    <input type="checkbox" name="amenities[]" value="Elevator" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
-                    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Elevator</span>
-                </label>
-                <label class="flex items-center">
-                    <input type="checkbox" name="amenities[]" value="Laundry Room" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
-                    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Laundry Room</span>
-                </label>
-                <label class="flex items-center">
-                    <input type="checkbox" name="amenities[]" value="Pet Friendly" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
-                    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Pet Friendly</span>
-                </label>
-                <label class="flex items-center">
-                    <input type="checkbox" name="amenities[]" value="Air Conditioning" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
-                    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Air Conditioning</span>
-                </label>
-                <label class="flex items-center">
-                    <input type="checkbox" name="amenities[]" value="Heating" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
-                    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Heating</span>
-                </label>
-                <label class="flex items-center">
-                    <input type="checkbox" name="amenities[]" value="Balcony" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
-                    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Balcony</span>
-                </label>
-                <label class="flex items-center">
-                    <input type="checkbox" name="amenities[]" value="Storage" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
-                    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Storage</span>
-                </label>
-                <label class="flex items-center">
-                    <input type="checkbox" name="amenities[]" value="Garden" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
-                    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Garden</span>
-                </label>
-                <label class="flex items-center">
-                    <input type="checkbox" name="amenities[]" value="Security System" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
-                    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Security System</span>
-                </label>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                <?php 
+                // Load property types from configuration
+                $propertyTypes = require_once __DIR__ . '/../../../config/property_types.php';
+                $typeOptions = ['' => 'Select type'];
+                foreach ($propertyTypes as $type) {
+                    $typeOptions[$type['value']] = $type['label'];
+                }
+                
+                echo UIComponents::select(
+                    'type',
+                    'Property Type',
+                    $typeOptions,
+                    '',
+                    true
+                ); ?>
+                
+                <?php 
+                echo UIComponents::select(
+                    'status',
+                    'Status',
+                    [
+                        '' => 'Select status',
+                        'active' => 'Active',
+                        'inactive' => 'Inactive',
+                        'maintenance' => 'Maintenance'
+                    ],
+                    'active',
+                    true
+                ); ?>
+                
+                <?php echo UIComponents::input('year_built', 'Year Built', 'number', '', 'e.g., 2018'); ?>
+                
+                <?php 
+                echo UIComponents::select(
+                    'water_availability',
+                    'Water Availability',
+                    [
+                        '' => 'Select option',
+                        'yes' => 'Available',
+                        'no' => 'Not Available'
+                    ],
+                    '',
+                    true
+                ); ?>
+            </div>
+            
+            <div class="mt-6">
+                <?php echo UIComponents::textarea('description', 'Description', '', 'Property description and features'); ?>
             </div>
         </div>
     </div>
 
-    <!-- Step 3: Pricing -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-6 flex items-center">
-            <i class="fas fa-dollar-sign mr-2 text-primary-600"></i>
-            Pricing Information
-        </h3>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <?php echo UIComponents::input('purchase_price', 'Purchase Price', 'number', '', 'e.g., 2500000', true); ?>
-            <?php echo UIComponents::input('current_value', 'Current Market Value', 'number', '', 'e.g., 2750000'); ?>
-            <?php echo UIComponents::input('monthly_revenue', 'Expected Monthly Revenue', 'number', '', 'e.g., 28800'); ?>
-            <?php echo UIComponents::input('annual_expenses', 'Annual Expenses', 'number', '', 'e.g., 50000'); ?>
-        </div>
-        
-        <!-- Rent Record Component -->
-        <div class="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
-            <h4 class="text-md font-medium text-gray-900 dark:text-white mb-4 flex items-center">
-                <i class="fas fa-money-bill-wave mr-2 text-primary-600"></i>
-                Rent Record Information
-            </h4>
+    <!-- Step 2: Property Details -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-8">
+        <div class="p-6">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-6 flex items-center">
+                <i class="fas fa-building mr-2 text-primary-600"></i>
+                Property Details
+                <button type="button" id="propertyDetailsToggle" class="ml-auto text-primary-600 hover:text-primary-700">
+                    <i class="fas fa-chevron-down transition-transform" id="propertyDetailsIcon"></i>
+                </button>
+            </h3>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Rent Price -->
-                <div>
-                    <label for="monthly_rent" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Rent Price
-                    </label>
-                    <div class="relative">
-                        <span class="absolute left-3 top-2.5 text-gray-500 dark:text-gray-400">₦</span>
-                        <input 
-                            type="number" 
-                            id="monthly_rent" 
-                            name="monthly_rent" 
-                            min="0"
-                            step="0.01"
-                            placeholder="0.00"
-                            class="w-full pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                        >
+            <div id="propertyDetailsContent" class="hidden">
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <?php echo UIComponents::input('bedrooms', 'Bedrooms', 'number', '', 'Number of bedrooms'); ?>
+                <?php echo UIComponents::input('bathrooms', 'Bathrooms', 'number', '', 'Number of bathrooms'); ?>
+                <?php echo UIComponents::input('kitchens', 'Kitchens', 'number', '', 'Number of kitchens'); ?>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                <?php 
+                echo UIComponents::select(
+                    'parking',
+                    'Parking Available',
+                    [
+                        '' => 'Select option',
+                        'yes' => 'Yes',
+                        'no' => 'No'
+                    ],
+                    '',
+                    true
+                ); ?>
+                <?php echo UIComponents::input('category', 'Category', 'text', '', 'Property category'); ?>
+            </div>
+            
+            <div class="mt-6">
+                <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Description
+                </label>
+                <textarea 
+                    id="description" 
+                    name="description" 
+                    rows="4"
+                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    placeholder="Describe the property, features, location benefits, etc."
+                ></textarea>
+            </div>
+            
+            <!-- Amenities -->
+            <div class="mt-6">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">
+                    <i class="fas fa-star mr-2 text-yellow-500"></i>
+                    Property Amenities
+                </label>
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        <label class="flex items-center p-3 bg-white dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
+                            <input type="checkbox" name="amenities[]" value="Swimming Pool" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
+                            <span class="ml-3 text-sm text-gray-700 dark:text-gray-300 font-medium">Swimming Pool</span>
+                        </label>
+                        <label class="flex items-center p-3 bg-white dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
+                            <input type="checkbox" name="amenities[]" value="Fitness Center" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
+                            <span class="ml-3 text-sm text-gray-700 dark:text-gray-300 font-medium">Fitness Center</span>
+                        </label>
+                        <label class="flex items-center p-3 bg-white dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
+                            <input type="checkbox" name="amenities[]" value="Secured Parking" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
+                            <span class="ml-3 text-sm text-gray-700 dark:text-gray-300 font-medium">Secured Parking</span>
+                        </label>
+                        <label class="flex items-center p-3 bg-white dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
+                            <input type="checkbox" name="amenities[]" value="Elevator" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
+                            <span class="ml-3 text-sm text-gray-700 dark:text-gray-300 font-medium">Elevator</span>
+                        </label>
+                        <label class="flex items-center p-3 bg-white dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
+                            <input type="checkbox" name="amenities[]" value="Laundry Room" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
+                            <span class="ml-3 text-sm text-gray-700 dark:text-gray-300 font-medium">Laundry Room</span>
+                        </label>
+                        <label class="flex items-center p-3 bg-white dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
+                            <input type="checkbox" name="amenities[]" value="Pet Friendly" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
+                            <span class="ml-3 text-sm text-gray-700 dark:text-gray-300 font-medium">Pet Friendly</span>
+                        </label>
+                        <label class="flex items-center p-3 bg-white dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
+                            <input type="checkbox" name="amenities[]" value="Air Conditioning" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
+                            <span class="ml-3 text-sm text-gray-700 dark:text-gray-300 font-medium">Air Conditioning</span>
+                        </label>
+                        <label class="flex items-center p-3 bg-white dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
+                            <input type="checkbox" name="amenities[]" value="Heating" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
+                            <span class="ml-3 text-sm text-gray-700 dark:text-gray-300 font-medium">Heating</span>
+                        </label>
+                        <label class="flex items-center p-3 bg-white dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
+                            <input type="checkbox" name="amenities[]" value="Balcony" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
+                            <span class="ml-3 text-sm text-gray-700 dark:text-gray-300 font-medium">Balcony</span>
+                        </label>
+                        <label class="flex items-center p-3 bg-white dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
+                            <input type="checkbox" name="amenities[]" value="Storage" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
+                            <span class="ml-3 text-sm text-gray-700 dark:text-gray-300 font-medium">Storage</span>
+                        </label>
+                        <label class="flex items-center p-3 bg-white dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
+                            <input type="checkbox" name="amenities[]" value="Garden" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
+                            <span class="ml-3 text-sm text-gray-700 dark:text-gray-300 font-medium">Garden</span>
+                        </label>
+                        <label class="flex items-center p-3 bg-white dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
+                            <input type="checkbox" name="amenities[]" value="Security System" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
+                            <span class="ml-3 text-sm text-gray-700 dark:text-gray-300 font-medium">Security System</span>
+                        </label>
                     </div>
                 </div>
+            </div>
+            </div>
+        </div>
+    </div>
 
-                <!-- Rent Payment Frequency -->
-                <div>
-                    <label for="rent_frequency" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Payment Frequency
+    <!-- Step 3: Monthly Revenue and Expenses (Optional) -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-8">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white flex items-center">
+                    <i class="fas fa-dollar-sign mr-2 text-primary-600"></i>
+                    Monthly Revenue and Expenses
+                    <span class="ml-2 text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">Optional</span>
+                </h3>
+                <div class="flex items-center">
+                    <label class="flex items-center cursor-pointer">
+                        <input type="checkbox" id="skipPricing" name="skip_pricing" value="1" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
+                        <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">Skip revenue and expenses for now</span>
                     </label>
-                    <select 
-                        id="rent_frequency" 
-                        name="rent_frequency" 
-                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    >
+                    <button type="button" id="pricingToggle" class="ml-4 text-primary-600 hover:text-primary-700">
+                        <i class="fas fa-chevron-down transition-transform" id="pricingIcon"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="pricingContent">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <?php echo UIComponents::input('monthly_revenue', 'Expected Monthly Revenue', 'number', '', 'e.g., 28800'); ?>
+                <?php echo UIComponents::input('annual_expenses', 'Annual Expenses', 'number', '', 'e.g., 50000'); ?>
+            </div>
+            
+            <div id="pricingAdditionalContent" class="hidden px-6 pb-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                <?php echo UIComponents::input('property_tax', 'Annual Property Tax', 'number', '', 'e.g., 30000'); ?>
+                <?php echo UIComponents::input('insurance', 'Annual Insurance', 'number', '', 'e.g., 12000'); ?>
+                <?php echo UIComponents::input('maintenance_fee', 'Monthly Maintenance Fee', 'number', '', 'e.g., 2000'); ?>
+            </div>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rent Record Information Section -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-8">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white flex items-center">
+                    <i class="fas fa-money-bill-wave mr-2 text-primary-600"></i>
+                    Rent Record Information
+                    <span class="ml-2 text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">Optional</span>
+                </h3>
+                <div class="flex items-center">
+                    <label class="flex items-center cursor-pointer">
+                        <input type="checkbox" id="skipRentRecord" name="skip_rent_record" value="1" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
+                        <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">Skip rent record for now</span>
+                    </label>
+                    <button type="button" id="rentRecordToggle" class="ml-4 text-primary-600 hover:text-primary-700">
+                        <i class="fas fa-chevron-down transition-transform" id="rentRecordIcon"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="rentRecordContent">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Rent Price -->
+                    <div>
+                        <label for="monthly_rent" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Rent Price
+                        </label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-2.5 text-gray-500 dark:text-gray-400">₦</span>
+                            <input 
+                                type="number" 
+                                id="monthly_rent" 
+                                name="monthly_rent" 
+                                min="0"
+                                step="0.01"
+                                placeholder="0.00"
+                                class="w-full pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Rent Payment Frequency -->
+                    <div>
+                        <label for="rent_frequency" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Payment Frequency
+                        </label>
+                        <select 
+                            id="rent_frequency" 
+                            name="rent_frequency" 
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        >
                         <option value="monthly">Monthly</option>
                         <option value="quarterly">Quarterly</option>
                         <option value="annually">Annually</option>
@@ -275,38 +386,35 @@ ComponentRegistry::load('ui-components');
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-            <?php echo UIComponents::input('property_tax', 'Annual Property Tax', 'number', '', 'e.g., 30000'); ?>
-            <?php echo UIComponents::input('insurance', 'Annual Insurance', 'number', '', 'e.g., 12000'); ?>
-            <?php echo UIComponents::input('maintenance_fee', 'Monthly Maintenance Fee', 'number', '', 'e.g., 2000'); ?>
+            </div>
         </div>
     </div>
 
     <!-- Step 4: Images -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-6 flex items-center">
-            <i class="fas fa-images mr-2 text-primary-600"></i>
-            Property Images
-        </h3>
-        
-        <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center hover:border-gray-400 dark:hover:border-gray-500 transition-colors">
-            <i class="fas fa-cloud-upload-alt text-gray-400 text-4xl mb-3"></i>
-            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                Click to upload or drag and drop
-            </p>
-            <p class="text-xs text-gray-500 dark:text-gray-400">
-                PNG, JPG, GIF up to 10MB each. Maximum 10 images.
-            </p>
-            <input type="file" id="property_images" name="images[]" multiple accept="image/*" class="hidden">
-            <button type="button" onclick="document.getElementById('property_images').click()" class="mt-4 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 text-sm">
-                Select Images
-            </button>
-        </div>
-        
-        <div id="imagePreview" class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 hidden">
-            <!-- Image previews will be added here dynamically -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-8">
+        <div class="p-6">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-6 flex items-center">
+                <i class="fas fa-images mr-2 text-primary-600"></i>
+                Property Images
+            </h3>
+            
+            <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center hover:border-gray-400 dark:hover:border-gray-500 transition-colors">
+                <i class="fas fa-cloud-upload-alt text-gray-400 text-4xl mb-3"></i>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                    Click to upload or drag and drop
+                </p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">
+                    PNG, JPG, GIF up to 10MB each. Maximum 10 images.
+                </p>
+                <input type="file" id="property_images" name="images[]" multiple accept="image/*" class="hidden">
+                <button type="button" onclick="document.getElementById('property_images').click()" class="mt-4 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 text-sm">
+                    Select Images
+                </button>
+            </div>
+            
+            <div id="imagePreview" class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 hidden">
+                <!-- Image previews will be added here dynamically -->
+            </div>
         </div>
     </div>
 
@@ -337,22 +445,62 @@ document.addEventListener('DOMContentLoaded', function() {
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         
+        console.log('=== PROPERTY CREATION DEBUG ===');
+        console.log('Form submission started');
+        
+        // Clear previous errors
+        document.querySelectorAll('.border-red-500').forEach(field => {
+            field.classList.remove('border-red-500');
+        });
+        
         // Basic validation
-        const requiredFields = ['name', 'address', 'type', 'status', 'rent_price'];
+        const requiredFields = ['name', 'address', 'type', 'status'];
         let isValid = true;
+        let validationErrors = [];
+        
+        // Check if pricing is skipped
+        const skipPricing = document.querySelector('#skipPricing').checked;
+        
+        // Check if rent record is skipped
+        const skipRentRecord = document.querySelector('#skipRentRecord').checked;
         
         requiredFields.forEach(fieldName => {
             const field = document.querySelector(`[name="${fieldName}"]`);
-            if (!field.value.trim()) {
-                field.classList.add('border-red-500');
+            if (!field || !field.value.trim()) {
+                if (field) {
+                    field.classList.add('border-red-500');
+                }
+                validationErrors.push(`${fieldName} is required`);
                 isValid = false;
             } else {
-                field.classList.remove('border-red-500');
+                console.log(`Field ${fieldName}:`, field.value);
+                if (field) {
+                    field.classList.remove('border-red-500');
+                }
+            }
+        });
+        
+        // Validate numeric fields only if pricing is not skipped
+        const numericFields = skipPricing ? ['bedrooms', 'bathrooms', 'kitchens'] : ['bedrooms', 'bathrooms', 'kitchens', 'purchase_price', 'current_value', 'monthly_revenue'];
+        
+        // Validate rent record fields only if rent record is not skipped
+        const rentRecordFields = skipRentRecord ? [] : ['monthly_rent', 'security_deposit', 'late_fee'];
+        
+        // Combine all numeric fields for validation
+        const allNumericFields = [...numericFields, ...rentRecordFields];
+        
+        allNumericFields.forEach(fieldName => {
+            const field = document.querySelector(`[name="${fieldName}"]`);
+            if (field && field.value && isNaN(field.value)) {
+                field.classList.add('border-red-500');
+                validationErrors.push(`${fieldName} must be a valid number`);
+                isValid = false;
             }
         });
         
         if (!isValid) {
-            showToast('Please fill in all required fields', 'error');
+            console.error('Validation errors:', validationErrors);
+            showToast('Please fix the following errors: ' + validationErrors.join(', '), 'error');
             return;
         }
         
@@ -362,34 +510,77 @@ document.addEventListener('DOMContentLoaded', function() {
         // Create FormData for file upload
         const formData = new FormData(form);
         
+        // Log form data for debugging
+        console.log('Form data being submitted:');
+        for (let [key, value] of formData.entries()) {
+            console.log(`${key}:`, value);
+        }
+        
         // Submit to server
         fetch('/admin/properties', {
             method: 'POST',
             body: formData
         })
-        .then(response => response.json())
+        .then(response => {
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            return response.text().then(text => {
+                console.log('Raw response:', text);
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    console.error('Failed to parse JSON:', e);
+                    throw new Error('Invalid JSON response');
+                }
+            });
+        })
         .then(data => {
+            console.log('Parsed response data:', data);
             setLoading(false);
+            
             if (data.errors) {
+                console.error('Server validation errors:', data.errors);
                 // Handle validation errors
                 Object.keys(data.errors).forEach(field => {
                     const input = document.querySelector(`[name="${field}"]`);
                     if (input) {
                         input.classList.add('border-red-500');
+                        console.error(`Error on field ${field}:`, data.errors[field]);
                     }
                 });
                 showToast('Please correct the errors and try again', 'error');
-            } else {
+            } else if (data.success) {
+                console.log('Property created successfully:', data);
                 showToast('Property added successfully!', 'success');
                 setTimeout(() => {
                     window.location.href = '/admin/properties';
                 }, 1500);
+            } else {
+                console.error('Unexpected response format:', data);
+                showToast('Unexpected response from server', 'error');
             }
         })
         .catch(error => {
+            console.error('=== SUBMISSION ERROR ===');
+            console.error('Error details:', error);
+            console.error('Error message:', error.message);
+            console.error('Error stack:', error.stack);
+            
             setLoading(false);
-            showToast('Error adding property. Please try again.', 'error');
-            console.error('Error:', error);
+            showToast('Error adding property: ' + error.message, 'error');
+            
+            // Show detailed error in console for debugging
+            const errorDetails = {
+                message: error.message,
+                timestamp: new Date().toISOString(),
+                formData: Array.from(formData.entries())
+            };
+            console.error('Full error details:', errorDetails);
         });
     });
 
@@ -452,6 +643,132 @@ document.addEventListener('DOMContentLoaded', function() {
             imagePreview.classList.add('hidden');
         }
     }
+
+    // Toggle property details section
+    document.getElementById('propertyDetailsToggle').addEventListener('click', function() {
+        const content = document.getElementById('propertyDetailsContent');
+        const icon = document.getElementById('propertyDetailsIcon');
+        
+        if (content.classList.contains('hidden')) {
+            content.classList.remove('hidden');
+            icon.classList.remove('fa-chevron-down');
+            icon.classList.add('fa-chevron-up');
+        } else {
+            content.classList.add('hidden');
+            icon.classList.remove('fa-chevron-up');
+            icon.classList.add('fa-chevron-down');
+        }
+    });
+    
+    // Toggle pricing section
+    document.getElementById('pricingToggle').addEventListener('click', function() {
+        const content = document.getElementById('pricingContent');
+        const additionalContent = document.getElementById('pricingAdditionalContent');
+        const icon = document.getElementById('pricingIcon');
+        const skipCheckbox = document.getElementById('skipPricing');
+        
+        if (content.classList.contains('hidden')) {
+            content.classList.remove('hidden');
+            additionalContent.classList.remove('hidden');
+            icon.classList.remove('fa-chevron-down');
+            icon.classList.add('fa-chevron-up');
+            skipCheckbox.checked = false;
+        } else {
+            content.classList.add('hidden');
+            additionalContent.classList.add('hidden');
+            icon.classList.remove('fa-chevron-up');
+            icon.classList.add('fa-chevron-down');
+            skipCheckbox.checked = true;
+        }
+    });
+    
+    // Handle skip pricing checkbox
+    document.getElementById('skipPricing').addEventListener('change', function() {
+        const content = document.getElementById('pricingContent');
+        const additionalContent = document.getElementById('pricingAdditionalContent');
+        const icon = document.getElementById('pricingIcon');
+        
+        if (this.checked) {
+            content.classList.add('hidden');
+            additionalContent.classList.add('hidden');
+            icon.classList.remove('fa-chevron-up');
+            icon.classList.add('fa-chevron-down');
+            
+            // Clear pricing field validation errors
+            const pricingFields = ['purchase_price', 'current_value', 'monthly_revenue', 'annual_expenses', 'property_tax', 'insurance', 'maintenance_fee', 'monthly_rent', 'security_deposit', 'late_fee'];
+            pricingFields.forEach(fieldName => {
+                const field = document.querySelector(`[name="${fieldName}"]`);
+                if (field) {
+                    field.classList.remove('border-red-500');
+                    field.removeAttribute('required');
+                }
+            });
+        } else {
+            content.classList.remove('hidden');
+            additionalContent.classList.remove('hidden');
+            icon.classList.remove('fa-chevron-down');
+            icon.classList.add('fa-chevron-up');
+        }
+    });
+    
+    // Toggle rent record section
+    document.getElementById('rentRecordToggle').addEventListener('click', function() {
+        const content = document.getElementById('rentRecordContent');
+        const icon = document.getElementById('rentRecordIcon');
+        const skipCheckbox = document.getElementById('skipRentRecord');
+        
+        if (content.classList.contains('hidden')) {
+            content.classList.remove('hidden');
+            icon.classList.remove('fa-chevron-down');
+            icon.classList.add('fa-chevron-up');
+            skipCheckbox.checked = false;
+        } else {
+            content.classList.add('hidden');
+            icon.classList.remove('fa-chevron-up');
+            icon.classList.add('fa-chevron-down');
+            skipCheckbox.checked = true;
+        }
+    });
+    
+    // Handle skip rent record checkbox
+    document.getElementById('skipRentRecord').addEventListener('change', function() {
+        const content = document.getElementById('rentRecordContent');
+        const icon = document.getElementById('rentRecordIcon');
+        
+        if (this.checked) {
+            content.classList.add('hidden');
+            icon.classList.remove('fa-chevron-up');
+            icon.classList.add('fa-chevron-down');
+            
+            // Clear rent record field validation errors
+            const rentRecordFields = ['monthly_rent', 'security_deposit', 'late_fee'];
+            rentRecordFields.forEach(fieldName => {
+                const field = document.querySelector(`[name="${fieldName}"]`);
+                if (field) {
+                    field.classList.remove('border-red-500');
+                    field.removeAttribute('required');
+                }
+            });
+        } else {
+            content.classList.remove('hidden');
+            icon.classList.remove('fa-chevron-down');
+            icon.classList.add('fa-chevron-up');
+        }
+    });
+    
+    // Initialize with property details collapsed and pricing optional
+    document.getElementById('propertyDetailsContent').classList.add('hidden');
+    document.getElementById('skipPricing').checked = false;
+    document.getElementById('pricingContent').classList.remove('hidden');
+    document.getElementById('pricingAdditionalContent').classList.remove('hidden');
+    document.getElementById('pricingIcon').classList.remove('fa-chevron-down');
+    document.getElementById('pricingIcon').classList.add('fa-chevron-up');
+    
+    // Initialize rent record section
+    document.getElementById('skipRentRecord').checked = false;
+    document.getElementById('rentRecordContent').classList.remove('hidden');
+    document.getElementById('rentRecordIcon').classList.remove('fa-chevron-down');
+    document.getElementById('rentRecordIcon').classList.add('fa-chevron-up');
 
     // Auto-format numeric inputs
     const numericInputs = document.querySelectorAll('input[type="number"]');

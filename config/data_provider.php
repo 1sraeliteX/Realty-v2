@@ -43,7 +43,8 @@ class DataProvider {
             'tenantMaintenanceRequests' => self::getTenantMaintenanceRequestsData(),
             'amenities' => self::getAmenitiesData(),
             'maintenanceHistory' => self::getMaintenanceHistoryData(),
-            'occupants' => self::getOccupantData()
+            'occupants' => self::getOccupantData(),
+            'rent_records' => self::getRentRecordsData()
         ];
         
         self::$initialized = true;
@@ -1021,6 +1022,86 @@ class DataProvider {
                 'status' => 'pending',
                 'move_in_date' => '2024-03-01',
                 'rent_amount' => 750
+            ]
+        ];
+    }
+    
+    /**
+     * Rent records data
+     */
+    private static function getRentRecordsData() {
+        return [
+            [
+                'id' => 1,
+                'unit' => 'Unit 101',
+                'tenant' => 'John Smith',
+                'amount' => 1200,
+                'date' => '2024-01-15',
+                'status' => 'paid',
+                'payment_method' => 'bank_transfer'
+            ],
+            [
+                'id' => 2,
+                'unit' => 'Unit 102',
+                'tenant' => 'Sarah Johnson',
+                'amount' => 1100,
+                'date' => '2024-01-14',
+                'status' => 'paid',
+                'payment_method' => 'credit_card'
+            ],
+            [
+                'id' => 3,
+                'unit' => 'Unit 201',
+                'tenant' => 'Michael Brown',
+                'amount' => 1300,
+                'date' => '2024-01-13',
+                'status' => 'paid',
+                'payment_method' => 'cash'
+            ],
+            [
+                'id' => 4,
+                'unit' => 'Unit 103',
+                'tenant' => 'Emily Davis',
+                'amount' => 1150,
+                'date' => '2024-01-12',
+                'status' => 'paid',
+                'payment_method' => 'bank_transfer'
+            ],
+            [
+                'id' => 5,
+                'unit' => 'Unit 202',
+                'tenant' => 'Robert Wilson',
+                'amount' => 1250,
+                'date' => '2024-01-11',
+                'status' => 'paid',
+                'payment_method' => 'credit_card'
+            ],
+            [
+                'id' => 6,
+                'unit' => 'Unit 301',
+                'tenant' => 'Lisa Anderson',
+                'amount' => 1400,
+                'date' => '2024-01-10',
+                'status' => 'paid',
+                'payment_method' => 'bank_transfer'
+            ],
+            [
+                'id' => 7,
+                'unit' => 'Unit 104',
+                'tenant' => 'James Taylor',
+                'amount' => 1050,
+                'date' => '2024-01-09',
+                'status' => 'paid',
+                'payment_method' => 'cash'
+            ],
+            [
+                'id' => 8,
+                'unit' => 'Unit 203',
+                'tenant' => 'Jennifer Martinez',
+                'amount' => 1350,
+                'date' => '2024-01-08',
+                'status' => 'paid',
+                'payment_method' => 'credit_card'
             ]
         ];
     }
