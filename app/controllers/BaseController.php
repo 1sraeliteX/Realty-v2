@@ -43,20 +43,28 @@ class BaseController {
         include $viewPath;
         $content = ob_get_clean();
         
+        // Detect if view is self-contained (has its own full layout)
+        $selfContained = (
+            strpos($content, '<body') !== false ||
+            strpos($content, 'id="sidebar"') !== false ||
+            strpos($content, 'sidebar-nav') !== false ||
+            strpos($content, 'dashboard-layout') !== false ||
+            strpos($content, 'admin-layout') !== false ||
+            strpos($content, 'min-h-screen') !== false ||
+            strpos($content, 'admin-wrapper') !== false ||
+            strpos($content, '<!DOCTYPE') !== false
+        );
+
         // Include layout if available
-        if (strpos($view, 'admin/') === 0) {
-            // Check if the view already handles its own layout (includes simple_layout.php)
-            if (strpos($content, "include '../simple_layout.php'") !== false || 
-                strpos($content, 'include "../simple_layout.php"') !== false ||
-                strpos($content, "include '../simple_layout.php';") !== false ||
-                strpos($content, 'include "../simple_layout.php";') !== false) {
-                // View already handles its own layout, just echo the content
-                echo $content;
+        if (strpos($view, 'admin/') === 0 || 
+            strpos($view, 'properties/') === 0 ||
+            strpos($view, 'units/') === 0 ||
+            strpos($view, 'tenants/') === 0) {
+            if ($selfContained) {
+                echo $content; // View handles its own layout
             } else {
-                // Use simple layout for admin views
-                $layoutPath = __DIR__ . '/../../views/simple_layout.php';
+                $layoutPath = __DIR__ . '/../../views/admin/dashboard_layout.php';
                 if (file_exists($layoutPath)) {
-                    // Pass the content to the simple layout
                     include $layoutPath;
                 } else {
                     echo $content;
@@ -162,7 +170,14 @@ class BaseController {
         if (isset($_SESSION['admin_id'])) {
             $stmt = $this->db->getConnection()->prepare("SELECT * FROM admins WHERE id = ? AND deleted_at IS NULL");
             $stmt->execute([$_SESSION['admin_id']]);
-            return $stmt->fetch();
+            $admin = $stmt->fetch(\PDO::FETCH_ASSOC);
+            
+            // Ensure we always return an array, not an object
+            if (is_object($admin)) {
+                $admin = (array) $admin;
+            }
+            
+            return $admin;
         }
         return null;
     }
@@ -176,6 +191,12 @@ class BaseController {
                 $this->redirect('/admin/login');
             }
         }
+        
+        // Double-check we have an array, not an object
+        if (is_object($admin)) {
+            $admin = (array) $admin;
+        }
+        
         return $admin;
     }
 

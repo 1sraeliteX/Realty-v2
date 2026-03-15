@@ -40,8 +40,11 @@ ComponentRegistry::load('ui-components');
 <!-- Add Property Form -->
 <form id="addPropertyForm" action="/admin/properties" method="POST" enctype="multipart/form-data" class="space-y-8">
     <!-- Step 1: Basic Information -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-6">Basic Information</h3>
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-6 flex items-center">
+            <i class="fas fa-info-circle mr-2 text-primary-600"></i>
+            Basic Information
+        </h3>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <?php echo UIComponents::input('name', 'Property Name', 'text', '', 'Enter property name', true); ?>
@@ -86,8 +89,11 @@ ComponentRegistry::load('ui-components');
     </div>
 
     <!-- Step 2: Property Details -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-6">Property Details</h3>
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-6 flex items-center">
+            <i class="fas fa-building mr-2 text-primary-600"></i>
+            Property Details
+        </h3>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <?php echo UIComponents::input('bedrooms', 'Bedrooms', 'number', '', 'Number of bedrooms'); ?>
@@ -173,14 +179,102 @@ ComponentRegistry::load('ui-components');
     </div>
 
     <!-- Step 3: Pricing -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-6">Pricing Information</h3>
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-6 flex items-center">
+            <i class="fas fa-dollar-sign mr-2 text-primary-600"></i>
+            Pricing Information
+        </h3>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <?php echo UIComponents::input('purchase_price', 'Purchase Price', 'number', '', 'e.g., 2500000', true); ?>
             <?php echo UIComponents::input('current_value', 'Current Market Value', 'number', '', 'e.g., 2750000'); ?>
             <?php echo UIComponents::input('monthly_revenue', 'Expected Monthly Revenue', 'number', '', 'e.g., 28800'); ?>
             <?php echo UIComponents::input('annual_expenses', 'Annual Expenses', 'number', '', 'e.g., 50000'); ?>
+        </div>
+        
+        <!-- Rent Record Component -->
+        <div class="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+            <h4 class="text-md font-medium text-gray-900 dark:text-white mb-4 flex items-center">
+                <i class="fas fa-money-bill-wave mr-2 text-primary-600"></i>
+                Rent Record Information
+            </h4>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Rent Price -->
+                <div>
+                    <label for="monthly_rent" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Rent Price
+                    </label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-2.5 text-gray-500 dark:text-gray-400">₦</span>
+                        <input 
+                            type="number" 
+                            id="monthly_rent" 
+                            name="monthly_rent" 
+                            min="0"
+                            step="0.01"
+                            placeholder="0.00"
+                            class="w-full pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        >
+                    </div>
+                </div>
+
+                <!-- Rent Payment Frequency -->
+                <div>
+                    <label for="rent_frequency" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Payment Frequency
+                    </label>
+                    <select 
+                        id="rent_frequency" 
+                        name="rent_frequency" 
+                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    >
+                        <option value="monthly">Monthly</option>
+                        <option value="quarterly">Quarterly</option>
+                        <option value="annually">Annually</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                <!-- Security Deposit -->
+                <div>
+                    <label for="security_deposit" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Security Deposit
+                    </label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-2.5 text-gray-500 dark:text-gray-400">₦</span>
+                        <input 
+                            type="number" 
+                            id="security_deposit" 
+                            name="security_deposit" 
+                            min="0"
+                            step="0.01"
+                            placeholder="0.00"
+                            class="w-full pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        >
+                    </div>
+                </div>
+
+                <!-- Late Fee -->
+                <div>
+                    <label for="late_fee" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Late Fee
+                    </label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-2.5 text-gray-500 dark:text-gray-400">₦</span>
+                        <input 
+                            type="number" 
+                            id="late_fee" 
+                            name="late_fee" 
+                            min="0"
+                            step="0.01"
+                            placeholder="0.00"
+                            class="w-full pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        >
+                    </div>
+                </div>
+            </div>
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
@@ -191,8 +285,11 @@ ComponentRegistry::load('ui-components');
     </div>
 
     <!-- Step 4: Images -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-6">Property Images</h3>
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-6 flex items-center">
+            <i class="fas fa-images mr-2 text-primary-600"></i>
+            Property Images
+        </h3>
         
         <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center hover:border-gray-400 dark:hover:border-gray-500 transition-colors">
             <i class="fas fa-cloud-upload-alt text-gray-400 text-4xl mb-3"></i>
@@ -214,7 +311,7 @@ ComponentRegistry::load('ui-components');
     </div>
 
     <!-- Form Actions -->
-    <div class="flex items-center justify-end space-x-4">
+    <div class="flex items-center justify-end space-x-4 mx-4 md:mx-6 my-6">
         <a href="/admin/dashboard/properties" class="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
             Cancel
         </a>

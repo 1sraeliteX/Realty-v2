@@ -122,7 +122,7 @@ $content = ob_start();
             <!-- Rent Price -->
             <div>
                 <label for="rent_price" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Monthly Rent Price
+                    Rent Price
                 </label>
                 <div class="relative">
                     <span class="absolute left-3 top-2.5 text-gray-500 dark:text-gray-400">$</span>

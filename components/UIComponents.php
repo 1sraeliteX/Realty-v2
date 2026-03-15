@@ -202,6 +202,48 @@ class UIComponents {
     }
     
     /**
+     * Textarea form component
+     */
+    public static function textarea(
+        string $name,
+        string $label = '',
+        string $value = '',
+        string $placeholder = '',
+        int $rows = 4,
+        bool $required = false,
+        string $error = '',
+        string $class = ''
+    ): string {
+        $requiredAttr = $required ? 'required' : '';
+        $requiredStar = $required ? '<span class="text-red-500 ml-1">*</span>' : '';
+        $errorClass   = $error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 dark:border-gray-600 focus:ring-primary-500';
+        $value        = htmlspecialchars($value);
+        $placeholder  = htmlspecialchars($placeholder);
+
+        $labelHtml = $label
+            ? "<label for=\"{$name}\" class=\"block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1\">{$label}{$requiredStar}</label>"
+            : '';
+
+        $errorHtml = $error
+            ? "<p class=\"mt-1 text-sm text-red-600 dark:text-red-400\">{$error}</p>"
+            : '';
+
+        return "
+        <div class=\"{$class}\">
+            {$labelHtml}
+            <textarea
+                id=\"{$name}\"
+                name=\"{$name}\"
+                rows=\"{$rows}\"
+                placeholder=\"{$placeholder}\"
+                {$requiredAttr}
+                class=\"w-full px-3 py-2 text-sm text-gray-900 dark:text-white bg-white dark:bg-gray-700 border {$errorClass} rounded-lg shadow-sm focus:outline-none focus:ring-2 transition-colors resize-vertical {$class}\"
+            >{$value}</textarea>
+            {$errorHtml}
+        </div>";
+    }
+    
+    /**
      * Form Select Component
      */
     public static function select($name, $label, $options, $value = '', $required = false, $class = '') {

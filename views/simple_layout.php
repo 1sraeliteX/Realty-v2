@@ -19,7 +19,9 @@
 <body class="bg-gray-50 dark:bg-gray-900">
     <div id="toast-container" class="fixed top-4 right-4 z-50"></div>
     
-    <?php echo $content ?? ''; ?>
+    <main class="min-h-screen">
+        <?php echo $content ?? ''; ?>
+    </main>
 
     <script>
         // Toast notification system

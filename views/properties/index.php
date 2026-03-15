@@ -238,7 +238,7 @@ foreach ($allPropertyTypes as $type) {
     </div>
     
     <!-- Pagination -->
-    <?php if (isset($pagination) && $pagination['total_pages'] > 1): ?>
+    <?php if (isset($pagination) && ($pagination['last_page'] ?? 1) > 1): ?>
         <div class="bg-white dark:bg-gray-800 px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 sm:px-6">
             <div class="flex-1 flex justify-between sm:hidden">
                 <?php if ($pagination['has_prev']): ?>
@@ -262,7 +262,7 @@ foreach ($allPropertyTypes as $type) {
                             <a href="?page=<?php echo $pagination['current_page'] - 1; ?><?php echo !empty($search) ? '&search=' . urlencode((string)$search) : ''; ?><?php echo !empty($type) ? '&type=' . urlencode((string)$type) : ''; ?><?php echo !empty($category) ? '&category=' . urlencode((string)$category) : ''; ?><?php echo !empty($status) ? '&status=' . urlencode((string)$status) : ''; ?>" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">Previous</a>
                         <?php endif; ?>
                         
-                        <?php for ($i = max(1, $pagination['current_page'] - 2); $i <= min($pagination['total_pages'], $pagination['current_page'] + 2); $i++): ?>
+                        <?php for ($i = max(1, $pagination['current_page'] - 2); $i <= min($pagination['last_page'], $pagination['current_page'] + 2); $i++): ?>
                             <a href="?page=<?php echo $i; ?><?php echo !empty($search) ? '&search=' . urlencode((string)$search) : ''; ?><?php echo !empty($type) ? '&type=' . urlencode((string)$type) : ''; ?><?php echo !empty($category) ? '&category=' . urlencode((string)$category) : ''; ?><?php echo !empty($status) ? '&status=' . urlencode((string)$status) : ''; ?>" class="relative inline-flex items-center px-4 py-2 border text-sm font-medium 
                                 <?php echo $i === $pagination['current_page'] ? 
                                     'z-10 bg-primary-50 border-primary-500 text-primary-600 dark:bg-primary-900 dark:border-primary-400 dark:text-primary-300' : 

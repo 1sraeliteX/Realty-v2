@@ -3,7 +3,7 @@
 require_once __DIR__ . '/../../config/bootstrap.php';
 
 // Get centralized data from DataProvider (anti-scattering compliant)
-$user = ViewManager::get('user');
+$user = ViewManager::get('user') ?? ['name' => 'Admin', 'email' => ''];
 $notifications = ViewManager::get('notifications');
 $title = ViewManager::get('title', 'Admin Dashboard');
 
@@ -240,17 +240,17 @@ $isProfile = strpos($currentPath, '/admin/profile') === 0;
                         <div class="relative">
                             <button id="user-menu-btn" class="flex items-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
                                 <div class="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center">
-                                    <span class="text-white text-sm font-medium"><?php echo strtoupper(substr($user['name'], 0, 1)); ?></span>
+                                    <span class="text-white text-sm font-medium"><?php echo strtoupper(substr($user['name'] ?? 'Admin', 0, 1)); ?></span>
                                 </div>
-                                <span class="ml-2 text-sm font-medium hidden md:block"><?php echo htmlspecialchars($user['name']); ?></span>
+                                <span class="ml-2 text-sm font-medium hidden md:block"><?php echo htmlspecialchars($user['name'] ?? 'Admin'); ?></span>
                                 <i class="fas fa-chevron-down ml-2 text-xs"></i>
                             </button>
                             
                             <!-- User Dropdown Menu -->
                             <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
                                 <div class="p-3 border-b border-gray-200 dark:border-gray-700">
-                                    <p class="text-sm font-medium text-gray-900 dark:text-white"><?php echo htmlspecialchars($user['name']); ?></p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400"><?php echo htmlspecialchars($user['email']); ?></p>
+                                    <p class="text-sm font-medium text-gray-900 dark:text-white"><?php echo htmlspecialchars($user['name'] ?? 'Admin'); ?></p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400"><?php echo htmlspecialchars($user['email'] ?? ''); ?></p>
                                 </div>
                                 <div class="py-1">
                                     <a href="/admin/profile" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
@@ -272,8 +272,10 @@ $isProfile = strpos($currentPath, '/admin/profile') === 0;
             </header>
 
             <!-- Page Content -->
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 dark:bg-gray-900 p-6">
-                <?php echo $content ?? '<div class="text-center py-8"><h1 class="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1><p class="text-gray-600 dark:text-gray-400 mt-2">Welcome to the admin dashboard</p></div>'; ?>
+            <main class="flex-1 overflow-auto bg-gray-50 dark:bg-gray-900">
+                <div class="p-6 max-w-7xl mx-auto">
+                    <?php echo $content ?? '<div class="text-center py-8"><h1 class="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1><p class="text-gray-600 dark:text-gray-400 mt-2">Welcome to the admin dashboard</p></div>'; ?>
+                </div>
             </main>
         </div>
     </div>

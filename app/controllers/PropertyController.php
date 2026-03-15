@@ -2,112 +2,122 @@
 
 namespace App\Controllers;
 
+// Require ViewManager since it's not auto-loaded
+require_once __DIR__ . '/../../config/view_manager.php';
+require_once __DIR__ . '/../../config/data_provider.php';
+
+// Use global namespace classes
+use ViewManager;
+use DataProvider;
+
 class PropertyController extends BaseController {
     public function index() {
-        // Initialize framework (anti-scattering compliant)
-        require_once __DIR__ . '/../../config/init_framework.php';
-        
         $admin = $this->requireAuth();
         
-        $page = $_GET['page'] ?? 1;
-        $search = $_GET['search'] ?? '';
-        $type = $_GET['type'] ?? '';
-        $category = $_GET['category'] ?? '';
-        $status = $_GET['status'] ?? '';
+        // Get admin data and pass to layout
+        \ViewManager::set('user', [
+            'name' => $admin['name'] ?? 'Admin',
+            'email' => $admin['email'] ?? ''
+        ]);
+        \ViewManager::set('title', 'Properties');
         
-        // Set view data in ViewManager (anti-scattering compliant)
-        \ViewManager::set('search', $search);
-        \ViewManager::set('type', $type);
-        \ViewManager::set('category', $category);
-        \ViewManager::set('status', $status);
-        
-        // Build query with admin filtering (reverted to direct admin_id for reliability)
-        $where = ["p.admin_id = ?", "p.deleted_at IS NULL"];
-        $params = [$admin['id']];
-        
-        if (!empty($search)) {
-            $where[] = "(p.name LIKE ? OR p.address LIKE ?)";
-            $params[] = "%$search%";
-            $params[] = "%$search%";
+        $filters = [
+            'search' => $_GET['search'] ?? '',
+            'type'   => $_GET['type'] ?? '',
+            'status' => $_GET['status'] ?? '',
+        ];
+        $page  = max(1, (int)($_GET['page'] ?? 1));
+        $limit = 20;
+        $offset = ($page - 1) * $limit;
+
+        // Base query with unit counts via LEFT JOIN
+        $sql = "
+            SELECT 
+                p.*,
+                COUNT(u.id) AS unit_count,
+                SUM(CASE WHEN u.status = 'occupied' THEN 1 ELSE 0 END) AS occupied_units
+            FROM properties p
+            LEFT JOIN units u ON u.property_id = p.id AND u.deleted_at IS NULL
+            WHERE p.admin_id = :admin_id AND p.deleted_at IS NULL
+        ";
+        $params = ['admin_id' => $admin['id']];
+
+        if (!empty($filters['search'])) {
+            $sql .= " AND (p.name LIKE :search OR p.address LIKE :search)";
+            $params['search'] = '%' . $filters['search'] . '%';
         }
-        
-        if (!empty($type)) {
-            $where[] = "p.type = ?";
-            $params[] = $type;
+        if (!empty($filters['type'])) {
+            $sql .= " AND p.type = :type";
+            $params['type'] = $filters['type'];
         }
-        
-        if (!empty($category)) {
-            // Load property type helper through component registry (anti-scattering compliant)
-            ComponentRegistry::load('property-type-helper');
-            $categoryTypes = getPropertiesByCategory($category);
-            if (!empty($categoryTypes)) {
-                $placeholders = str_repeat('?,', count($categoryTypes));
-                $where[] = "p.type IN ($placeholders)";
-                $params = array_merge($params, array_column($categoryTypes, 'value'));
-            }
+        if (!empty($filters['status'])) {
+            $sql .= " AND p.status = :status";
+            $params['status'] = $filters['status'];
         }
-        
-        if (!empty($status)) {
-            $where[] = "p.status = ?";
-            $params[] = $status;
-        }
-        
-        $whereClause = implode(' AND ', $where);
-        
-        // Get properties with unit counts
-        $sql = "SELECT p.*, 
-                       (SELECT COUNT(*) FROM units u WHERE u.property_id = p.id AND u.deleted_at IS NULL) as unit_count,
-                       (SELECT COUNT(*) FROM units u WHERE u.property_id = p.id AND u.status = 'occupied' AND u.deleted_at IS NULL) as occupied_units
-                FROM properties p 
-                WHERE {$whereClause}
-                ORDER BY p.created_at DESC";
-        
-        $result = $this->paginate($sql, $page, 10, $params);
-        
+
+        $sql .= " GROUP BY p.id ORDER BY p.created_at DESC LIMIT :limit OFFSET :offset";
+        $params['limit']  = $limit;
+        $params['offset'] = $offset;
+
+        $stmt = $this->db->query($sql, $params);
+        $properties = $stmt ? $stmt->fetchAll(\PDO::FETCH_ASSOC) : [];
+
+        // Count total for pagination
+        $countSql = "SELECT COUNT(*) as total FROM properties WHERE admin_id = :admin_id AND deleted_at IS NULL";
+        $countParams = ['admin_id' => $admin['id']];
+        $countStmt = $this->db->query($countSql, $countParams);
+        $total = $countStmt ? (int)$countStmt->fetchColumn() : 0;
+
+        $pagination = [
+            'total'        => $total,
+            'per_page'     => $limit,
+            'current_page' => $page,
+            'last_page'    => ceil($total / $limit),
+        ];
+
         // Debug: Log the SQL query and results
         error_log("Property Query SQL: " . $sql);
         error_log("Property Query Params: " . json_encode($params));
-        error_log("Property Query Results: " . json_encode($result));
-        
+        error_log("Properties Query Result: " . json_encode($properties));
+
         // Initialize framework (anti-scattering compliant)
         require_once __DIR__ . '/../../config/bootstrap.php';
-        
-        // Set data in ViewManager for dashboard layout compatibility (anti-scattering compliant)
-        \ViewManager::set('properties', $result['data']);
-        \ViewManager::set('pagination', $result['pagination']);
-        \ViewManager::set('search', $search);
-        \ViewManager::set('type', $type);
-        \ViewManager::set('category', $category);
-        \ViewManager::set('status', $status);
-        
-        // Capture properties list content (anti-scattering compliant)
-        ob_start();
-        include __DIR__ . '/../../views/admin/properties/list.php';
-        $content = ob_get_clean();
-        
-        // Set content and render with layout (anti-scattering compliant)
-        \ViewManager::set('content', $content);
-        echo \ViewManager::render('admin.dashboard_layout');
+
+        // Pass data both ways (anti-scattering compliant)
+        ViewManager::set('properties', $properties);
+        ViewManager::set('pagination', $pagination);
+        ViewManager::set('search', $filters['search']);
+        ViewManager::set('type', $filters['type']);
+        ViewManager::set('status', $filters['status']);
+
+        // Use the view method with correct path
+        $this->view('properties/index', [
+            'properties' => $properties,
+            'pagination' => $pagination,
+            'search' => $filters['search'],
+            'type' => $filters['type'],
+            'status' => $filters['status']
+        ]);
     }
 
     public function create() {
         $admin = $this->requireAuth();
         
+        // Get admin data and pass to layout
+        \ViewManager::set('user', [
+            'name' => $admin['name'] ?? 'Admin',
+            'email' => $admin['email'] ?? ''
+        ]);
+        \ViewManager::set('title', 'Add Property');
+        
         // Initialize framework (anti-scattering compliant)
         require_once __DIR__ . '/../../config/bootstrap.php';
         
-        // Set data through ViewManager (anti-scattering compliant)
-        \ViewManager::set('title', 'Add Property');
-        \ViewManager::set('user', $admin);
-        
-        // Capture create property content (anti-scattering compliant)
-        ob_start();
-        include __DIR__ . '/../../views/admin/properties/add.php';
-        $content = ob_get_clean();
-        
-        // Set content and render with layout (anti-scattering compliant)
-        \ViewManager::set('content', $content);
-        echo \ViewManager::render('admin.dashboard_layout');
+        // Use the view method with correct path
+        $this->view('admin/properties/add', [
+            'title' => 'Add Property',
+            'user' => $admin
+        ]);
     }
 
     public function store() {
@@ -141,7 +151,7 @@ class PropertyController extends BaseController {
             } else {
                 $_SESSION['errors'] = $errors;
                 $_SESSION['old'] = $mappedData;
-                $this->redirect('/properties/create');
+                $this->redirect('/admin/properties/create');
             }
         }
         
@@ -176,7 +186,7 @@ class PropertyController extends BaseController {
             } else {
                 $_SESSION['errors'] = $errors;
                 $_SESSION['old'] = $mappedData;
-                $this->redirect('/properties/create');
+                $this->redirect('/admin/properties/create');
             }
         }
 
@@ -311,7 +321,7 @@ class PropertyController extends BaseController {
             } else {
                 $_SESSION['errors'] = $errors;
                 $_SESSION['old'] = $data;
-                $this->redirect("/properties/{$id}/edit");
+                $this->redirect("/admin/properties/{$id}/edit");
             }
         }
 
@@ -346,7 +356,7 @@ class PropertyController extends BaseController {
             } else {
                 $_SESSION['errors'] = $errors;
                 $_SESSION['old'] = $data;
-                $this->redirect("/properties/{$id}/edit");
+                $this->redirect("/admin/properties/{$id}/edit");
             }
         }
 
