@@ -69,6 +69,9 @@ class PropertyController extends BaseController {
         error_log("Property Query Params: " . json_encode($params));
         error_log("Property Query Results: " . json_encode($result));
         
+        // Initialize framework (anti-scattering compliant)
+        require_once __DIR__ . '/../../config/bootstrap.php';
+        
         // Set data in ViewManager for dashboard layout compatibility (anti-scattering compliant)
         \ViewManager::set('properties', $result['data']);
         \ViewManager::set('pagination', $result['pagination']);
@@ -89,6 +92,9 @@ class PropertyController extends BaseController {
 
     public function create() {
         $admin = $this->requireAuth();
+        
+        // Initialize framework (anti-scattering compliant)
+        require_once __DIR__ . '/../../config/bootstrap.php';
         
         // Set data through ViewManager (anti-scattering compliant)
         \ViewManager::set('title', 'Add Property');
