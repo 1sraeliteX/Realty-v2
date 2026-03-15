@@ -10,6 +10,7 @@ $title = ViewManager::get('title', 'Admin Dashboard');
 // Get current page for navigation highlighting
 $currentPath = $_SERVER['REQUEST_URI'] ?? '';
 $isDashboard = strpos($currentPath, '/admin/dashboard') === 0 && strpos($currentPath, '/admin/dashboard/') === false;
+$isDashboardReports = strpos($currentPath, '/admin/dashboard/reports') === 0;
 $isProperties = strpos($currentPath, '/admin/properties') === 0;
 $isUnits = strpos($currentPath, '/admin/units') === 0;
 $isTenants = strpos($currentPath, '/admin/tenants') === 0 || strpos($currentPath, '/admin/tenants-occupants') === 0;
@@ -172,7 +173,7 @@ $isProfile = strpos($currentPath, '/admin/profile') === 0;
                         <div class="pt-4 pb-2">
                             <span class="px-3 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400">Dashboard</span>
                         </div>
-                        <a href="/admin/dashboard/reports" class="<?php echo (strpos($currentPath, '/admin/dashboard/reports') === 0) ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <a href="/admin/dashboard/reports" class="<?php echo $isDashboardReports ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <i class="fas fa-chart-pie mr-3"></i>
                             Dashboard Reports
                         </a>

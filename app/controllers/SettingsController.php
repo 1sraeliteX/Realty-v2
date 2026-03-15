@@ -60,8 +60,14 @@ class SettingsController extends BaseController {
         // Set page title
         \ViewManager::set('title', 'Settings');
         
-        // Include the settings view which handles its own rendering
-        include __DIR__ . '/../../views/admin/settings/index.php';
+        // Capture settings content (anti-scattering compliant)
+        ob_start();
+        include __DIR__ . '/../../views/admin/settings/settings_content.php';
+        $content = ob_get_clean();
+        
+        // Set content and render with layout (anti-scattering compliant)
+        \ViewManager::set('content', $content);
+        echo \ViewManager::render('admin.dashboard_layout');
     }
     
     public function update() {

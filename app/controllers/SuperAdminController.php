@@ -29,30 +29,23 @@ class SuperAdminController extends BaseController {
         require_once __DIR__ . '/../../config/bootstrap.php';
         
         // Set data through ViewManager (anti-scattering compliant)
-        ViewManager::set('stats', $stats);
-        ViewManager::set('recentAdmins', $recentAdmins);
-        ViewManager::set('recentActivities', $recentActivities);
-        ViewManager::set('revenueData', $revenueData);
-        ViewManager::set('topProperties', $topProperties);
-        ViewManager::set('platform_trends', $trends);
-        ViewManager::set('user', $admin);
-        ViewManager::set('title', 'Super Admin Dashboard');
+        \ViewManager::set('stats', $stats);
+        \ViewManager::set('recentAdmins', $recentAdmins);
+        \ViewManager::set('recentActivities', $recentActivities);
+        \ViewManager::set('revenueData', $revenueData);
+        \ViewManager::set('topProperties', $topProperties);
+        \ViewManager::set('platform_trends', $trends);
+        \ViewManager::set('user', $admin);
+        \ViewManager::set('title', 'Super Admin Dashboard');
         
-        // Render with enhanced dashboard layout
-        $content = $this->renderView('superadmin.dashboard_enhanced', [
-            'stats' => $stats,
-            'recentAdmins' => $recentAdmins,
-            'recentActivities' => $recentActivities,
-            'revenueData' => $revenueData,
-            'topProperties' => $topProperties,
-            'platform_trends' => $trends
-        ]);
+        // Capture superadmin dashboard content (anti-scattering compliant)
+        ob_start();
+        include __DIR__ . '/../../views/superadmin/dashboard_content.php';
+        $content = ob_get_clean();
         
-        $this->view('superadmin.dashboard_layout', [
-            'admin' => $admin,
-            'title' => 'Super Admin Dashboard',
-            'content' => $content
-        ]);
+        // Set content and render with layout (anti-scattering compliant)
+        \ViewManager::set('content', $content);
+        echo \ViewManager::render('superadmin.dashboard_layout');
     }
 
     public function properties() {

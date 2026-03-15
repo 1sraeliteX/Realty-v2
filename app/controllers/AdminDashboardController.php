@@ -117,7 +117,7 @@ class AdminDashboardController extends BaseController {
         
         // Capture dashboard reports content (anti-scattering compliant)
         ob_start();
-        include __DIR__ . '/../../views/admin/dashboard/reports.php';
+        include __DIR__ . '/../../views/admin/dashboard/reports_content.php';
         $content = ob_get_clean();
         
         // Set content and render with layout (anti-scattering compliant)
