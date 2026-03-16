@@ -67,7 +67,9 @@ ob_start();
 
 <!-- Form Container -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
-    <form id="occupantForm" onsubmit="submitOccupantForm(event)">
+    <form id="occupantForm"
+        onsubmit="submitOccupantForm(event)"
+        enctype="multipart/form-data">
         <div class="p-6">
             <div class="mb-6">
                 <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Occupant Information</h2>
@@ -111,22 +113,107 @@ ob_start();
                 </div>
 
                 <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">ID Document Upload</label>
-                    <?php
-                    // Load attachment component (anti-scattering compliant)
-                    ComponentRegistry::load('attachment-component');
-                    echo AttachmentComponent::renderUploadArea([
-                        'id' => 'occupant-id-upload',
-                        'name' => 'id_documents[]',
-                        'accept' => '.jpg,.jpeg,.png,.pdf',
-                        'max_size' => 5,
-                        'max_files' => 2,
-                        'preview' => true,
-                        'class' => 'id-document-upload'
-                    ]);
-                    ?>
+                    <label class="block text-sm font-medium text-gray-700
+                                   dark:text-gray-300 mb-2">
+                        ID Document Upload
+                        <span class="text-xs text-gray-400 ml-1">(optional)</span>
+                    </label>
+
+                    <!-- Upload method tabs -->
+                    <div class="flex gap-2 mb-3">
+                        <button type="button" id="tabFile"
+                            onclick="switchUploadTab('file')"
+                            class="upload-tab-btn active-tab px-4 py-2 text-sm rounded-lg
+                                   border border-primary-600 bg-primary-600 text-white
+                                   transition-colors">
+                            <i class="fas fa-folder-open mr-2"></i>Browse Files
+                        </button>
+                        <button type="button" id="tabCamera"
+                            onclick="switchUploadTab('camera')"
+                            class="upload-tab-btn px-4 py-2 text-sm rounded-lg
+                                   border border-gray-300 dark:border-gray-600
+                                   text-gray-700 dark:text-gray-300
+                                   hover:bg-gray-50 dark:hover:bg-gray-700
+                                   transition-colors">
+                            <i class="fas fa-camera mr-2"></i>Use Camera
+                        </button>
+                    </div>
+
+                    <!-- File upload panel -->
+                    <div id="panelFile">
+                        <div id="idDropZone"
+                             class="border-2 border-dashed border-gray-300 dark:border-gray-600
+                                    rounded-lg p-6 text-center cursor-pointer
+                                    hover:border-primary-500 dark:hover:border-primary-400
+                                    transition-colors bg-gray-50 dark:bg-gray-700/50"
+                             onclick="document.getElementById('idFileInput').click()"
+                             ondragover="handleDragOver(event)"
+                             ondragleave="handleDragLeave(event)"
+                             ondrop="handleFileDrop(event)">
+                            <i class="fas fa-cloud-upload-alt text-gray-400 text-3xl mb-2"></i>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                                Click to browse or drag & drop
+                            </p>
+                            <p class="text-xs text-gray-400 mt-1">
+                                JPG, PNG, PDF — max 5MB each, up to 2 files
+                            </p>
+                        </div>
+                        <!-- Hidden file input — accepts images and PDFs from device -->
+                        <input type="file"
+                               id="idFileInput"
+                               name="id_documents[]"
+                               accept="image/*,.pdf"
+                               multiple
+                               capture=""
+                               class="hidden"
+                               onchange="handleFileSelect(this.files)">
+                    </div>
+
+                    <!-- Camera panel -->
+                    <div id="panelCamera" class="hidden">
+                        <div class="rounded-lg overflow-hidden bg-black relative"
+                             style="max-height:300px">
+                            <video id="cameraStream" autoplay playsinline muted
+                                   class="w-full object-cover"
+                                   style="max-height:300px"></video>
+                            <div id="cameraPlaceholder"
+                                 class="flex flex-col items-center justify-center
+                                        bg-gray-800 text-gray-400 py-12">
+                                <i class="fas fa-camera text-4xl mb-3"></i>
+                                <p class="text-sm">Camera not started</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 mt-3">
+                            <button type="button" onclick="startCamera()"
+                                    id="startCameraBtn"
+                                    class="flex-1 px-4 py-2 bg-primary-600 text-white
+                                           rounded-lg hover:bg-primary-700 text-sm">
+                                <i class="fas fa-play mr-2"></i>Start Camera
+                            </button>
+                            <button type="button" onclick="capturePhoto()"
+                                    id="captureBtn"
+                                    class="flex-1 px-4 py-2 bg-green-600 text-white
+                                           rounded-lg hover:bg-green-700 text-sm hidden">
+                                <i class="fas fa-camera mr-2"></i>Capture
+                            </button>
+                            <button type="button" onclick="stopCamera()"
+                                    id="stopCameraBtn"
+                                    class="px-4 py-2 bg-red-600 text-white rounded-lg
+                                           hover:bg-red-700 text-sm hidden">
+                                <i class="fas fa-stop mr-2"></i>Stop
+                            </button>
+                        </div>
+                        <!-- Hidden canvas for photo capture -->
+                        <canvas id="captureCanvas" class="hidden"></canvas>
+                    </div>
+
+                    <!-- Preview area -->
+                    <div id="idPreviewArea" class="mt-3 grid grid-cols-2 md:grid-cols-4
+                                            gap-3 hidden"></div>
+
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                        Upload clear photos of ID document (front and back) or passport. Accepted formats: JPG, PNG, PDF. Maximum 5MB per file.
+                        Upload front and back of ID or passport.
+                        Accepted: JPG, PNG, PDF. Max 5MB per file.
                     </p>
                 </div>
             </div>
@@ -211,109 +298,417 @@ ob_start();
                 </div>
             </div>
 
+            <!-- Next of Kin -->
+            <div class="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2
+                               flex items-center">
+                        <i class="fas fa-user-friends mr-2 text-primary-600"></i>
+                        Next of Kin
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm">
+                        Emergency contact information for the occupant
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700
+                                       dark:text-gray-300 mb-2">Full Name</label>
+                        <input type="text" name="next_of_kin"
+                               placeholder="Next of kin full name"
+                               class="w-full px-3 py-2 border border-gray-300
+                                      dark:border-gray-600 rounded-lg bg-white
+                                      dark:bg-gray-700 text-gray-900 dark:text-white
+                                      placeholder-gray-500 dark:placeholder-gray-400
+                                      focus:outline-none focus:ring-2
+                                      focus:ring-primary-500 focus:border-transparent
+                                      transition-colors">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700
+                                       dark:text-gray-300 mb-2">Phone Number</label>
+                        <input type="tel" name="next_of_kin_phone"
+                               placeholder="e.g. 08012345678"
+                               class="w-full px-3 py-2 border border-gray-300
+                                      dark:border-gray-600 rounded-lg bg-white
+                                      dark:bg-gray-700 text-gray-900 dark:text-white
+                                      placeholder-gray-500 dark:placeholder-gray-400
+                                      focus:outline-none focus:ring-2
+                                      focus:ring-primary-500 focus:border-transparent
+                                      transition-colors">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700
+                                       dark:text-gray-300 mb-2">Address</label>
+                        <textarea name="next_of_kin_address" rows="2"
+                                  placeholder="Next of kin residential address"
+                                  class="w-full px-3 py-2 border border-gray-300
+                                         dark:border-gray-600 rounded-lg bg-white
+                                         dark:bg-gray-700 text-gray-900 dark:text-white
+                                         placeholder-gray-500 dark:placeholder-gray-400
+                                         focus:outline-none focus:ring-2
+                                         focus:ring-primary-500 focus:border-transparent
+                                         transition-colors resize-none"></textarea>
+                    </div>
+                </div>
+            </div>
+
             <!-- Form Actions -->
-            <div class="mt-8 flex justify-between">
-                <a href="/admin/tenants-occupants" class="px-6 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200">
-                    <i class="fas fa-arrow-left mr-2"></i> Cancel
+            <div class="mt-8 flex flex-col sm:flex-row sm:justify-between
+                        gap-3 sm:gap-0">
+
+                <!-- Cancel — full width on mobile, auto on desktop -->
+                <a href="/admin/tenants-occupants"
+                   class="flex items-center justify-center sm:justify-start
+                          px-6 py-3 sm:py-2 bg-gray-300 dark:bg-gray-600
+                          text-gray-700 dark:text-gray-300 rounded-lg
+                          hover:bg-gray-400 dark:hover:bg-gray-500
+                          focus:outline-none focus:ring-2 focus:ring-gray-500
+                          focus:ring-offset-2 transition-all duration-200
+                          text-sm font-medium">
+                  <i class="fas fa-arrow-left mr-2"></i> Cancel
                 </a>
-                <div class="space-x-3">
-                    <button type="button" onclick="saveAsDraft()" class="px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200">
+
+                <!-- Right side buttons — stack on mobile, row on desktop -->
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button type="button" onclick="saveAsDraft()"
+                            class="w-full sm:w-auto flex items-center justify-center
+                                   px-6 py-3 sm:py-2 bg-gray-200 dark:bg-gray-700
+                                   text-gray-700 dark:text-gray-300 rounded-lg
+                                   hover:bg-gray-300 dark:hover:bg-gray-600
+                                   focus:outline-none focus:ring-2 focus:ring-gray-500
+                                   focus:ring-offset-2 transition-all duration-200
+                                   text-sm font-medium">
                         Save as Draft
                     </button>
-                    <button type="submit" class="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-200">
+                    <button type="submit"
+                            class="w-full sm:w-auto flex items-center justify-center
+                                   px-6 py-3 sm:py-2 bg-primary-600 text-white
+                                   rounded-lg hover:bg-primary-700
+                                   focus:outline-none focus:ring-2
+                                   focus:ring-primary-500 focus:ring-offset-2
+                                   transition-all duration-200 text-sm font-medium">
                         <i class="fas fa-check mr-2"></i> Create Occupant
                     </button>
                 </div>
+
             </div>
         </div>
     </form>
 </div>
 
 <script>
+// ── Upload tab switching ──────────────────────────────────────────
+function switchUploadTab(tab) {
+    document.getElementById('panelFile').classList.toggle('hidden', tab !== 'file');
+    document.getElementById('panelCamera').classList.toggle('hidden', tab !== 'camera');
+    document.querySelectorAll('.upload-tab-btn').forEach(btn => {
+        btn.classList.remove('bg-primary-600','text-white','border-primary-600');
+        btn.classList.add('border-gray-300','dark:border-gray-600',
+                          'text-gray-700','dark:text-gray-300');
+    });
+    const activeBtn = document.getElementById(
+        tab === 'file' ? 'tabFile' : 'tabCamera');
+    activeBtn.classList.add('bg-primary-600','text-white','border-primary-600');
+    activeBtn.classList.remove('border-gray-300','text-gray-700');
+
+    if (tab !== 'camera') stopCamera();
+}
+
+// ── File drag & drop ─────────────────────────────────────────────
+function handleDragOver(e) {
+    e.preventDefault();
+    document.getElementById('idDropZone').classList.add(
+        'border-primary-500','bg-primary-50','dark:bg-primary-900/20');
+}
+function handleDragLeave(e) {
+    document.getElementById('idDropZone').classList.remove(
+        'border-primary-500','bg-primary-50','dark:bg-primary-900/20');
+}
+function handleFileDrop(e) {
+    e.preventDefault();
+    handleDragLeave(e);
+    handleFileSelect(e.dataTransfer.files);
+}
+function handleFileSelect(files) {
+    const MAX = 2, MAX_MB = 5;
+    const preview = document.getElementById('idPreviewArea');
+    preview.innerHTML = '';
+    const valid = Array.from(files).slice(0, MAX).filter(f => {
+        if (f.size > MAX_MB * 1024 * 1024) {
+            showToast(f.name + ' exceeds 5MB limit', 'error');
+            return false;
+        }
+        return true;
+    });
+    if (!valid.length) return;
+    preview.classList.remove('hidden');
+    valid.forEach((file, i) => {
+        const div = document.createElement('div');
+        div.className = 'relative group rounded-lg overflow-hidden ' +
+                        'border border-gray-200 dark:border-gray-600 bg-gray-50 ' +
+                        'dark:bg-gray-700';
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                div.innerHTML = `
+                    <img src="${e.target.result}"
+                         class="w-full h-24 object-cover">
+                    <button type="button"
+                        onclick="removePreview(this, ${i})"
+                        class="absolute top-1 right-1 bg-red-500 text-white
+                               rounded-full w-5 h-5 text-xs flex items-center
+                               justify-center opacity-0 group-hover:opacity-100">
+                        <i class="fas fa-times"></i>
+                    </button>`;
+                preview.appendChild(div);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            div.innerHTML = `
+                <div class="w-full h-24 flex flex-col items-center
+                             justify-center text-gray-400">
+                    <i class="fas fa-file-pdf text-2xl text-red-400 mb-1"></i>
+                    <span class="text-xs truncate px-2 w-full text-center">
+                        ${file.name}</span>
+                </div>
+                <button type="button"
+                    onclick="removePreview(this, ${i})"
+                    class="absolute top-1 right-1 bg-red-500 text-white
+                           rounded-full w-5 h-5 text-xs flex items-center
+                           justify-center opacity-0 group-hover:opacity-100">
+                    <i class="fas fa-times"></i>
+                </button>`;
+            preview.appendChild(div);
+        }
+    });
+}
+function removePreview(btn, idx) {
+    btn.closest('div').remove();
+    const preview = document.getElementById('idPreviewArea');
+    if (!preview.children.length) preview.classList.add('hidden');
+}
+
+// ── Camera ────────────────────────────────────────────────────────
+let cameraStream = null;
+async function startCamera() {
+    try {
+        cameraStream = await navigator.mediaDevices.getUserMedia(
+            { video: { facingMode: 'environment' }, audio: false });
+        const video = document.getElementById('cameraStream');
+        video.srcObject = cameraStream;
+        document.getElementById('cameraPlaceholder').classList.add('hidden');
+        video.classList.remove('hidden');
+        document.getElementById('startCameraBtn').classList.add('hidden');
+        document.getElementById('captureBtn').classList.remove('hidden');
+        document.getElementById('stopCameraBtn').classList.remove('hidden');
+    } catch (err) {
+        showToast('Camera access denied or not available: ' + err.message, 'error');
+    }
+}
+function capturePhoto() {
+    const video  = document.getElementById('cameraStream');
+    const canvas = document.getElementById('captureCanvas');
+    canvas.width  = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+
+    // Store in hidden input for form submission
+    let hidden = document.getElementById('cameraCaptureData');
+    if (!hidden) {
+        hidden = document.createElement('input');
+        hidden.type = 'hidden';
+        hidden.id   = 'cameraCaptureData';
+        hidden.name = 'camera_capture_data';
+        document.getElementById('occupantForm').appendChild(hidden);
+    }
+    hidden.value = dataUrl;
+
+    // Show preview
+    const preview = document.getElementById('idPreviewArea');
+    preview.classList.remove('hidden');
+    const div = document.createElement('div');
+    div.className = 'relative group rounded-lg overflow-hidden ' +
+                    'border border-gray-200 dark:border-gray-600';
+    div.innerHTML = `
+        <img src="${dataUrl}" class="w-full h-24 object-cover">
+        <button type="button" onclick="clearCameraCapture(this)"
+                class="absolute top-1 right-1 bg-red-500 text-white
+                       rounded-full w-5 h-5 text-xs flex items-center
+                       justify-center opacity-0 group-hover:opacity-100">
+            <i class="fas fa-times"></i>
+        </button>
+        <span class="absolute bottom-0 left-0 right-0 text-center
+                     text-xs bg-black/50 text-white py-0.5">
+            Camera capture
+        </span>`;
+    preview.appendChild(div);
+    showToast('Photo captured!', 'success');
+    stopCamera();
+    switchUploadTab('file');
+}
+function clearCameraCapture(btn) {
+    btn.closest('div').remove();
+    const hidden = document.getElementById('cameraCaptureData');
+    if (hidden) hidden.value = '';
+}
+function stopCamera() {
+    if (cameraStream) {
+        cameraStream.getTracks().forEach(t => t.stop());
+        cameraStream = null;
+    }
+    const video = document.getElementById('cameraStream');
+    if (video) {
+        video.srcObject = null;
+        video.classList.add('hidden');
+    }
+    const ph = document.getElementById('cameraPlaceholder');
+    if (ph) ph.classList.remove('hidden');
+    const start   = document.getElementById('startCameraBtn');
+    const capture = document.getElementById('captureBtn');
+    const stop    = document.getElementById('stopCameraBtn');
+    if (start)   start.classList.remove('hidden');
+    if (capture) capture.classList.add('hidden');
+    if (stop)    stop.classList.add('hidden');
+}
+
+// ── Form init ─────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
-    // Set today's date as default for move-in date
     const today = new Date().toISOString().split('T')[0];
-    document.querySelector('input[name="move_in_date"]').value = today;
+    const mdi = document.querySelector('input[name="move_in_date"]');
+    if (mdi) mdi.value = today;
+    // Stop camera if user navigates away
+    window.addEventListener('beforeunload', stopCamera);
 });
 
+// ── Units filter ──────────────────────────────────────────────────
 function updateOccupantUnits() {
     const propertyId = document.querySelector('select[name="property_id"]').value;
     const unitSelect = document.querySelector('select[name="unit_id"]');
-    
-    // Clear current options
     unitSelect.innerHTML = '<option value="">Select Unit</option>';
-    
-    if (propertyId) {
-        // Mock units data - in real app, this would come from an API call
-        const units = <?php echo json_encode($units); ?>;
-        const filteredUnits = units.filter(unit => unit.property_id == propertyId);
-        
-        filteredUnits.forEach(unit => {
-            const option = document.createElement('option');
-            option.value = unit.id;
-            option.textContent = `${unit.number} - ${unit.type}`;
-            unitSelect.appendChild(option);
+    if (!propertyId) return;
+
+    // Fetch real units from API
+    fetch('/admin/units?property_id=' + propertyId + '&_ajax=1', {
+        headers: { 'X-Requested-With': 'XMLHttpRequest',
+                   'Accept': 'application/json' }
+    })
+    .then(r => r.json())
+    .then(data => {
+        const units = Array.isArray(data) ? data :
+                      (data.units || data.data || []);
+        units.forEach(unit => {
+            const opt = document.createElement('option');
+            opt.value = unit.id;
+            opt.textContent = (unit.unit_number || unit.number) +
+                              ' — ' + (unit.type || '');
+            unitSelect.appendChild(opt);
         });
-    }
+        if (!units.length) {
+            unitSelect.innerHTML =
+                '<option value="">No units found for this property</option>';
+        }
+    })
+    .catch(() => {
+        // Fallback to PHP-embedded units
+        const units = <?php echo json_encode($units); ?>;
+        units.filter(u => u.property_id == propertyId).forEach(u => {
+            const opt = document.createElement('option');
+            opt.value = u.id;
+            opt.textContent = u.number + ' — ' + u.type;
+            unitSelect.appendChild(opt);
+        });
+    });
 }
 
+// ── Form submit ───────────────────────────────────────────────────
 function submitOccupantForm(event) {
     event.preventDefault();
-    
-    // Basic validation
     const form = event.target;
     const formData = new FormData(form);
-    
-    // Check required fields
-    const requiredFields = ['first_name', 'last_name', 'email', 'phone', 'property_id', 'unit_id', 'move_in_date', 'status'];
-    for (const field of requiredFields) {
-        if (!formData.get(field)) {
+
+    const required = ['first_name','last_name','email','phone',
+                      'property_id','unit_id','move_in_date','status'];
+    for (const f of required) {
+        if (!formData.get(f)) {
             showToast('Please fill in all required fields.', 'error');
+            const el = form.querySelector(`[name="${f}"]`);
+            if (el) {
+                el.classList.add('border-red-500');
+                el.focus();
+            }
             return;
         }
     }
-    
-    // Email validation
-    const email = formData.get('email');
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        showToast('Please enter a valid email address.', 'error');
-        return;
-    }
-    
-    // Show loading state
+
     const submitBtn = form.querySelector('button[type="submit"]');
-    const originalText = submitBtn.innerHTML;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Creating...';
+    const orig = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Creating...';
     submitBtn.disabled = true;
-    
-    // Simulate API call
-    setTimeout(() => {
-        // Reset button
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
-        
-        // Show success message
-        showToast('Occupant created successfully!', 'success');
-        
-        // Redirect after a short delay
-        setTimeout(() => {
-            window.location.href = '/admin/tenants-occupants';
-        }, 1500);
-    }, 1500);
+
+    fetch('/admin/occupants?_ajax=1', {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest',
+                   'Accept': 'application/json' },
+        body: formData
+    })
+    .then(r => r.text().then(text => {
+        try { return JSON.parse(text); }
+        catch(e) {
+            console.error('Non-JSON response:', text);
+            throw new Error('Server returned non-JSON response');
+        }
+    }))
+    .then(data => {
+        submitBtn.innerHTML = orig;
+        submitBtn.disabled  = false;
+        if (data.success) {
+            showToast('Occupant created successfully!', 'success');
+            stopCamera();
+            setTimeout(() => {
+                window.location.href = '/admin/tenants-occupants';
+            }, 1500);
+        } else {
+            const msg = data.errors
+                ? Object.values(data.errors).join(', ')
+                : (data.error || data.message || 'Failed to create occupant');
+            showToast(msg, 'error');
+        }
+    })
+    .catch(err => {
+        submitBtn.innerHTML = orig;
+        submitBtn.disabled  = false;
+        showToast('Error: ' + err.message, 'error');
+    });
 }
 
 function saveAsDraft() {
     showToast('Draft saved successfully!', 'info');
 }
-</script>
 
-<?php
-// Include attachment component JavaScript
-ComponentRegistry::load('attachment-component');
-echo AttachmentComponentJS::renderJS();
-echo AttachmentComponent::renderPreviewModal();
-?>
+// Safe showToast fallback
+if (typeof showToast !== 'function') {
+    window.showToast = function(msg, type) {
+        const c = {success:'#10b981',error:'#ef4444',
+                   info:'#3b82f6',warning:'#f59e0b'};
+        const t = document.createElement('div');
+        t.style.cssText = 'position:fixed;top:20px;right:20px;z-index:9999;' +
+            'padding:12px 20px;border-radius:8px;color:#fff;font-size:14px;' +
+            'font-weight:500;box-shadow:0 4px 12px rgba(0,0,0,.3);background:'
+            + (c[type]||c.info);
+        t.textContent = msg;
+        document.body.appendChild(t);
+        setTimeout(() => {
+            t.style.opacity='0'; t.style.transition='opacity .3s';
+            setTimeout(()=>t.remove(),300);
+        }, 3500);
+    };
+}
+</script>
 
 <?php
 // Capture content

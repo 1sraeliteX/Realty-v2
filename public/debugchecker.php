@@ -265,7 +265,133 @@
         </div>
 
         <div class="section">
-            <h2>8. Units tenant_name Fix Debug</h2>
+            <h2>9. Occupant Create Page Debug</h2>
+            <?php
+            // 1. Column existence check
+            echo '<h3>1. Tenants table next_of_kin columns check</h3>';
+            if ($db) {
+                try {
+                    $pdo = $db->getConnection();
+                    $stmt = $pdo->query("SHOW COLUMNS FROM tenants LIKE 'next_of_kin%'");
+                    $columns = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    
+                    echo '<table>';
+                    echo '<tr><th>Column Name</th><th>Type</th><th>Null</th><th>Status</th></tr>';
+                    
+                    $nextOfKinExists = false;
+                    $nextOfKinPhoneExists = false;
+                    $nextOfKinAddressExists = false;
+                    
+                    foreach ($columns as $col) {
+                        echo '<tr>';
+                        echo '<td>' . htmlspecialchars($col['Field']) . '</td>';
+                        echo '<td>' . htmlspecialchars($col['Type']) . '</td>';
+                        echo '<td>' . htmlspecialchars($col['Null']) . '</td>';
+                        
+                        if ($col['Field'] === 'next_of_kin') {
+                            $nextOfKinExists = true;
+                            echo '<td><span class="pass">✅ next_of_kin</span></td>';
+                        } elseif ($col['Field'] === 'next_of_kin_phone') {
+                            $nextOfKinPhoneExists = true;
+                            echo '<td><span class="pass">✅ next_of_kin_phone</span></td>';
+                        } elseif ($col['Field'] === 'next_of_kin_address') {
+                            $nextOfKinAddressExists = true;
+                            echo '<td><span class="pass">✅ next_of_kin_address</span></td>';
+                        } else {
+                            echo '<td>-</td>';
+                        }
+                        echo '</tr>';
+                    }
+                    echo '</table>';
+                    
+                    if (!$nextOfKinExists) {
+                        echo '<div class="check"><span class="fail">❌ next_of_kin column missing</span></div>';
+                    }
+                    if (!$nextOfKinPhoneExists) {
+                        echo '<div class="check"><span class="fail">❌ next_of_kin_phone column missing</span></div>';
+                    }
+                    if (!$nextOfKinAddressExists) {
+                        echo '<div class="check"><span class="fail">❌ next_of_kin_address column missing</span></div>';
+                    }
+                    
+                } catch (\Throwable $e) {
+                    echo '<div class="check"><span class="fail">❌ Could not check tenants table: ' . htmlspecialchars($e->getMessage()) . '</div></div>';
+                }
+            } else {
+                echo '<p style="color:red">Database not available for column check</p>';
+            }
+
+            // 2. Upload directory check
+            echo '<h3>2. Upload directory check</h3>';
+            $uploadDir = __DIR__ . '/../public/uploads/documents';
+            if (is_dir($uploadDir)) {
+                if (is_writable($uploadDir)) {
+                    echo '<div class="check"><span class="pass">✅</span> public/uploads/documents exists and writable</div>';
+                } else {
+                    echo '<div class="check"><span class="fail">❌</span> public/uploads/documents exists but not writable</div>';
+                }
+            } else {
+                echo '<div class="check"><span class="fail">❌</span> public/uploads/documents does not exist</div>';
+            }
+
+            // 3. storeOccupant() implementation check
+            echo '<h3>3. storeOccupant() implementation check</h3>';
+            $controllerFile = file_get_contents(__DIR__ . '/../app/controllers/TenantOccupantController.php');
+            
+            $hasDbInsert = strpos($controllerFile, 'db->insert') !== false && strpos($controllerFile, 'storeOccupant') !== false;
+            echo '<div class="check">';
+            echo $hasDbInsert ? '<span class="pass">✅ IMPLEMENTED</span>' : '<span class="fail">❌ STUB</span>';
+            echo ' db->insert exists in storeOccupant</div>';
+            
+            $hasNextOfKinAddress = strpos($controllerFile, 'next_of_kin_address') !== false;
+            echo '<div class="check">';
+            echo $hasNextOfKinAddress ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
+            echo ' next_of_kin_address in storeOccupant</div>';
+
+            // 4. Form fields check
+            echo '<h3>4. Form fields check</h3>';
+            $createFile = file_get_contents(__DIR__ . '/../views/admin/occupants/create.php');
+            
+            $hasNextOfKinField = strpos($createFile, 'name="next_of_kin"') !== false;
+            echo '<div class="check">';
+            echo $hasNextOfKinField ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
+            echo ' next_of_kin input exists</div>';
+            
+            $hasNextOfKinPhoneField = strpos($createFile, 'name="next_of_kin_phone"') !== false;
+            echo '<div class="check">';
+            echo $hasNextOfKinPhoneField ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
+            echo ' next_of_kin_phone input exists</div>';
+            
+            $hasNextOfKinAddressField = strpos($createFile, 'name="next_of_kin_address"') !== false;
+            echo '<div class="check">';
+            echo $hasNextOfKinAddressField ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
+            echo ' next_of_kin_address textarea exists</div>';
+            
+            $hasCameraCaptureLogic = strpos($createFile, 'camera_capture_data') !== false;
+            echo '<div class="check">';
+            echo $hasCameraCaptureLogic ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
+            echo ' camera_capture_data hidden input logic exists</div>';
+            
+            $hasStartCamera = strpos($createFile, 'function startCamera') !== false;
+            echo '<div class="check">';
+            echo $hasStartCamera ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
+            echo ' startCamera function exists</div>';
+            
+            $hasEnctype = strpos($createFile, 'enctype="multipart/form-data"') !== false;
+            echo '<div class="check">';
+            echo $hasEnctype ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
+            echo ' enctype="multipart/form-data" on form</div>';
+
+            // 5. Route check
+            echo '<h3>5. Route check</h3>';
+            $routesFile = file_get_contents(__DIR__ . '/../routes/web.php');
+            
+            $hasOccupantsRoute = strpos($routesFile, "'POST /admin/occupants' => 'TenantOccupantController@storeOccupant'") !== false;
+            echo '<div class="check">';
+            echo $hasOccupantsRoute ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
+            echo ' POST /admin/occupants → TenantOccupantController@storeOccupant</div>';
+            ?>
+        </div>
             <?php
             // 1. Tenants table structure check
             echo '<h3>1. Tenants table structure check</h3>';
@@ -371,10 +497,59 @@
             ?>
         </div>
 
+        <div class="section">
+            <h2>10. Properties Filter Bar Alignment Debug</h2>
+            <?php
+            $propertiesListFile = file_get_contents(__DIR__ . '/../views/admin/properties/list.php');
+            
+            // Check search container has flex-1 min-w-0
+            $hasSearchFlex = strpos($propertiesListFile, 'flex-1 min-w-0') !== false;
+            echo '<div class="check">';
+            echo $hasSearchFlex ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
+            echo ' flex-1 min-w-0 on search container</div>';
+            
+            // Check type_filter has flex-shrink-0
+            $hasTypeFlexShrink = strpos($propertiesListFile, 'id="type_filter"') !== false && 
+                                 strpos($propertiesListFile, 'flex-shrink-0', strpos($propertiesListFile, 'id="type_filter"')) !== false;
+            echo '<div class="check">';
+            echo $hasTypeFlexShrink ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
+            echo ' flex-shrink-0 on type_filter container</div>';
+            
+            // Check status_filter has flex-shrink-0
+            $hasStatusFlexShrink = strpos($propertiesListFile, 'id="status_filter"') !== false && 
+                                  strpos($propertiesListFile, 'flex-shrink-0', strpos($propertiesListFile, 'id="status_filter"')) !== false;
+            echo '<div class="check">';
+            echo $hasStatusFlexShrink ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
+            echo ' flex-shrink-0 on status_filter container</div>';
+            
+            // Check no labels before selects
+            $typeLabelExists = strpos($propertiesListFile, '<label') !== false && 
+                              strpos($propertiesListFile, 'type_filter', strpos($propertiesListFile, '<label')) !== false;
+            $statusLabelExists = strpos($propertiesListFile, '<label') !== false && 
+                                strpos($propertiesListFile, 'status_filter', strpos($propertiesListFile, '<label')) !== false;
+            
+            echo '<div class="check">';
+            echo (!$typeLabelExists && !$statusLabelExists) ? '<span class="pass">✅ CLEAN</span>' : '<span class="fail">⚠️ LABELS STILL PRESENT</span>';
+            echo ' No <label> elements immediately before type_filter or status_filter selects</div>';
+            
+            // Check type_filter ID exists
+            $hasTypeId = strpos($propertiesListFile, 'id="type_filter"') !== false;
+            echo '<div class="check">';
+            echo $hasTypeId ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
+            echo ' id="type_filter" exists</div>';
+            
+            // Check status_filter ID exists
+            $hasStatusId = strpos($propertiesListFile, 'id="status_filter"') !== false;
+            echo '<div class="check">';
+            echo $hasStatusId ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
+            echo ' id="status_filter" exists</div>';
+            ?>
+        </div>
+
         <div class="summary">
             <h2>Summary</h2>
             <?php
-            $totalChecks = 19;
+            $totalChecks = 25;
             $passedChecks = ($hasUnitsIndex ? 1 : 0) + ($hasUnitsCreate ? 1 : 0) + 
                            ($hasPropertyUnitsIndex ? 1 : 0) + ($hasPropertyUnitsCreate ? 1 : 0) +
                            ($hasIndex ? 1 : 0) + ($hasIndexByProperty ? 1 : 0) + 
@@ -383,7 +558,10 @@
                            ($hasCorrectUrl ? 1 : 0) + (!$hasOldUrl ? 1 : 0) +
                            ($hasCorrectOrder ? 1 : 0) + ($noDuplicate ? 1 : 0) +
                            ($hasFlexLayout ? 1 : 0) + ($hasExportFunction ? 1 : 0) +
-                           ($hasNairaList ? 1 : 0) + ($hasNairaCreate ? 1 : 0);
+                           ($hasNairaList ? 1 : 0) + ($hasNairaCreate ? 1 : 0) +
+                           ($hasSearchFlex ? 1 : 0) + ($hasTypeFlexShrink ? 1 : 0) + 
+                           ($hasStatusFlexShrink ? 1 : 0) + ((!$typeLabelExists && !$statusLabelExists) ? 1 : 0) +
+                           ($hasTypeId ? 1 : 0) + ($hasStatusId ? 1 : 0);
             
             $successRate = round(($passedChecks / $totalChecks) * 100, 1);
             

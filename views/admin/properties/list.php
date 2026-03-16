@@ -50,43 +50,72 @@ if (empty($properties)) {
 
 <!-- Filters and Search -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
-    <div class="flex items-center gap-3 flex-wrap">
-        <!-- Search -->
-        <div class="flex-1 min-w-[200px]">
-            <?php echo UIComponents::searchBar('Search properties...', '', 'searchProperties(this.value)'); ?>
+    <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+
+        <!-- Search input -->
+        <div class="flex-1 min-w-0">
+            <div class="relative pt-6">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center
+                            pointer-events-none">
+                    <i class="fas fa-search text-gray-400 text-sm"></i>
+                </div>
+                <input
+                    type="text"
+                    id="search_input"
+                    placeholder="Search properties..."
+                    oninput="searchProperties(this.value)"
+                    class="w-full pl-9 pr-4 py-2 text-sm border
+                           border-gray-300 dark:border-gray-600 rounded-lg
+                           bg-white dark:bg-gray-700 text-gray-900
+                           dark:text-white placeholder-gray-400
+                           focus:outline-none focus:ring-2
+                           focus:ring-primary-500 focus:border-transparent"
+                />
+            </div>
         </div>
-        
-        <!-- Property Type Filter -->
-        <?php 
-        echo UIComponents::select(
-            'type_filter',
-            'Property Type',
-            [
-                '' => 'All Types',
-                'Residential' => 'Residential',
-                'Commercial' => 'Commercial',
-                'Industrial' => 'Industrial'
-            ],
-            '',
-            false,
-            'w-40'
-        ); ?>
-        
-        <!-- Status Filter -->
-        <?php 
-        echo UIComponents::select(
-            'status_filter',
-            'Status',
-            [
-                '' => 'All Status',
-                'occupied' => 'Occupied',
-                'available' => 'Available',
-                'maintenance' => 'Maintenance'
-            ],
-            '',
-            false,
-            'w-40'
-        ); ?>
+
+        <!-- Property Type select with label -->
+        <div class="flex-shrink-0">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Property Type
+            </label>
+            <select
+                id="type_filter"
+                onchange="filterProperties()"
+                class="w-40 px-3 py-2 text-sm border border-gray-300
+                       dark:border-gray-600 rounded-lg bg-white
+                       dark:bg-gray-700 text-gray-900 dark:text-white
+                       focus:outline-none focus:ring-2
+                       focus:ring-primary-500 focus:border-transparent
+                       appearance-none cursor-pointer">
+                <option value="">All Types</option>
+                <option value="Residential">Residential</option>
+                <option value="Commercial">Commercial</option>
+                <option value="Industrial">Industrial</option>
+            </select>
+        </div>
+
+        <!-- Status select with label -->
+        <div class="flex-shrink-0">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Status
+            </label>
+            <select
+                id="status_filter"
+                onchange="filterProperties()"
+                class="w-36 px-3 py-2 text-sm border border-gray-300
+                       dark:border-gray-600 rounded-lg bg-white
+                       dark:bg-gray-700 text-gray-900 dark:text-white
+                       focus:outline-none focus:ring-2
+                       focus:ring-primary-500 focus:border-transparent
+                       appearance-none cursor-pointer">
+                <option value="">All Status</option>
+                <option value="occupied">Occupied</option>
+                <option value="available">Available</option>
+                <option value="maintenance">Maintenance</option>
+            </select>
+        </div>
+
     </div>
     
     <!-- Additional Filters -->
