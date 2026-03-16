@@ -56,7 +56,7 @@ class ComponentRegistry {
         self::register('notes-component', __DIR__ . '/../components/NotesComponent.php', ['ui-components']);
         self::register('attachment-component', __DIR__ . '/../components/AttachmentComponent.php', ['ui-components']);
         self::register('searchable-dropdown', __DIR__ . '/../components/SearchableDropdown.php', ['ui-components']);
-        self::register('autofill-component', __DIR__ . '/../components/AutoFillComponent.php', ['ui-components']);
+        self::register('autofill-component', __DIR__ . '/../app/components/AutoFillComponent.php', ['ui-components']);
         self::register('layout', __DIR__ . '/../views/layout.php', ['ui-components']);
         self::register('dashboard-layout', __DIR__ . '/../views/admin/dashboard_layout.php', ['ui-components']);
         self::register('admin.dashboard_layout', __DIR__ . '/../views/admin/dashboard_layout.php', ['ui-components']);

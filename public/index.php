@@ -3,6 +3,9 @@
 // Start session
 session_start();
 
+// Load bootstrap for anti-scattering system and Components namespace autoloader
+require_once __DIR__ . '/../config/bootstrap.php';
+
 // Simple autoloader for our classes
 spl_autoload_register(function ($class) {
     $prefix = 'App\\';

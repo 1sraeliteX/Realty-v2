@@ -5,6 +5,20 @@
  * Initializes the anti-scattering system before any views are loaded
  */
 
+// Custom autoloader for Components namespace
+spl_autoload_register(function ($class) {
+    // Handle Components namespace
+    if (strpos($class, 'Components\\') === 0) {
+        $relativePath = str_replace('Components\\', '', $class);
+        $filePath = __DIR__ . '/../app/components/' . $relativePath . '.php';
+        if (file_exists($filePath)) {
+            require_once $filePath;
+            return true;
+        }
+    }
+    return false;
+});
+
 // Load core anti-scattering components
 require_once __DIR__ . '/components_registry.php';
 require_once __DIR__ . '/view_manager.php';

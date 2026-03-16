@@ -90,14 +90,16 @@ class PropertyController extends BaseController {
         ViewManager::set('type', $filters['type']);
         ViewManager::set('status', $filters['status']);
 
-        // Use the view method with correct path
-        $this->view('properties/index', [
-            'properties' => $properties,
-            'pagination' => $pagination,
-            'search' => $filters['search'],
-            'type' => $filters['type'],
-            'status' => $filters['status']
-        ]);
+        // Use the admin layout (anti-scattering compliant)
+        ob_start();
+        include __DIR__ . '/../../views/admin/properties/list.php';
+        $content = ob_get_clean();
+        
+        // Set content for the layout
+        \ViewManager::set('content', $content);
+        
+        // Include the admin layout
+        include __DIR__ . '/../../views/admin/dashboard_layout.php';
     }
 
     public function create() {
@@ -129,6 +131,10 @@ class PropertyController extends BaseController {
     }
 
     public function store() {
+        error_log('PropertyController::store() called');
+        error_log('POST data: ' . json_encode($_POST));
+        error_log('FILES: ' . json_encode(array_keys($_FILES)));
+        
         $admin = $this->requireAuth();
         $data = $this->getPostData();
         
@@ -137,7 +143,7 @@ class PropertyController extends BaseController {
             'property_name' => $data['name'] ?? '',
             'address' => $data['address'] ?? '',
             'property_type' => $data['type'] ?? '',
-            'yearly_rent' => $data['rent_price'] ?? $data['yearly_rent'] ?? '',
+            'yearly_rent' => $data['monthly_rent'] ?? $data['rent_price'] ?? $data['yearly_rent'] ?? '',
             'year_built' => $data['year_built'] ?? '',
             'rooms' => $data['bedrooms'] ?? $data['rooms'] ?? '',
             'bathrooms' => $data['bathrooms'] ?? '',
@@ -146,7 +152,16 @@ class PropertyController extends BaseController {
             'water_availability' => $data['water_availability'] ?? '',
             'description' => $data['description'] ?? '',
             'category' => $data['category'] ?? '',
-            'status' => $data['status'] ?? 'active'
+            'status' => $data['status'] ?? 'active',
+            'rent_frequency' => $data['rent_frequency'] ?? 'monthly',
+            'security_deposit' => $data['security_deposit'] ?? null,
+            'monthly_revenue' => $data['monthly_revenue'] ?? null,
+            'annual_expenses' => $data['annual_expenses'] ?? null,
+            'property_tax' => $data['property_tax'] ?? null,
+            'insurance' => $data['insurance'] ?? null,
+            'maintenance_fee' => $data['maintenance_fee'] ?? null,
+            'skip_pricing' => $data['skip_pricing'] ?? null,
+            'skip_rent_record' => $data['skip_rent_record'] ?? null
         ];
         
         // Validate required fields
@@ -159,15 +174,19 @@ class PropertyController extends BaseController {
         error_log("Property Form Validation - Errors: " . json_encode($errors));
         
         if (!empty($errors)) {
-            error_log("Property creation failed - validation errors: " . json_encode($errors));
-            if ($this->isApiRequest()) {
-                $this->json(['errors' => $errors], 422);
+            error_log("Property Form Validation - Returning errors: " . json_encode($errors));
+            
+            if ($this->isApiRequest() || isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+                $this->json([
+                    'success' => false,
+                    'errors' => $errors
+                ], 422);
             } else {
                 $_SESSION['errors'] = $errors;
-                $_SESSION['old'] = $mappedData;
+                $_SESSION['old'] = $data;
                 $this->redirect('/admin/properties/create');
             }
-            return; // Add return to stop execution
+            return;
         }
         
         // Handle file uploads
@@ -196,13 +215,17 @@ class PropertyController extends BaseController {
         }
 
         if (!empty($errors)) {
-            if ($this->isApiRequest()) {
-                $this->json(['errors' => $errors], 422);
+            if ($this->isApiRequest() || isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+                $this->json([
+                    'success' => false,
+                    'errors' => $errors
+                ], 422);
             } else {
                 $_SESSION['errors'] = $errors;
                 $_SESSION['old'] = $mappedData;
                 $this->redirect('/admin/properties/create');
             }
+            return;
         }
 
         // Prepare property data
@@ -220,7 +243,7 @@ class PropertyController extends BaseController {
             'parking' => $mappedData['parking'] ?? 0,
             'rent_price' => $mappedData['yearly_rent'] ?? null,
             'status' => $mappedData['status'] ?? 'active',
-            'amenities' => !empty($data['amenities']) ? json_decode($data['amenities'], true) : null,
+            'amenities' => !empty($data['amenities']) ? (is_array($data['amenities']) ? json_encode($data['amenities']) : $data['amenities']) : null,
             'images' => !empty($images) ? json_encode($images) : null
         ];
 
@@ -231,8 +254,11 @@ class PropertyController extends BaseController {
         
         if (!$propertyId) {
             error_log("Property creation failed - database insertion returned false");
-            if ($this->isApiRequest()) {
-                $this->json(['error' => 'Failed to create property in database'], 500);
+            if ($this->isApiRequest() || isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+                $this->json([
+                    'success' => false,
+                    'error' => 'Failed to create property in database'
+                ], 500);
             } else {
                 $_SESSION['error'] = 'Failed to create property. Please try again.';
                 $_SESSION['old'] = $mappedData;
@@ -248,6 +274,7 @@ class PropertyController extends BaseController {
 
         if ($this->isApiRequest() || isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
             $this->json([
+                'success' => true,
                 'message' => 'Property created successfully',
                 'property_id' => $propertyId
             ], 201);

@@ -16,7 +16,7 @@ class AutoFillComponent {
         <!-- Auto-Fill Button -->
         <div class="mb-4 flex justify-end">
             <button type="button" 
-                    onclick="autoFillForm('<?php echo $formId; ?>', <?php echo json_encode($fillData); ?>)" 
+                    onclick="autoFillForm('<?php echo $formId; ?>', <?php echo json_encode($fillData, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE); ?>)" 
                     class="<?php echo $buttonStyle; ?> px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center gap-2">
                 <i class="fas fa-magic"></i>
                 <?php echo $buttonText; ?>

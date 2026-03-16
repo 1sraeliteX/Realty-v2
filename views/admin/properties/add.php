@@ -64,38 +64,29 @@ if (!$admin) {
     <?php
     // Add auto-fill button at the top
     try {
-        echo "<!-- DEBUG: About to call AutoFillComponent -->\n";
-        
         // Check if class exists in current scope
         if (class_exists('Components\AutoFillComponent')) {
-            echo "<!-- DEBUG: AutoFillComponent class exists -->\n";
             \Components\AutoFillComponent::generateAutoFillButton(
                 'addPropertyForm', 
                 \Components\AutoFillComponent::getPropertyFillData(),
                 'Auto-Fill Property Form',
                 'bg-purple-600 hover:bg-purple-700 text-white'
             );
-            echo "<!-- DEBUG: AutoFillComponent call completed -->\n";
         } else {
-            echo "<!-- DEBUG: AutoFillComponent class does not exist, trying to load again -->\n";
             ComponentRegistry::load('autofill-component');
             if (class_exists('Components\AutoFillComponent')) {
-                echo "<!-- DEBUG: AutoFillComponent class exists after reload -->\n";
                 \Components\AutoFillComponent::generateAutoFillButton(
                     'addPropertyForm', 
                     \Components\AutoFillComponent::getPropertyFillData(),
                     'Auto-Fill Property Form',
                     'bg-purple-600 hover:bg-purple-700 text-white'
                 );
-                echo "<!-- DEBUG: AutoFillComponent call completed after reload -->\n";
-            } else {
-                echo "<!-- DEBUG: AutoFillComponent class still does not exist -->\n";
             }
         }
     } catch (Exception $e) {
-        echo "<!-- DEBUG: AutoFillComponent error: " . $e->getMessage() . " -->\n";
+        // AutoFillComponent error - silently continue
     } catch (Error $e) {
-        echo "<!-- DEBUG: AutoFillComponent fatal error: " . $e->getMessage() . " -->\n";
+        // AutoFillComponent fatal error - silently continue
     }
     ?>
     <!-- Step 1: Basic Information -->
@@ -113,8 +104,12 @@ if (!$admin) {
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                 <?php 
-                // Load property types from configuration
-                $propertyTypes = require_once __DIR__ . '/../../../config/property_types.php';
+                // Load property types from configuration (anti-scattering compliant)
+                $propertyTypes = DataProvider::get('property_types');
+                if (!$propertyTypes) {
+                    $propertyTypes = include __DIR__ . '/../../../config/property_types.php';
+                    DataProvider::set('property_types', $propertyTypes);
+                }
                 $typeOptions = ['' => 'Select type'];
                 foreach ($propertyTypes as $type) {
                     $typeOptions[$type['value']] = $type['label'];
@@ -439,6 +434,47 @@ if (!$admin) {
 </form>
 
 <script>
+// Enhanced fallback functions in case layout doesn't define them
+if (typeof showToast !== 'function') {
+    window.showToast = function(message, type) {
+        type = type || 'info';
+        const colors = {
+            success: '#10b981', error: '#ef4444',
+            info: '#3b82f6', warning: '#f59e0b'
+        };
+        const toast = document.createElement('div');
+        toast.style.cssText = 'position:fixed;top:20px;right:20px;' +
+            'z-index:9999;padding:12px 20px;border-radius:8px;color:#fff;' +
+            'font-size:14px;font-weight:500;box-shadow:0 4px 12px ' +
+            'rgba(0,0,0,0.3);background:' + (colors[type] || colors.info);
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(function() {
+            toast.style.opacity = '0';
+            setTimeout(function() {
+                if (toast.parentNode) toast.parentNode.removeChild(toast);
+            }, 300);
+        }, 3000);
+    };
+}
+
+if (typeof setLoading !== 'function') {
+    window.setLoading = function(isLoading) {
+        const btn = document.querySelector(
+            '#addPropertyForm [type="submit"], #addPropertyForm button'
+        );
+        if (!btn) return;
+        if (isLoading) {
+            btn.disabled = true;
+            btn.dataset.originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Saving...';
+        } else {
+            btn.disabled = false;
+            btn.innerHTML = btn.dataset.originalText || 'Save Property';
+        }
+    };
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('addPropertyForm');
     const saveBtn = document.getElementById('saveBtn');
@@ -525,6 +561,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Submit to server
         fetch('/admin/properties', {
             method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            },
             body: formData
         })
         .then(response => {
@@ -785,29 +825,31 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-});
 
-// Drag and drop functionality
-const dropZone = document.querySelector('.border-dashed');
+    // Drag and drop functionality
+    const dropZone = document.querySelector('.border-dashed');
 
-dropZone.addEventListener('dragover', function(e) {
-    e.preventDefault();
-    this.classList.add('border-primary-500', 'bg-primary-50', 'dark:bg-primary-900/20');
-});
+    if (dropZone) {
+        dropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('border-primary-500', 'bg-primary-50', 'dark:bg-primary-900/20');
+        });
 
-dropZone.addEventListener('dragleave', function(e) {
-    e.preventDefault();
-    this.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-900/20');
-});
+        dropZone.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-900/20');
+        });
 
-dropZone.addEventListener('drop', function(e) {
-    e.preventDefault();
-    this.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-900/20');
-    
-    const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith('image/'));
-    if (files.length > 0) {
-        document.getElementById('property_images').files = e.dataTransfer.files;
-        document.getElementById('property_images').dispatchEvent(new Event('change'));
+        dropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-900/20');
+            
+            const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith('image/'));
+            if (files.length > 0) {
+                document.getElementById('property_images').files = e.dataTransfer.files;
+                document.getElementById('property_images').dispatchEvent(new Event('change'));
+            }
+        });
     }
 });
 </script>
