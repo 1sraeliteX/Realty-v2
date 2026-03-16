@@ -166,38 +166,55 @@ class BaseController {
         }
     }
 
-    protected function getCurrentAdmin() {
-        if (isset($_SESSION['admin_id'])) {
-            $stmt = $this->db->getConnection()->prepare("SELECT * FROM admins WHERE id = ? AND deleted_at IS NULL");
-            $stmt->execute([$_SESSION['admin_id']]);
-            $admin = $stmt->fetch(\PDO::FETCH_ASSOC);
-            
-            // Ensure we always return an array, not an object
-            if (is_object($admin)) {
-                $admin = (array) $admin;
+    protected function getCurrentAdmin(): ?array {
+        // Support all session key variants for any role type
+        $sessionKeys = ['admin_id', 'superadmin_id', 'user_id'];
+        $adminId = null;
+
+        foreach ($sessionKeys as $key) {
+            if (!empty($_SESSION[$key])) {
+                $adminId = $_SESSION[$key];
+                break;
             }
-            
-            return $admin;
         }
-        return null;
+
+        if (!$adminId) {
+            return null;
+        }
+
+        try {
+            // Query admins table — covers regular admins and superadmins
+            $admin = $this->db->fetch(
+                "SELECT * FROM admins WHERE id = ? AND deleted_at IS NULL LIMIT 1",
+                [$adminId]
+            );
+
+            if (!$admin) {
+                return null;
+            }
+
+            return is_array($admin) ? $admin : (array) $admin;
+
+        } catch (\Exception $e) {
+            error_log('getCurrentAdmin() error: ' . $e->getMessage());
+            return null;
+        }
     }
 
-    protected function requireAuth() {
+    protected function requireAuth(): array {
         $admin = $this->getCurrentAdmin();
+
         if (!$admin) {
             if ($this->isApiRequest()) {
-                $this->json(['error' => 'Unauthorized'], 401);
+                $this->json(['success' => false, 'error' => 'Session expired. Please log in again.'], 401);
+                exit;
             } else {
                 $this->redirect('/admin/login');
+                exit;
             }
         }
-        
-        // Double-check we have an array, not an object
-        if (is_object($admin)) {
-            $admin = (array) $admin;
-        }
-        
-        return $admin;
+
+        return is_array($admin) ? $admin : (array) $admin;
     }
 
     protected function requireApiAuth() {
@@ -276,25 +293,36 @@ class BaseController {
         return $admin['id']; // Regular admin sees only their data
     }
 
-    protected function isApiRequest() {
+    protected function isApiRequest(): bool {
+        // Check X-Requested-With header (standard AJAX indicator)
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+            return true;
+        }
+
+        // Check Accept header for JSON preference
+        if (!empty($_SERVER['HTTP_ACCEPT']) &&
+            strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false) {
+            return true;
+        }
+
+        // Check Content-Type for JSON body
+        if (!empty($_SERVER['CONTENT_TYPE']) &&
+            strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false) {
+            return true;
+        }
+
+        // Check explicit _ajax POST/GET flag as fallback
+        if (!empty($_POST['_ajax']) || !empty($_GET['_ajax'])) {
+            return true;
+        }
+
         // Check for API route prefix
         $requestUri = $_SERVER['REQUEST_URI'] ?? '';
         if (strpos($requestUri, '/api/') === 0) {
             return true;
         }
-        
-        // Check for AJAX requests with specific headers
-        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && 
-            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
-            return true;
-        }
-        
-        // Check for Accept header expecting JSON
-        if (isset($_SERVER['HTTP_ACCEPT']) && 
-            strpos(strtolower($_SERVER['HTTP_ACCEPT']), 'application/json') !== false) {
-            return true;
-        }
-        
+
         return false;
     }
 

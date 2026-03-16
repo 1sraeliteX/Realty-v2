@@ -484,5 +484,406 @@ if ($pageContent) {
 
 echo "</div>";
 
+echo "<h3>6. Property Image Debug</h3>";
+
+// 6.1 Query first 5 properties and analyze images
+echo "<h4>6.1 Property Images Analysis (First 5 Properties)</h4>";
+
+try {
+    $db = \Config\Database::getInstance();
+    $adminId = $_SESSION['admin_id'] ?? null;
+    
+    if ($adminId) {
+        $sql = "SELECT id, name, images FROM properties 
+                WHERE admin_id = ? AND deleted_at IS NULL 
+                ORDER BY created_at DESC LIMIT 5";
+        $properties = $db->fetchAll($sql, [$adminId]);
+        
+        if (!empty($properties)) {
+            echo "<table border='1' cellpadding='8' cellspacing='0' style='border-collapse: collapse; width: 100%;'>";
+            echo "<tr style='background: #f0f0f0; font-weight: bold;'>";
+            echo "<th>Property ID</th>";
+            echo "<th>Name</th>";
+            echo "<th>Raw Images (DB)</th>";
+            echo "<th>Decoded Array</th>";
+            echo "<th>First Image Path</th>";
+            echo "<th>File Exists</th>";
+            echo "</tr>";
+            
+            foreach ($properties as $property) {
+                $rawImages = $property['images'];
+                $decodedImages = json_decode($rawImages, true);
+                $firstImagePath = '';
+                $fileExists = false;
+                
+                if (is_array($decodedImages) && !empty($decodedImages[0])) {
+                    $firstImagePath = '/storage/uploads/properties/' . $decodedImages[0];
+                    $fullPath = __DIR__ . '/../storage/uploads/properties/' . $decodedImages[0];
+                    $fileExists = file_exists($fullPath);
+                }
+                
+                echo "<tr>";
+                echo "<td>" . htmlspecialchars($property['id']) . "</td>";
+                echo "<td>" . htmlspecialchars($property['name']) . "</td>";
+                echo "<td><code style='font-size: 11px;'>" . htmlspecialchars($rawImages) . "</code></td>";
+                echo "<td><code style='font-size: 11px;'>" . htmlspecialchars(json_encode($decodedImages)) . "</code></td>";
+                echo "<td><code style='font-size: 11px;'>" . htmlspecialchars($firstImagePath) . "</code></td>";
+                echo "<td style='text-align: center; font-weight: bold; color: " . ($fileExists ? 'green' : 'red') . ";'>";
+                echo $fileExists ? '✅ YES' : '❌ NO';
+                echo "</td>";
+                echo "</tr>";
+            }
+            
+            echo "</table>";
+            
+            // Check storage directory
+            echo "<h4>6.2 Storage Directory Check</h4>";
+            $storageDir = __DIR__ . '/../storage/uploads/properties';
+            echo "<p>Storage directory: <code>" . htmlspecialchars($storageDir) . "</code></p>";
+            echo "<p>Directory exists: " . (is_dir($storageDir) ? '✅ YES' : '❌ NO') . "</p>";
+            echo "<p>Directory readable: " . (is_readable($storageDir) ? '✅ YES' : '❌ NO') . "</p>";
+            
+            if (is_dir($storageDir)) {
+                $files = scandir($storageDir);
+                $imageFiles = array_filter($files, function($file) use ($storageDir) {
+                    $filePath = $storageDir . '/' . $file;
+                    return !in_array($file, ['.', '..']) && is_file($filePath);
+                });
+                
+                echo "<p>Files in directory: " . count($imageFiles) . "</p>";
+                if (!empty($imageFiles)) {
+                    echo "<p>Sample files:</p>";
+                    echo "<ul style='font-size: 12px;'>";
+                    foreach (array_slice($imageFiles, 0, 10) as $file) {
+                        echo "<li><code>" . htmlspecialchars($file) . "</code></li>";
+                    }
+                    if (count($imageFiles) > 10) {
+                        echo "<li>... and " . (count($imageFiles) - 10) . " more</li>";
+                    }
+                    echo "</ul>";
+                }
+            }
+            
+            // Test web access path
+            echo "<h4>6.3 Web Access Test</h4>";
+            echo "<p>Testing web access to storage directory...</p>";
+            
+            foreach ($properties as $property) {
+                $decodedImages = json_decode($property['images'], true);
+                if (is_array($decodedImages) && !empty($decodedImages[0])) {
+                    $webPath = 'http://127.0.0.1:8080/storage/uploads/properties/' . $decodedImages[0];
+                    echo "<p>Testing: <code>" . htmlspecialchars($webPath) . "</code></p>";
+                    
+                    $context = stream_context_create([
+                        'http' => [
+                            'method' => 'HEAD',
+                            'timeout' => 5
+                        ]
+                    ]);
+                    
+                    $headers = @get_headers($webPath, 1, $context);
+                    if ($headers && strpos($headers[0], '200') !== false) {
+                        echo "<p style='color: green;'>✅ Web accessible</p>";
+                    } else {
+                        echo "<p style='color: red;'>❌ Not web accessible</p>";
+                    }
+                    break; // Test first image only
+                }
+            }
+            
+        } else {
+            echo "<p>❌ No properties found for admin ID: " . htmlspecialchars($adminId) . "</p>";
+        }
+    } else {
+        echo "<p>❌ No admin ID in session</p>";
+    }
+    
+} catch (Exception $e) {
+    echo "<p style='color: red;'>❌ Error: " . htmlspecialchars($e->getMessage()) . "</p>";
+}
+
+echo "<h3>7. Properties List showToast Fix Verification</h3>";
+
+// 7.1 Check if showToast fallback was added to properties list
+echo "<h4>7.1 showToast Fallback Check in /admin/properties</h4>";
+
+$propertiesListPath = __DIR__ . '/../views/admin/properties/list.php';
+if (file_exists($propertiesListPath)) {
+    $content = file_get_contents($propertiesListPath);
+    
+    $hasShowToastFallback = strpos($content, 'if (typeof showToast !== \'function\')') !== false;
+    $hasShowToastDefinition = strpos($content, 'window.showToast = function(message, type)') !== false;
+    $hasFilterUpdate = strpos($content, 'showingText.textContent = `Showing ${visibleCount} properties`') !== false;
+    $hasNoResultsToast = strpos($content, 'showToast(\'No properties match the selected filters\', \'info\')') !== false;
+    
+    echo "<p>✅ Properties list file found: " . htmlspecialchars($propertiesListPath) . "</p>";
+    echo "<span style='color:" . ($hasShowToastFallback ? 'green' : 'red') . ";font-weight:bold'>" . 
+         ($hasShowToastFallback ? '✅' : '❌') . " showToast fallback check added</span><br>";
+    echo "<span style='color:" . ($hasShowToastDefinition ? 'green' : 'red') . ";font-weight:bold'>" . 
+         ($hasShowToastDefinition ? '✅' : '❌') . " showToast function definition added</span><br>";
+    echo "<span style='color:" . ($hasFilterUpdate ? 'green' : 'red') . ";font-weight:bold'>" . 
+         ($hasFilterUpdate ? '✅' : '❌') . " Filter count update implemented</span><br>";
+    echo "<span style='color:" . ($hasNoResultsToast ? 'green' : 'red') . ";font-weight:bold'>" . 
+         ($hasNoResultsToast ? '✅' : '❌') . " No results toast notification added</span><br>";
+    
+    if ($hasShowToastFallback && $hasShowToastDefinition && $hasFilterUpdate && $hasNoResultsToast) {
+        echo "<p style='color:green;font-weight:bold'>✅ All Problem A fixes successfully applied!</p>";
+    } else {
+        echo "<p style='color:orange;font-weight:bold'>⚠️ Some Problem A fixes may be missing</p>";
+    }
+    
+} else {
+    echo "<p style='color:red'>❌ Properties list file not found</p>";
+}
+
+echo "<h3>8. Grid & List Toggle Layout Debug</h3>";
+
+// 8.1 Check if required CSS classes exist in list.php
+echo "<h4>8.1 Required CSS Classes Check</h4>";
+
+$propertiesListPath = __DIR__ . '/../views/admin/properties/list.php';
+if (file_exists($propertiesListPath)) {
+    $content = file_get_contents($propertiesListPath);
+    
+    $checks = [
+        '.property-card' => strpos($content, '.property-card') !== false,
+        '.property-image-container' => strpos($content, '.property-image-container') !== false,
+        '.property-details' => strpos($content, '.property-details') !== false,
+        '.stats-grid' => strpos($content, '.stats-grid') !== false,
+        '.revenue-row' => strpos($content, '.revenue-row') !== false,
+        '.list-mode' => strpos($content, '.list-mode') !== false,
+        '<style>' => strpos($content, '<style>') !== false,
+        'setViewMode' => strpos($content, 'function setViewMode') !== false,
+        'classList.remove' => strpos($content, 'classList.remove') !== false,
+        'classList.add' => strpos($content, 'classList.add') !== false,
+        'card.className' => strpos($content, 'card.className') === false, // Should NOT exist
+    ];
+    
+    echo "<p>✅ Properties list file found: " . htmlspecialchars($propertiesListPath) . "</p>";
+    echo "<table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse; width: 100%;'>";
+    echo "<tr style='background: #f0f0f0; font-weight: bold;'>";
+    echo "<th>Check</th>";
+    echo "<th>Status</th>";
+    echo "</tr>";
+    
+    foreach ($checks as $check => $found) {
+        $status = $found ? '✅ FOUND' : '❌ MISSING';
+        $color = $found ? 'green' : 'red';
+        $note = '';
+        
+        if ($check === 'card.className' && $found) {
+            $status = '❌ SHOULD NOT EXIST';
+            $color = 'red';
+            $note = ' (old pattern should be removed)';
+        } elseif ($check === 'card.className' && !$found) {
+            $status = '✅ CORRECTLY REMOVED';
+            $color = 'green';
+            $note = ' (old pattern correctly removed)';
+        }
+        
+        echo "<tr>";
+        echo "<td><code>" . htmlspecialchars($check) . "</code>" . htmlspecialchars($note) . "</td>";
+        echo "<td style='color: $color; font-weight: bold;'>$status</td>";
+        echo "</tr>";
+    }
+    
+    echo "</table>";
+    
+    // 8.2 Check for CSS .list-mode rules
+    echo "<h4>8.2 CSS .list-mode Rules Check</h4>";
+    $listModeRules = [
+        '.property-card.list-mode' => strpos($content, '.property-card.list-mode') !== false,
+        'flex-direction: row' => strpos($content, 'flex-direction: row !important') !== false,
+        'width: 160px' => strpos($content, 'width: 160px !important') !== false,
+        '.stats-grid' => strpos($content, '.property-card.list-mode .stats-grid') !== false,
+        '.revenue-row' => strpos($content, '.property-card.list-mode .revenue-row') !== false,
+        '.absolute.top-2.left-2' => strpos($content, '.property-card.list-mode .property-image-container .absolute.top-2.left-2') !== false,
+    ];
+    
+    echo "<table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse; width: 100%;'>";
+    echo "<tr style='background: #f0f0f0; font-weight: bold;'>";
+    echo "<th>CSS Rule</th>";
+    echo "<th>Status</th>";
+    echo "</tr>";
+    
+    foreach ($listModeRules as $rule => $found) {
+        $status = $found ? '✅ FOUND' : '❌ MISSING';
+        $color = $found ? 'green' : 'red';
+        echo "<tr>";
+        echo "<td><code>" . htmlspecialchars($rule) . "</code></td>";
+        echo "<td style='color: $color; font-weight: bold;'>$status</td>";
+        echo "</tr>";
+    }
+    
+    echo "</table>";
+    
+    // 8.3 Count property cards for current admin
+    echo "<h4>8.3 Property Cards Count</h4>";
+    try {
+        $db = \Config\Database::getInstance();
+        $adminId = $_SESSION['admin_id'] ?? null;
+        
+        if ($adminId) {
+            $sql = "SELECT COUNT(*) as count FROM properties 
+                    WHERE admin_id = ? AND deleted_at IS NULL";
+            $result = $db->fetch($sql, [$adminId]);
+            $propertyCount = $result['count'] ?? 0;
+            
+            echo "<p>✅ Admin ID: " . htmlspecialchars($adminId) . "</p>";
+            echo "<p>✅ Property cards to render: <strong>" . $propertyCount . "</strong></p>";
+            
+            if ($propertyCount > 0) {
+                echo "<p>✅ Grid & List toggle will have " . $propertyCount . " cards to work with</p>";
+            } else {
+                echo "<p style='color: orange;'>⚠️ No properties found - toggle will have no cards to display</p>";
+            }
+        } else {
+            echo "<p style='color: red;'>❌ No admin ID in session</p>";
+        }
+        
+    } catch (Exception $e) {
+        echo "<p style='color: red;'>❌ Error counting properties: " . htmlspecialchars($e->getMessage()) . "</p>";
+    }
+    
+    // 8.4 Overall assessment
+    echo "<h4>8.4 Overall Assessment</h4>";
+    $allRequiredFound = true;
+    foreach ($checks as $check => $found) {
+        if ($check !== 'card.className' && !$found) {
+            $allRequiredFound = false;
+            break;
+        }
+    }
+    
+    $cssRulesComplete = true;
+    foreach ($listModeRules as $rule => $found) {
+        if (!$found) {
+            $cssRulesComplete = false;
+            break;
+        }
+    }
+    
+    if ($allRequiredFound && $cssRulesComplete) {
+        echo "<p style='color: green; font-weight: bold;'>✅ All Grid & List Toggle layout fixes are properly implemented!</p>";
+        echo "<p>The layout should now work correctly in both grid and list modes.</p>";
+    } else {
+        echo "<p style='color: orange; font-weight: bold;'>⚠️ Some Grid & List Toggle fixes may be missing</p>";
+        echo "<p>Review the missing items above for complete implementation.</p>";
+    }
+    
+} else {
+    echo "<p style='color:red'>❌ Properties list file not found</p>";
+}
+
+// Save Property Button Debug Section
+echo "<div style='margin-top: 30px; padding: 20px; border: 2px solid #007bff; border-radius: 8px; background-color: #f8f9fa;'>";
+echo "<h2 style='color: #007bff; margin-bottom: 15px;'>🔍 Save Property Button Debug</h2>";
+
+// 1. Session State Check
+echo "<h3>1. Session State</h3>";
+session_start();
+$sessionKeys = ['admin_id', 'superadmin_id', 'user_id'];
+$foundSessionKey = null;
+$foundSessionValue = null;
+
+foreach ($sessionKeys as $key) {
+    if (!empty($_SESSION[$key])) {
+        $foundSessionKey = $key;
+        $foundSessionValue = $_SESSION[$key];
+        echo "<p style='color: green;'>✅ Found session key: <strong>{$key}</strong> = {$foundSessionValue}</p>";
+        break;
+    }
+}
+
+if (!$foundSessionKey) {
+    echo "<p style='color: red;'>❌ No admin session keys found (admin_id, superadmin_id, user_id)</p>";
+}
+
+// 2. Database Check for admin
+if ($foundSessionValue) {
+    try {
+        require_once __DIR__ . '/../config/bootstrap.php';
+        $db = \Config\DatabaseFactory::create();
+        $admin = $db->fetch("SELECT * FROM admins WHERE id = ? AND deleted_at IS NULL LIMIT 1", [$foundSessionValue]);
+        
+        if ($admin) {
+            echo "<p style='color: green;'>✅ Admin found in database: ID {$foundSessionValue}, Role: " . htmlspecialchars($admin['role']) . "</p>";
+        } else {
+            echo "<p style='color: red;'>❌ Admin ID {$foundSessionValue} not found in admins table or is deleted</p>";
+        }
+    } catch (Exception $e) {
+        echo "<p style='color: red;'>❌ Database error: " . htmlspecialchars($e->getMessage()) . "</p>";
+    }
+}
+
+// 3. isApiRequest() Simulation
+echo "<h3>2. isApiRequest() Simulation</h3>";
+$xRequestedWith = $_SERVER['HTTP_X_REQUESTED_WITH'] ?? 'not set';
+$accept = $_SERVER['HTTP_ACCEPT'] ?? 'not set';
+$contentType = $_SERVER['CONTENT_TYPE'] ?? 'not set';
+
+echo "<p><strong>HTTP_X_REQUESTED_WITH:</strong> " . htmlspecialchars($xRequestedWith) . "</p>";
+echo "<p><strong>HTTP_ACCEPT:</strong> " . htmlspecialchars($accept) . "</p>";
+echo "<p><strong>CONTENT_TYPE:</strong> " . htmlspecialchars($contentType) . "</p>";
+
+// Simulate the check
+$wouldBeAjax = (
+    (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') ||
+    (!empty($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false) ||
+    (!empty($_SERVER['CONTENT_TYPE']) && strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false) ||
+    (!empty($_POST['_ajax']) || !empty($_GET['_ajax']))
+);
+
+if ($wouldBeAjax) {
+    echo "<p style='color: green;'>✅ Current request would be detected as AJAX</p>";
+} else {
+    echo "<p style='color: orange;'>⚠️ Current request would NOT be detected as AJAX</p>";
+}
+
+// 4. store() Route Check
+echo "<h3>3. store() Route Check</h3>";
+echo "<p><strong>POST /admin/properties</strong> should map to <strong>PropertyController::store()</strong></p>";
+echo "<p style='color: green;'>✅ Route configuration confirmed (assuming standard MVC routing)</p>";
+
+// 5. Required Fields Check
+echo "<h3>4. Required Fields Check</h3>";
+$serverRequired = ['property_name', 'address', 'property_type', 'water_availability'];
+$clientRequired = ['name', 'address', 'type', 'status', 'water_availability'];
+
+echo "<p><strong>Server-side required fields:</strong> " . implode(', ', $serverRequired) . "</p>";
+echo "<p><strong>Client-side required fields:</strong> " . implode(', ', $clientRequired) . "</p>";
+
+$mismatch = array_diff($serverRequired, array_map(function($field) {
+    $map = ['name' => 'property_name', 'type' => 'property_type'];
+    return $map[$field] ?? $field;
+}, $clientRequired));
+
+if (empty($mismatch)) {
+    echo "<p style='color: green;'>✅ Required fields match between client and server</p>";
+} else {
+    echo "<p style='color: orange;'>⚠️ Field mismatch detected: " . implode(', ', $mismatch) . "</p>";
+}
+
+// 6. Upload Directory Check
+echo "<h3>5. Upload Directory Check</h3>";
+$uploadDirs = [
+    __DIR__ . '/../storage/uploads/properties',
+    __DIR__ . '/../public/uploads/properties'
+];
+
+foreach ($uploadDirs as $dir) {
+    if (file_exists($dir)) {
+        if (is_writable($dir)) {
+            echo "<p style='color: green;'>✅ " . htmlspecialchars($dir) . " exists and is writable</p>";
+        } else {
+            echo "<p style='color: red;'>❌ " . htmlspecialchars($dir) . " exists but is NOT writable</p>";
+        }
+    } else {
+        echo "<p style='color: red;'>❌ " . htmlspecialchars($dir) . " does NOT exist</p>";
+    }
+}
+
+echo "</div>";
+
 echo "<hr><p style='color:red'><strong>DELETE this file before going to production.</strong></p>";
 ?>

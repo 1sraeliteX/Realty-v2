@@ -136,6 +136,10 @@ class PropertyController extends BaseController {
         error_log('FILES: ' . json_encode(array_keys($_FILES)));
         
         $admin = $this->requireAuth();
+        
+        // Force JSON mode for any AJAX/fetch request
+        $forceJson = $this->isApiRequest();
+        
         $data = $this->getPostData();
         
         // Handle form field mapping - the form uses 'name' and 'type' fields
@@ -176,7 +180,7 @@ class PropertyController extends BaseController {
         if (!empty($errors)) {
             error_log("Property Form Validation - Returning errors: " . json_encode($errors));
             
-            if ($this->isApiRequest() || isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+            if ($forceJson) {
                 $this->json([
                     'success' => false,
                     'errors' => $errors
@@ -215,7 +219,7 @@ class PropertyController extends BaseController {
         }
 
         if (!empty($errors)) {
-            if ($this->isApiRequest() || isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+            if ($forceJson) {
                 $this->json([
                     'success' => false,
                     'errors' => $errors
@@ -254,7 +258,7 @@ class PropertyController extends BaseController {
         
         if (!$propertyId) {
             error_log("Property creation failed - database insertion returned false");
-            if ($this->isApiRequest() || isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+            if ($forceJson) {
                 $this->json([
                     'success' => false,
                     'error' => 'Failed to create property in database'
@@ -272,7 +276,7 @@ class PropertyController extends BaseController {
         // Log activity
         $this->logActivity($admin['id'], 'create', "Created property: {$mappedData['property_name']}", 'property', $propertyId);
 
-        if ($this->isApiRequest() || isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+        if ($forceJson) {
             $this->json([
                 'success' => true,
                 'message' => 'Property created successfully',

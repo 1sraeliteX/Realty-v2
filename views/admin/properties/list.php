@@ -50,9 +50,9 @@ if (empty($properties)) {
 
 <!-- Filters and Search -->
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div class="flex items-center gap-3 flex-wrap">
         <!-- Search -->
-        <div class="md:col-span-2">
+        <div class="flex-1 min-w-[200px]">
             <?php echo UIComponents::searchBar('Search properties...', '', 'searchProperties(this.value)'); ?>
         </div>
         
@@ -69,7 +69,7 @@ if (empty($properties)) {
             ],
             '',
             false,
-            'col-span-1'
+            'w-40'
         ); ?>
         
         <!-- Status Filter -->
@@ -85,7 +85,7 @@ if (empty($properties)) {
             ],
             '',
             false,
-            'col-span-1'
+            'w-40'
         ); ?>
     </div>
     
@@ -102,33 +102,119 @@ if (empty($properties)) {
         </div>
         <div class="flex items-center space-x-2">
             <span class="text-sm text-gray-500 dark:text-gray-400">View:</span>
-            <button id="gridView" class="p-2 text-primary-600 border border-primary-600 rounded">
+            <button id="gridView" class="p-2 text-primary-600 border border-primary-600 rounded" data-view-mode="grid">
                 <i class="fas fa-th"></i>
             </button>
-            <button id="listView" class="p-2 text-gray-400 border border-gray-300 rounded">
+            <button id="listView" class="p-2 text-gray-400 border border-gray-300 rounded" data-view-mode="list">
                 <i class="fas fa-list"></i>
             </button>
         </div>
     </div>
 </div>
 
-<!-- Properties Grid -->
-<div id="propertiesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+<!-- Grid & List Toggle Layout Styles -->
+<style>
+/* Grid mode — default */
+.property-card {
+    display: flex;
+    flex-direction: column;
+}
+.property-card .property-image-container {
+    position: relative;
+    height: 12rem; /* h-48 */
+    width: 100%;
+    background-color: rgb(229 231 235);
+    flex-shrink: 0;
+    overflow: hidden;
+}
+.property-card .property-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* List mode overrides */
+.property-card.list-mode {
+    flex-direction: row !important;
+    align-items: stretch !important;
+    min-height: 120px;
+}
+.property-card.list-mode .property-image-container {
+    width: 160px !important;
+    min-width: 160px !important;
+    height: auto !important;
+    min-height: 120px !important;
+    flex-shrink: 0 !important;
+    position: relative !important;
+}
+.property-card.list-mode .property-image-container img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    position: absolute !important;
+    inset: 0 !important;
+}
+.property-card.list-mode .property-details {
+    flex: 1 !important;
+    padding: 1rem !important;
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+}
+
+/* List mode: stats row */
+.property-card.list-mode .stats-grid {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 1rem !important;
+}
+.property-card.list-mode .stats-grid > div {
+    flex: 1 !important;
+}
+
+/* List mode: revenue row */
+.property-card.list-mode .revenue-row {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 1rem !important;
+}
+
+/* List mode: hide type badge to prevent overlap */
+.property-card.list-mode .property-image-container .absolute.top-2.left-2 {
+    display: none !important;
+}
+
+/* Dark mode */
+.dark .property-card .property-image-container {
+    background-color: rgb(55 65 81);
+}
+</style>
+
+<!-- Properties Container -->
+<div id="properties-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
     <?php foreach ($properties as $property): ?>
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-200 cursor-pointer" onclick="previewProperty(<?php echo $property['id']; ?>)">
+        <div class="property-card bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-200 cursor-pointer" onclick="previewProperty(<?php echo $property['id']; ?>)" data-view-mode="grid">
             <!-- Property Image -->
-            <div class="relative h-48 bg-gray-200 dark:bg-gray-700">
+            <div class="property-image-container relative h-48 w-full bg-gray-200 dark:bg-gray-700 overflow-hidden flex-shrink-0">
                 <?php 
                 // Handle image display - use first image from JSON if available, otherwise placeholder
-                $imagePath = '/assets/images/property-placeholder.jpg';
+                $imageHtml = '<div class="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-500">
+                    <i class="fas fa-image text-4xl"></i>
+                    <span class="ml-2 text-sm">No Image</span>
+                </div>';
+                
                 if (!empty($property['images'])) {
                     $images = json_decode($property['images'], true);
                     if (is_array($images) && !empty($images[0])) {
                         $imagePath = '/storage/uploads/properties/' . $images[0];
+                        $imageHtml = '<img src="' . $imagePath . '" alt="' . htmlspecialchars($property['name']) . '" class="w-full h-full object-cover">';
                     }
                 }
+                echo $imageHtml;
                 ?>
-                <img src="<?php echo $imagePath; ?>" alt="<?php echo htmlspecialchars($property['name']); ?>" class="w-full h-full object-cover">
                 <div class="absolute top-2 right-2">
                     <?php 
                     // Map database status to display status
@@ -144,9 +230,9 @@ if (empty($properties)) {
             </div>
             
             <!-- Property Details -->
-            <div class="p-6">
+            <div class="property-details p-6">
                 <div class="flex items-start justify-between mb-2">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white truncate min-w-0 flex-1 pr-2"><?php echo htmlspecialchars($property['name']); ?></h3>
+                    <h3 class="text-base font-semibold text-gray-900 dark:text-white truncate min-w-0 flex-1 pr-2"><?php echo htmlspecialchars($property['name']); ?></h3>
                     <div class="flex space-x-1 flex-shrink-0">
                         <button onclick="editProperty(<?php echo $property['id']; ?>)" class="text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">
                             <i class="fas fa-edit"></i>
@@ -163,7 +249,7 @@ if (empty($properties)) {
                 </p>
                 
                 <!-- Stats Grid -->
-                <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="stats-grid grid grid-cols-2 gap-4 mb-4">
                     <div class="text-center p-2 bg-gray-50 dark:bg-gray-700 rounded">
                         <p class="text-lg font-semibold text-gray-900 dark:text-white"><?php echo $property['unit_count']; ?></p>
                         <p class="text-xs text-gray-500 dark:text-gray-400">Total Units</p>
@@ -175,7 +261,7 @@ if (empty($properties)) {
                 </div>
                 
                 <!-- Revenue Info -->
-                <div class="flex items-center justify-between mb-4">
+                <div class="revenue-row flex items-center justify-between mb-4">
                     <div>
                         <p class="text-xs text-gray-500 dark:text-gray-400">Monthly Revenue</p>
                         <p class="text-lg font-semibold text-gray-900 dark:text-white">
@@ -236,12 +322,32 @@ echo UIComponents::modal(
 ); ?>
 
 <script>
+// Safe showToast fallback if not defined by layout
+if (typeof showToast !== 'function') {
+    window.showToast = function(message, type) {
+        console.log('[Toast] ' + type + ': ' + message);
+        // Simple fallback notification
+        const toast = document.createElement('div');
+        toast.className = 'fixed bottom-4 right-4 z-50 px-4 py-2 rounded-lg text-white text-sm shadow-lg transition-opacity duration-300 ' +
+            (type === 'success' ? 'bg-green-600' : type === 'error' ? 'bg-red-600' : 'bg-blue-600');
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
+    };
+}
+
 let propertyToDelete = null;
+
+// Initialize view mode from localStorage
+document.addEventListener('DOMContentLoaded', function() {
+    const savedViewMode = localStorage.getItem('propertiesViewMode') || 'grid';
+    setViewMode(savedViewMode);
+});
 
 // Search functionality
 function searchProperties(query) {
     // Filter properties based on search query
-    const cards = document.querySelectorAll('#propertiesGrid > div');
+    const cards = document.querySelectorAll('#properties-container > .property-card');
     cards.forEach(card => {
         const text = card.textContent.toLowerCase();
         if (text.includes(query.toLowerCase())) {
@@ -252,20 +358,35 @@ function searchProperties(query) {
     });
 }
 
-// View toggle
+// View toggle functionality
+function setViewMode(mode) {
+    const container = document.getElementById('properties-container');
+    const gridBtn = document.getElementById('gridView');
+    const listBtn = document.getElementById('listView');
+    const cards = document.querySelectorAll('.property-card');
+    
+    if (mode === 'grid') {
+        container.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8';
+        gridBtn.className = 'p-2 rounded border border-primary-600 text-primary-600 bg-primary-50 dark:bg-primary-900/30';
+        listBtn.className = 'p-2 rounded border border-gray-300 dark:border-gray-600 text-gray-400';
+        cards.forEach(card => card.classList.remove('list-mode'));
+    } else {
+        container.className = 'flex flex-col gap-4 mb-8';
+        gridBtn.className = 'p-2 rounded border border-gray-300 dark:border-gray-600 text-gray-400';
+        listBtn.className = 'p-2 rounded border border-primary-600 text-primary-600 bg-primary-50 dark:bg-primary-900/30';
+        cards.forEach(card => card.classList.add('list-mode'));
+    }
+
+    localStorage.setItem('propertiesViewMode', mode);
+}
+
+// View toggle event listeners
 document.getElementById('gridView').addEventListener('click', function() {
-    this.classList.add('text-primary-600', 'border-primary-600');
-    this.classList.remove('text-gray-400', 'border-gray-300');
-    document.getElementById('listView').classList.add('text-gray-400', 'border-gray-300');
-    document.getElementById('listView').classList.remove('text-primary-600', 'border-primary-600');
+    setViewMode('grid');
 });
 
 document.getElementById('listView').addEventListener('click', function() {
-    this.classList.add('text-primary-600', 'border-primary-600');
-    this.classList.remove('text-gray-400', 'border-gray-300');
-    document.getElementById('gridView').classList.add('text-gray-400', 'border-gray-300');
-    document.getElementById('gridView').classList.remove('text-primary-600', 'border-primary-600');
-    // In a real app, this would switch to list view
+    setViewMode('list');
 });
 
 // Property actions
@@ -314,7 +435,9 @@ function filterProperties() {
     const typeFilter = document.getElementById('type_filter').value;
     const statusFilter = document.getElementById('status_filter').value;
     
-    const cards = document.querySelectorAll('#propertiesGrid > div');
+    const cards = document.querySelectorAll('#properties-container > .property-card');
+    let visibleCount = 0;
+    
     cards.forEach(card => {
         const text = card.textContent.toLowerCase();
         const matchesType = !typeFilter || text.includes(typeFilter.toLowerCase());
@@ -322,10 +445,22 @@ function filterProperties() {
         
         if (matchesType && matchesStatus) {
             card.style.display = '';
+            visibleCount++;
         } else {
             card.style.display = 'none';
         }
     });
+    
+    // Update showing count
+    const showingText = document.querySelector('.text-sm.text-gray-500.dark\:text-gray-400');
+    if (showingText && showingText.textContent.includes('Showing')) {
+        showingText.textContent = `Showing ${visibleCount} properties`;
+    }
+    
+    // Show toast if no results
+    if (visibleCount === 0) {
+        showToast('No properties match the selected filters', 'info');
+    }
 }
 
 function goToPage(page) {

@@ -673,6 +673,44 @@ require_once __DIR__ . '/config/bootstrap.php';
             }
             
             echo '</div>';
+            
+            // Properties List Debug Section
+            echo '<div class="mb-4">';
+            echo '<h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">7. Properties List showToast Fix Verification</h3>';
+            
+            $propertiesListPath = __DIR__ . '/../views/admin/properties/list.php';
+            if (file_exists($propertiesListPath)) {
+                $content = file_get_contents($propertiesListPath);
+                
+                $hasShowToastFallback = strpos($content, 'if (typeof showToast !== \'function\')') !== false;
+                $hasShowToastDefinition = strpos($content, 'window.showToast = function(message, type)') !== false;
+                $hasFilterUpdate = strpos($content, 'showingText.textContent = `Showing ${visibleCount} properties`') !== false;
+                $hasNoResultsToast = strpos($content, 'showToast(\'No properties match the selected filters\', \'info\')') !== false;
+                $hasEnhancedListView = strpos($content, 'Enhanced styling') !== false;
+                
+                echo '<div class="text-green-600">✅ Properties list file found</div>';
+                echo '<div class="' . ($hasShowToastFallback ? 'text-green-600' : 'text-red-600') . '">' . 
+                     ($hasShowToastFallback ? '✅' : '❌') . ' showToast fallback check added</div>';
+                echo '<div class="' . ($hasShowToastDefinition ? 'text-green-600' : 'text-red-600') . '">' . 
+                     ($hasShowToastDefinition ? '✅' : '❌') . ' showToast function definition added</div>';
+                echo '<div class="' . ($hasFilterUpdate ? 'text-green-600' : 'text-red-600') . '">' . 
+                     ($hasFilterUpdate ? '✅' : '❌') . ' Filter count update implemented</div>';
+                echo '<div class="' . ($hasNoResultsToast ? 'text-green-600' : 'text-red-600') . '">' . 
+                     ($hasNoResultsToast ? '✅' : '❌') . ' No results toast notification added</div>';
+                echo '<div class="' . ($hasEnhancedListView ? 'text-green-600' : 'text-red-600') . '">' . 
+                     ($hasEnhancedListView ? '✅' : '❌') . ' Enhanced list view styling implemented</div>';
+                
+                if ($hasShowToastFallback && $hasShowToastDefinition && $hasFilterUpdate && $hasNoResultsToast) {
+                    echo '<div class="text-green-600 font-bold">✅ All Problem A fixes successfully applied!</div>';
+                } else {
+                    echo '<div class="text-yellow-600 font-bold">⚠️ Some Problem A fixes may be missing</div>';
+                }
+                
+            } else {
+                echo '<div class="text-red-600">❌ Properties list file not found</div>';
+            }
+            
+            echo '</div>';
             ?>
         </div>
     </div>

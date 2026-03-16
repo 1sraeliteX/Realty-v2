@@ -496,7 +496,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         // Basic validation
-        const requiredFields = ['name', 'address', 'type', 'status'];
+        const requiredFields = ['name', 'address', 'type', 'status', 'water_availability'];
         let isValid = true;
         let validationErrors = [];
         
@@ -559,7 +559,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Submit to server
-        fetch('/admin/properties', {
+        fetch('/admin/properties?_ajax=1', {
             method: 'POST',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
