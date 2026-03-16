@@ -194,9 +194,10 @@ if (empty($properties)) {
 </style>
 
 <!-- Properties Container -->
-<div id="properties-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-    <?php foreach ($properties as $property): ?>
-        <div class="property-card bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-200 cursor-pointer" onclick="previewProperty(<?php echo $property['id']; ?>)" data-view-mode="grid">
+<div class="px-4 md:px-0">
+    <div id="properties-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 place-items-center md:place-items-stretch">
+        <?php foreach ($properties as $property): ?>
+            <div class="property-card w-full max-w-sm md:max-w-none bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-200 cursor-pointer" onclick="previewProperty(<?php echo $property['id']; ?>)" data-view-mode="grid">
             <!-- Property Image -->
             <div class="property-image-container relative h-48 w-full bg-gray-200 dark:bg-gray-700 overflow-hidden flex-shrink-0">
                 <?php 
@@ -263,16 +264,15 @@ if (empty($properties)) {
                 <!-- Revenue Info -->
                 <div class="revenue-row flex items-center justify-between mb-4">
                     <div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Monthly Revenue</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Annual Revenue</p>
                         <p class="text-lg font-semibold text-gray-900 dark:text-white">
-                            $<?php 
-                            // Calculate monthly revenue from occupied units * rent_price (if yearly, divide by 12)
-                            $monthlyRevenue = 0;
+                            ₦<?php 
+                            // Calculate annual revenue from occupied units * rent_price
+                            $annualRevenue = 0;
                             if ($property['occupied_units'] > 0 && !empty($property['rent_price'])) {
-                                // rent_price might be yearly, so convert to monthly
-                                $monthlyRevenue = ($property['rent_price'] / 12) * $property['occupied_units'];
+                                $annualRevenue = (float)$property['rent_price'] * (int)$property['occupied_units'];
                             }
-                            echo number_format($monthlyRevenue, 0);
+                            echo number_format($annualRevenue, 0);
                             ?>
                         </p>
                     </div>
@@ -391,7 +391,7 @@ document.getElementById('listView').addEventListener('click', function() {
 
 // Property actions
 function editProperty(id) {
-    window.location.href = `/admin/dashboard/properties/${id}/edit`;
+    window.location.href = `/admin/properties/${id}/edit`;
 }
 
 function deleteProperty(id) {
@@ -400,18 +400,42 @@ function deleteProperty(id) {
 }
 
 function confirmDelete() {
-    if (propertyToDelete) {
-        showToast('Property deleted successfully', 'success');
-        closeModal('deleteModal');
-        // In a real app, this would make an API call
-        setTimeout(() => {
-            location.reload();
-        }, 1500);
+    if (!propertyToDelete) return;
+
+    // Show loading state on confirm button
+    const confirmBtn = document.querySelector('#deleteModal button:last-child');
+    if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = 'Deleting...';
     }
+
+    // Submit DELETE via hidden form POST
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/admin/properties/${propertyToDelete}/delete`;
+    form.style.display = 'none';
+
+    // CSRF token if available
+    const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+    if (csrfMeta) {
+        const csrf = document.createElement('input');
+        csrf.type = 'hidden';
+        csrf.name = '_token';
+        csrf.value = csrfMeta.getAttribute('content');
+        form.appendChild(csrf);
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+}
+
+function closeModal(id) {
+    const modal = document.getElementById(id);
+    if (modal) modal.classList.add('hidden');
 }
 
 function viewUnits(id) {
-    window.location.href = `/admin/dashboard/properties/${id}/units`;
+    window.location.href = `/admin/units?property_id=${id}`;
 }
 
 function exportProperties() {
@@ -468,3 +492,4 @@ function goToPage(page) {
     showToast(`Loading page ${page}...`, 'info');
 }
 </script>
+</div>

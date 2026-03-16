@@ -54,6 +54,48 @@ class UnitController extends BaseController {
         echo \ViewManager::render('admin.units.list', [], 'admin.dashboard_layout');
     }
     
+    public function indexByProperty($propertyId) {
+        // Validate property belongs to this admin
+        $admin = $this->requireAuth();
+        $pdo = $this->db->getConnection();
+        $stmt = $pdo->prepare(
+            "SELECT id, name FROM properties
+             WHERE id = ? AND admin_id = ? AND deleted_at IS NULL"
+        );
+        $stmt->execute([$propertyId, $admin['id']]);
+        $property = $stmt->fetch();
+
+        if (!$property) {
+            $this->redirect('/admin/units');
+            return;
+        }
+
+        // Delegate to index() with property_id pre-set in $_GET
+        $_GET['property_id'] = $propertyId;
+        $this->index();
+    }
+
+    public function createForProperty($propertyId) {
+        // Validate property belongs to this admin
+        $admin = $this->requireAuth();
+        $pdo = $this->db->getConnection();
+        $stmt = $pdo->prepare(
+            "SELECT id, name FROM properties
+             WHERE id = ? AND admin_id = ? AND deleted_at IS NULL"
+        );
+        $stmt->execute([$propertyId, $admin['id']]);
+        $property = $stmt->fetch();
+
+        if (!$property) {
+            $this->redirect('/admin/units');
+            return;
+        }
+
+        // Delegate to create() with property_id pre-set in $_GET
+        $_GET['property_id'] = $propertyId;
+        $this->create();
+    }
+    
     public function create() {
         $admin = $this->requireAuth();
         
@@ -341,12 +383,19 @@ class UnitController extends BaseController {
         $total = $stmt->fetchColumn();
         
         // Get paginated results
-        $query = "SELECT u.*, p.name as property_name, p.address as property_address 
-                 FROM units u 
-                 JOIN properties p ON u.property_id = p.id 
-                 WHERE {$whereClause} 
-                 ORDER BY u.created_at DESC 
-                 LIMIT {$limit} OFFSET {$offset}";
+        $query = "SELECT u.*,
+                         p.name as property_name,
+                         p.address as property_address,
+                         t.name as tenant_name
+                  FROM units u
+                  JOIN properties p ON u.property_id = p.id
+                  LEFT JOIN tenants t
+                         ON t.unit_id = u.id
+                        AND t.deleted_at IS NULL
+                        AND t.status = 'active'
+                  WHERE {$whereClause} 
+                  ORDER BY u.created_at DESC 
+                  LIMIT {$limit} OFFSET {$offset}";
         $stmt = $pdo->prepare($query);
         $stmt->execute($params);
         $units = $stmt->fetchAll();

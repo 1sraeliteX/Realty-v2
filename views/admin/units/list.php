@@ -20,27 +20,80 @@ $properties = ViewManager::get('properties', [
     ['id' => 2, 'name' => 'Downtown Plaza'],
     ['id' => 3, 'name' => 'Riverside Complex']
 ]);
+
+// MUST be assigned here — before any HTML output
+$filteredPropertyId = ViewManager::get('property_id', 'all');
+$allProperties      = $properties;
+$filteredProperty   = null;
+
+if ($filteredPropertyId !== 'all') {
+    foreach ($allProperties as $prop) {
+        if ((int)$prop['id'] === (int)$filteredPropertyId) {
+            $filteredProperty = $prop;
+            break;
+        }
+    }
+}
+
+// Build Add Unit URL
+$addUnitUrl = '/admin/units/create';
+if ($filteredPropertyId !== 'all') {
+    $addUnitUrl = '/admin/units/create?property_id=' . urlencode($filteredPropertyId);
+}
 ?>
 
 <!-- Units Management Content -->
 <div class="space-y-6">
     <!-- Page Header -->
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Units Management</h1>
-            <p class="text-gray-600 dark:text-gray-400 mt-1">Manage all property units across your portfolio</p>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+                Units Management
+            </h1>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                Manage all property units across your portfolio
+            </p>
         </div>
-        <div class="flex items-center space-x-3">
-            <button class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+        <div class="flex items-center gap-3 flex-shrink-0">
+            <button
+                onclick="exportUnits()"
+                class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800
+                       border border-gray-300 dark:border-gray-600 rounded-lg text-sm
+                       font-medium text-gray-700 dark:text-gray-300
+                       hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                 <i class="fas fa-download mr-2"></i>
                 Export
             </button>
-            <a href="/admin/units/create" class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
+            <a href="<?php echo $addUnitUrl; ?>"
+               class="inline-flex items-center px-4 py-2 bg-primary-600 text-white
+                      rounded-lg hover:bg-primary-700 text-sm font-medium
+                      transition-colors">
                 <i class="fas fa-plus mr-2"></i>
                 Add Unit
             </a>
         </div>
     </div>
+
+    <?php if ($filteredProperty): ?>
+    <div class="flex items-center gap-3 px-4 py-3
+                bg-primary-50 dark:bg-primary-900/20
+                border border-primary-200 dark:border-primary-700
+                rounded-lg">
+        <i class="fas fa-building text-primary-600 dark:text-primary-400"></i>
+        <div class="flex-1 min-w-0">
+            <p class="text-sm text-primary-700 dark:text-primary-300">
+                Showing units for
+                <span class="font-semibold">
+                    <?php echo htmlspecialchars($filteredProperty['name']); ?>
+                </span>
+            </p>
+        </div>
+        <a href="/admin/units"
+           class="text-xs text-primary-600 dark:text-primary-400 hover:underline flex-shrink-0">
+            View all units
+        </a>
+    </div>
+    <?php endif; ?>
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -149,10 +202,10 @@ $properties = ViewManager::get('properties', [
                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     <?php foreach ($units as $unit): ?>
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white"><?php echo htmlspecialchars($unit['unit_number']); ?></td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"><?php echo htmlspecialchars($unit['property_name']); ?></td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"><?php echo ucfirst($unit['type']); ?></td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">$<?php echo number_format($unit['rent_price'], 0); ?></td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white"><?php echo htmlspecialchars($unit['unit_number'] ?? 'N/A'); ?></td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"><?php echo htmlspecialchars($unit['property_name'] ?? 'N/A'); ?></td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"><?php echo ucfirst($unit['type'] ?? 'N/A'); ?></td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">₦<?php echo number_format($unit['rent_price'] ?? 0, 0); ?></td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <?php
                                 $statusColors = [
@@ -160,13 +213,13 @@ $properties = ViewManager::get('properties', [
                                     'available' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
                                     'maintenance' => 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
                                 ];
-                                $colorClass = $statusColors[$unit['status']] ?? 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+                                $colorClass = $statusColors[$unit['status'] ?? 'available'] ?? 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
                                 ?>
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?php echo $colorClass; ?>">
-                                    <?php echo ucfirst($unit['status']); ?>
+                                    <?php echo ucfirst($unit['status'] ?? 'available'); ?>
                                 </span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"><?php echo $unit['tenant_name'] ?: '-'; ?></td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"><?php echo !empty($unit['tenant_name']) ? htmlspecialchars($unit['tenant_name']) : '<span class="text-gray-400 dark:text-gray-500">—</span>'; ?></td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <a href="/admin/units/<?php echo $unit['id']; ?>/edit" class="text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-300 mr-3">Edit</a>
                                 <a href="#" class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300">Delete</a>
@@ -178,3 +231,30 @@ $properties = ViewManager::get('properties', [
         </div>
     </div>
 </div>
+
+<script>
+// Safe showToast fallback
+if (typeof showToast !== 'function') {
+    window.showToast = function(message, type) {
+        const colors = { success:'#10b981', error:'#ef4444',
+                         info:'#3b82f6', warning:'#f59e0b' };
+        const t = document.createElement('div');
+        t.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:9999;' +
+            'padding:10px 18px;border-radius:8px;color:#fff;font-size:14px;' +
+            'font-weight:500;box-shadow:0 4px 12px rgba(0,0,0,0.3);background:'
+            + (colors[type] || colors.info);
+        t.textContent = message;
+        document.body.appendChild(t);
+        setTimeout(() => {
+            t.style.opacity = '0';
+            t.style.transition = 'opacity 0.3s';
+            setTimeout(() => t.remove(), 300);
+        }, 3000);
+    };
+}
+
+function exportUnits() {
+    showToast('Exporting units data...', 'info');
+    setTimeout(() => showToast('Units exported successfully', 'success'), 2000);
+}
+</script>

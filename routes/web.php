@@ -48,6 +48,10 @@ return [
     'POST /admin/units/{id}' => 'UnitController@update',
     'POST /admin/units/{id}/delete' => 'UnitController@delete',
 
+    // Property-scoped unit routes
+    'GET /admin/properties/{id}/units' => 'UnitController@indexByProperty',
+    'GET /admin/properties/{id}/units/create' => 'UnitController@createForProperty',
+
     // Admin Tenant routes
     'GET /admin/tenants' => 'TenantController@index',
     'GET /admin/tenants/create' => 'TenantController@create',

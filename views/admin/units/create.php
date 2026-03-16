@@ -4,10 +4,21 @@
 // Get data from ViewManager (anti-scattering compliant)
 $properties = ViewManager::get('properties', []);
 $unitTypes = ViewManager::get('unitTypes', []);
+$preselectedPropertyId = $_GET['property_id'] ?? ViewManager::get('property_id', '');
 ?>
 
 <!-- Create Unit Content -->
 <div class="space-y-6">
+    <?php if (!empty($preselectedPropertyId)): ?>
+    <div class="mb-4">
+        <a href="/admin/units?property_id=<?php echo urlencode($preselectedPropertyId); ?>"
+           class="inline-flex items-center text-sm text-primary-600
+                  dark:text-primary-400 hover:underline">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back to property units
+        </a>
+    </div>
+    <?php endif; ?>
     <!-- Page Header with Breadcrumb -->
     <div class="mb-6">
         <nav class="flex mb-4" aria-label="Breadcrumb">
@@ -61,9 +72,13 @@ $unitTypes = ViewManager::get('unitTypes', []);
                     required
                     class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 >
-                    <option value="">Select a property</option>
-                    <?php foreach ($properties as $property): ?>
-                        <option value="<?php echo $property['id']; ?>"><?php echo htmlspecialchars($property['name']); ?></option>
+                    <option value="">Select Property</option>
+                    <?php foreach ($properties as $prop): ?>
+                        <option value="<?php echo $prop['id']; ?>"
+                            <?php echo (string)$prop['id'] === (string)$preselectedPropertyId
+                                ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($prop['name']); ?>
+                        </option>
                     <?php endforeach; ?>
                 </select>
             </div>
@@ -141,7 +156,7 @@ $unitTypes = ViewManager::get('unitTypes', []);
                     Rent Price
                 </label>
                 <div class="relative">
-                    <span class="absolute left-3 top-2.5 text-gray-500 dark:text-gray-400">$</span>
+                    <span class="absolute left-3 top-2.5 text-gray-500 dark:text-gray-400">₦</span>
                     <input 
                         type="number" 
                         id="rent_price" 
@@ -224,9 +239,14 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(result => {
             if (result.success) {
-                showToast(result.message, 'success');
+                showToast(result.message || 'Unit created successfully', 'success');
                 setTimeout(() => {
-                    window.location.href = '/admin/units';
+                    const propertyId = document.getElementById('property_id').value;
+                    if (propertyId) {
+                        window.location.href = '/admin/units?property_id=' + propertyId;
+                    } else {
+                        window.location.href = '/admin/units';
+                    }
                 }, 1500);
             } else {
                 // Handle validation errors
