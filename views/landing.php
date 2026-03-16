@@ -185,7 +185,7 @@ ViewManager::set('title', 'Cornerstone Realty - Complete Property Management Sol
                 <div class="text-primary-100">Happy Tenants</div>
             </div>
             <div>
-                <div class="text-4xl md:text-5xl font-bold mb-2">$2M+</div>
+                <div class="text-4xl md:text-5xl font-bold mb-2">₦2M+</div>
                 <div class="text-primary-100">Monthly Rent Processed</div>
             </div>
             <div>

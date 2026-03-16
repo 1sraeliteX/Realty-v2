@@ -69,7 +69,7 @@ $content = ob_start();
                             </div>
                             <div>
                                 <span class="text-sm text-gray-500 dark:text-gray-400">Amount Due:</span>
-                                <span class="ml-2 text-xl font-bold text-gray-900 dark:text-white">$1,200.00</span>
+                                <span class="ml-2 text-xl font-bold text-gray-900 dark:text-white">₦1,200.00</span>
                             </div>
                         </div>
                     </div>
@@ -93,14 +93,14 @@ $content = ob_start();
                             <tr>
                                 <td class="px-4 py-3 text-sm text-gray-900 dark:text-white">Monthly Rent</td>
                                 <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">1</td>
-                                <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">$1,200.00</td>
-                                <td class="px-4 py-3 text-sm text-gray-900 dark:text-white">$1,200.00</td>
+                                <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">₦1,200.00</td>
+                                <td class="px-4 py-3 text-sm text-gray-900 dark:text-white">₦1,200.00</td>
                             </tr>
                         </tbody>
                         <tfoot class="bg-gray-50 dark:bg-gray-700">
                             <tr>
                                 <td colspan="3" class="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">Total</td>
-                                <td class="px-4 py-3 text-sm font-bold text-gray-900 dark:text-white">$1,200.00</td>
+                                <td class="px-4 py-3 text-sm font-bold text-gray-900 dark:text-white">₦1,200.00</td>
                             </tr>
                         </tfoot>
                     </table>

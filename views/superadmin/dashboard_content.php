@@ -138,7 +138,7 @@ function calculateTrend($current, $previous) {
         <div class="p-5">
             <div class="flex items-center">
                 <div class="flex-shrink-0">
-                    <i class="fas fa-dollar-sign text-yellow-600 dark:text-yellow-400 text-2xl"></i>
+                    <i class="fas fa-naira-sign text-yellow-600 dark:text-yellow-400 text-2xl"></i>
                 </div>
                 <div class="ml-5 w-0 flex-1">
                     <dl>

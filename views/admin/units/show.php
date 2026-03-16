@@ -249,7 +249,7 @@ ob_start();
                         </div>
                         <div class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                             <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Additional Fees</span>
-                            <span class="text-sm font-bold text-gray-900 dark:text-white">$0</span>
+                            <span class="text-sm font-bold text-gray-900 dark:text-white">₦0</span>
                         </div>
                         <div class="flex justify-between items-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border-t-2 border-green-200 dark:border-green-800">
                             <span class="text-sm font-bold text-gray-900 dark:text-white">Total Income</span>
@@ -264,15 +264,15 @@ ob_start();
                     <div class="space-y-3">
                         <div class="flex justify-between items-center p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
                             <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Maintenance</span>
-                            <span class="text-sm font-bold text-red-600 dark:text-red-400">$50</span>
+                            <span class="text-sm font-bold text-red-600 dark:text-red-400">₦50</span>
                         </div>
                         <div class="flex justify-between items-center p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
                             <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Utilities</span>
-                            <span class="text-sm font-bold text-red-600 dark:text-red-400">$75</span>
+                            <span class="text-sm font-bold text-red-600 dark:text-red-400">₦75</span>
                         </div>
                         <div class="flex justify-between items-center p-3 bg-red-50 dark:bg-red-900/20 rounded-lg border-t-2 border-red-200 dark:border-red-800">
                             <span class="text-sm font-bold text-gray-900 dark:text-white">Total Expenses</span>
-                            <span class="text-sm font-bold text-red-600 dark:text-red-400">$125</span>
+                            <span class="text-sm font-bold text-red-600 dark:text-red-400">₦125</span>
                         </div>
                     </div>
                 </div>

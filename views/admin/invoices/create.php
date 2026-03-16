@@ -174,9 +174,9 @@ ob_start();
                 <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
                     <div class="flex justify-between items-center">
                         <div class="text-sm text-gray-600 dark:text-gray-400">
-                            <p>Subtotal: <span id="subtotal" class="font-medium">$1,200.00</span></p>
-                            <p>Tax (10%): <span id="tax" class="font-medium">$120.00</span></p>
-                            <p class="text-lg font-semibold text-gray-900 dark:text-white">Total: <span id="total">$1,320.00</span></p>
+                            <p>Subtotal: <span id="subtotal" class="font-medium">₦1,200.00</span></p>
+                            <p>Tax (10%): <span id="tax" class="font-medium">₦120.00</span></p>
+                            <p class="text-lg font-semibold text-gray-900 dark:text-white">Total: <span id="total">₦1,320.00</span></p>
                         </div>
                     </div>
                 </div>

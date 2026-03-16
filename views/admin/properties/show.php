@@ -180,7 +180,7 @@ ob_start();
                         </div>
                         <div class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                             <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Other Income</span>
-                            <span class="text-sm font-bold text-gray-900 dark:text-white">$500</span>
+                            <span class="text-sm font-bold text-gray-900 dark:text-white">₦500</span>
                         </div>
                         <div class="flex justify-between items-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border-t-2 border-green-200 dark:border-green-800">
                             <span class="text-sm font-bold text-gray-900 dark:text-white">Total Income</span>

@@ -57,7 +57,7 @@ $content = ob_start();
             <div class="prose dark:prose-invert max-w-none">
                 <p>Dear John Doe,</p>
                 <p>This is a friendly reminder that your rent payment for March 2024 is due on March 15, 2024.</p>
-                <p>Amount due: $1,200.00</p>
+                <p>Amount due: ₦1,200.00</p>
                 <p>Please ensure payment is made on time to avoid any late fees.</p>
                 <p>Thank you for your cooperation.</p>
                 <p>Best regards,<br>Cornerstone Realty Management</p>

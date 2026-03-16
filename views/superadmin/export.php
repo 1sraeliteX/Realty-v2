@@ -101,7 +101,7 @@ $content = ob_start();
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <div class="flex items-center mb-4">
                 <div class="flex-shrink-0 bg-yellow-100 dark:bg-yellow-900 rounded-lg p-3">
-                    <i class="fas fa-dollar-sign text-yellow-600 dark:text-yellow-400 text-xl"></i>
+                    <i class="fas fa-naira-sign text-yellow-600 dark:text-yellow-400 text-xl"></i>
                 </div>
                 <div class="ml-4">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Financials</h3>

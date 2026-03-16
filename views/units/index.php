@@ -206,8 +206,8 @@ $content = ob_start();
                                 
                                 <?php if ($unit['rent_price']): ?>
                                     <div class="flex items-center text-gray-900 dark:text-white font-medium">
-                                        <i class="fas fa-dollar-sign mr-2 text-green-600"></i>
-                                        $<?php echo number_format($unit['rent_price'], 2); ?>/month
+                                        <i class="fas fa-naira-sign mr-2 text-green-600"></i>
+                                        ₦<?php echo number_format($unit['rent_price'], 2); ?>/month
                                     </div>
                                 <?php endif; ?>
                             </div>
@@ -266,7 +266,7 @@ $content = ob_start();
                                         <div class="text-sm text-gray-900 dark:text-white"><?php echo $unit['bathrooms'] ?: '0'; ?></div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900 dark:text-white"><?php echo $unit['rent_price'] ? '$' . number_format($unit['rent_price'], 2) : '-'; ?></div>
+                                        <div class="text-sm text-gray-900 dark:text-white"><?php echo $unit['rent_price'] ? '₦' . number_format($unit['rent_price'], 2) : '-'; ?></div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?php echo getStatusColorClass($unit['status']); ?>">
