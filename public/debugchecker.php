@@ -622,7 +622,7 @@ if ($pdo) {
         $testQuery = "
             SELECT p.id, p.amount, p.status,
                    p.receipt_reference, p.deleted_at,
-                   t.first_name as tenant_name
+                   t.name as tenant_name
             FROM payments p
             LEFT JOIN tenants t ON t.id = p.tenant_id
             WHERE p.admin_id IS NOT NULL
@@ -667,6 +667,31 @@ try {
 } catch (Throwable $e) {
     echo '<p style="color:red">❌ PaymentModel fatal: ' . htmlspecialchars($e->getMessage()) . '</p>';
 }
+
+echo '</div>';
+
+// Section 13: PaymentModel First/Last Name Verification
+echo '<div class="bg-white rounded-lg shadow p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4">13. PaymentModel First/Last Name Verification</h2>';
+
+// Check 1: first_name/last_name still in PaymentModel
+$pmSrc = file_get_contents($projectRoot . '/app/models/PaymentModel.php');
+
+$firstNameCount = substr_count($pmSrc, 'first_name');
+$lastNameCount  = substr_count($pmSrc, 'last_name');
+
+echo '<p>'
+     . ($firstNameCount === 0 ? '✅' : '❌')
+     . ' first_name references: '
+     . $firstNameCount
+     . ($firstNameCount === 0 ? ' — CLEAN' : ' — STILL PRESENT')
+     . '</p>';
+echo '<p>'
+     . ($lastNameCount === 0 ? '✅' : '❌')
+     . ' last_name references: '
+     . $lastNameCount
+     . ($lastNameCount === 0 ? ' — CLEAN' : ' — STILL PRESENT')
+     . '</p>';
 
 echo '</div>';
 
