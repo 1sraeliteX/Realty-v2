@@ -486,120 +486,92 @@ echo "</div>";
 
 echo "<h3>6. Property Image Debug</h3>";
 
-// 6.1 Query first 5 properties and analyze images
-echo "<h4>6.1 Property Images Analysis (First 5 Properties)</h4>";
+// 6.1 Directory checks BEFORE database operations
+echo "<h4>6.1 Upload Directory Status</h4>";
+
+$storagePath = __DIR__ . '/../storage/uploads/properties';
+$publicPath  = __DIR__ . '/uploads/properties';
+
+echo '<p>' . (is_dir($storagePath) ? '✅' : '❌') . ' storage/uploads/properties/ ' .
+     (is_dir($storagePath) ? (is_writable($storagePath) ? '— ✅ WRITABLE' : '— ❌ NOT WRITABLE') : 'MISSING') . '</p>';
+
+echo '<p>' . (is_dir($publicPath) ? '✅' : '❌') . ' public/uploads/properties/ ' .
+     (is_dir($publicPath) ? (is_writable($publicPath) ? '— ✅ WRITABLE' : '— ❌ NOT WRITABLE') : 'MISSING') . '</p>';
+
+// 6.2 Query first 5 properties and analyze images
+echo "<h4>6.2 Property Images Analysis (First 5 Properties)</h4>";
 
 try {
-    $db = \Config\Database::getInstance();
-    $adminId = $_SESSION['admin_id'] ?? null;
-    
-    if ($adminId) {
-        $sql = "SELECT id, name, images FROM properties 
-                WHERE admin_id = ? AND deleted_at IS NULL 
-                ORDER BY created_at DESC LIMIT 5";
-        $properties = $db->fetchAll($sql, [$adminId]);
+    // Try multiple ways to instantiate database
+    $db = null;
+    if (class_exists('Config\Database')) {
+        $db = \Config\Database::getInstance();
+    } elseif (class_exists('Database')) {
+        $db = \Database::getInstance();
+    } else {
+        // Try loading it manually
+        $dbFile = __DIR__ . '/../config/database.php';
+        if (file_exists($dbFile)) {
+            require_once $dbFile;
+            if (class_exists('Config\Database')) {
+                $db = \Config\Database::getInstance();
+            }
+        }
+    }
+
+    if (!$db) {
+        echo '<p style="color:red">❌ Could not instantiate database — Config\Database class not found even after manual load attempt.</p>';
+        // Skip the rest of this section gracefully
+    } else {
+        // Use the same pattern as PropertyController::index()
+        $sql = "SELECT id, name, images FROM properties
+                WHERE deleted_at IS NULL
+                ORDER BY created_at DESC
+                LIMIT 5";
+        $properties = $db->fetchAll($sql, []);
         
         if (!empty($properties)) {
-            echo "<table border='1' cellpadding='8' cellspacing='0' style='border-collapse: collapse; width: 100%;'>";
-            echo "<tr style='background: #f0f0f0; font-weight: bold;'>";
-            echo "<th>Property ID</th>";
-            echo "<th>Name</th>";
-            echo "<th>Raw Images (DB)</th>";
-            echo "<th>Decoded Array</th>";
-            echo "<th>First Image Path</th>";
-            echo "<th>File Exists</th>";
-            echo "</tr>";
-            
             foreach ($properties as $property) {
+                echo '<div style="border: 1px solid #ddd; padding: 10px; margin: 10px 0; border-radius: 5px;">';
+                echo '<h5>Property #' . htmlspecialchars($property['id']) . ' — "' . htmlspecialchars($property['name']) . '"</h5>';
+                
                 $rawImages = $property['images'];
                 $decodedImages = json_decode($rawImages, true);
-                $firstImagePath = '';
-                $fileExists = false;
+                
+                echo '<p><strong>Raw images:</strong> <code style="font-size: 11px;">' . htmlspecialchars($rawImages) . '</code></p>';
+                echo '<p><strong>Decoded:</strong> <code style="font-size: 11px;">' . htmlspecialchars(print_r($decodedImages, true)) . '</code></p>';
                 
                 if (is_array($decodedImages) && !empty($decodedImages[0])) {
-                    $firstImagePath = '/storage/uploads/properties/' . $decodedImages[0];
-                    $fullPath = __DIR__ . '/../storage/uploads/properties/' . $decodedImages[0];
-                    $fileExists = file_exists($fullPath);
+                    $filename = $decodedImages[0];
+                    $webPath = '/uploads/properties/' . $filename;
+                    
+                    echo '<p><strong>Web path:</strong> <code>' . htmlspecialchars($webPath) . '</code></p>';
+                    
+                    // Check storage/ directory
+                    $diskPath = __DIR__ . '/../storage/uploads/properties/' . $filename;
+                    $storageExists = file_exists($diskPath);
+                    echo '<p><strong>storage/ check:</strong> ' . 
+                         ($storageExists ? '✅ FILE EXISTS on disk (storage/)' : '❌ FILE MISSING from storage/') . '</p>';
+                    
+                    // Check public/ directory  
+                    $publicDiskPath = __DIR__ . '/uploads/properties/' . $filename;
+                    $publicExists = file_exists($publicDiskPath);
+                    echo '<p><strong>public/ check:</strong> ' . 
+                         ($publicExists ? '✅ FILE EXISTS in public/uploads/' : '❌ FILE MISSING from public/uploads/') . '</p>';
+                } else {
+                    echo '<p style="color: orange;">⚠️ No valid images found in JSON data</p>';
                 }
                 
-                echo "<tr>";
-                echo "<td>" . htmlspecialchars($property['id']) . "</td>";
-                echo "<td>" . htmlspecialchars($property['name']) . "</td>";
-                echo "<td><code style='font-size: 11px;'>" . htmlspecialchars($rawImages) . "</code></td>";
-                echo "<td><code style='font-size: 11px;'>" . htmlspecialchars(json_encode($decodedImages)) . "</code></td>";
-                echo "<td><code style='font-size: 11px;'>" . htmlspecialchars($firstImagePath) . "</code></td>";
-                echo "<td style='text-align: center; font-weight: bold; color: " . ($fileExists ? 'green' : 'red') . ";'>";
-                echo $fileExists ? '✅ YES' : '❌ NO';
-                echo "</td>";
-                echo "</tr>";
+                echo '</div>';
             }
-            
-            echo "</table>";
-            
-            // Check storage directory
-            echo "<h4>6.2 Storage Directory Check</h4>";
-            $storageDir = __DIR__ . '/../storage/uploads/properties';
-            echo "<p>Storage directory: <code>" . htmlspecialchars($storageDir) . "</code></p>";
-            echo "<p>Directory exists: " . (is_dir($storageDir) ? '✅ YES' : '❌ NO') . "</p>";
-            echo "<p>Directory readable: " . (is_readable($storageDir) ? '✅ YES' : '❌ NO') . "</p>";
-            
-            if (is_dir($storageDir)) {
-                $files = scandir($storageDir);
-                $imageFiles = array_filter($files, function($file) use ($storageDir) {
-                    $filePath = $storageDir . '/' . $file;
-                    return !in_array($file, ['.', '..']) && is_file($filePath);
-                });
-                
-                echo "<p>Files in directory: " . count($imageFiles) . "</p>";
-                if (!empty($imageFiles)) {
-                    echo "<p>Sample files:</p>";
-                    echo "<ul style='font-size: 12px;'>";
-                    foreach (array_slice($imageFiles, 0, 10) as $file) {
-                        echo "<li><code>" . htmlspecialchars($file) . "</code></li>";
-                    }
-                    if (count($imageFiles) > 10) {
-                        echo "<li>... and " . (count($imageFiles) - 10) . " more</li>";
-                    }
-                    echo "</ul>";
-                }
-            }
-            
-            // Test web access path
-            echo "<h4>6.3 Web Access Test</h4>";
-            echo "<p>Testing web access to storage directory...</p>";
-            
-            foreach ($properties as $property) {
-                $decodedImages = json_decode($property['images'], true);
-                if (is_array($decodedImages) && !empty($decodedImages[0])) {
-                    $webPath = 'http://127.0.0.1:8080/storage/uploads/properties/' . $decodedImages[0];
-                    echo "<p>Testing: <code>" . htmlspecialchars($webPath) . "</code></p>";
-                    
-                    $context = stream_context_create([
-                        'http' => [
-                            'method' => 'HEAD',
-                            'timeout' => 5
-                        ]
-                    ]);
-                    
-                    $headers = @get_headers($webPath, 1, $context);
-                    if ($headers && strpos($headers[0], '200') !== false) {
-                        echo "<p style='color: green;'>✅ Web accessible</p>";
-                    } else {
-                        echo "<p style='color: red;'>❌ Not web accessible</p>";
-                    }
-                    break; // Test first image only
-                }
-            }
-            
         } else {
-            echo "<p>❌ No properties found for admin ID: " . htmlspecialchars($adminId) . "</p>";
+            echo "<p>❌ No properties found in database</p>";
         }
-    } else {
-        echo "<p>❌ No admin ID in session</p>";
     }
     
-} catch (Exception $e) {
-    echo "<p style='color: red;'>❌ Error: " . htmlspecialchars($e->getMessage()) . "</p>";
+} catch (\Throwable $e) {
+    echo '<p style="color:red">❌ Section 6 fatal error: ' . htmlspecialchars($e->getMessage()) . '</p>';
+    echo '<p style="color:orange">File: ' . $e->getFile() . ' Line: ' . $e->getLine() . '</p>';
 }
 
 echo "<h3>7. Properties List showToast Fix Verification</h3>";
