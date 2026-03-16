@@ -47,14 +47,14 @@ class PaymentsController extends BaseController {
             $stats = $this->paymentModel->getSummaryStats($userId);
             
             // Set data through ViewManager (anti-scattering compliant)
-            \\ViewManager::set('title', 'Payments');
+            \ViewManager::set('title', 'Payments');
             \ViewManager::set('admin', $admin);
-            \\ViewManager::set('payments', $paymentsResult['data']);
-            \\ViewManager::set('pagination', $paymentsResult['pagination']);
-            \\ViewManager::set('stats', $stats);
-            \\ViewManager::set('filters', $filters);
-            \\ViewManager::set('pageTitle', 'Payments');
-            \\ViewManager::set('pageDescription', 'Track rent collections and payment history');
+            \ViewManager::set('payments', $paymentsResult['data']);
+            \ViewManager::set('pagination', $paymentsResult['pagination']);
+            \ViewManager::set('stats', $stats);
+            \ViewManager::set('filters', $filters);
+            \ViewManager::set('pageTitle', 'Payments');
+            \ViewManager::set('pageDescription', 'Track rent collections and payment history');
             
             // Capture payments content (anti-scattering compliant)
             ob_start();
