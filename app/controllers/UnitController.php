@@ -392,7 +392,6 @@ class UnitController extends BaseController {
                   LEFT JOIN tenants t
                          ON t.unit_id = u.id
                         AND t.deleted_at IS NULL
-                        AND t.status = 'active'
                   WHERE {$whereClause} 
                   ORDER BY u.created_at DESC 
                   LIMIT {$limit} OFFSET {$offset}";

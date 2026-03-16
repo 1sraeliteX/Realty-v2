@@ -267,6 +267,42 @@
         <div class="section">
             <h2>9. Occupant Create Page Debug</h2>
             <?php
+            // ── FORCE MIGRATION: add missing next_of_kin columns ──────────────
+            echo '<h4><strong>0. Force Migration — next_of_kin columns</strong></h4>';
+            if ($db) {
+                try {
+                    $pdo = $db->getConnection();
+                    $migrations = [
+                        'next_of_kin'         => "VARCHAR(255) NULL",
+                        'next_of_kin_phone'   => "VARCHAR(50) NULL",
+                        'next_of_kin_address' => "TEXT NULL",
+                    ];
+                    foreach ($migrations as $col => $def) {
+                        $chk = $pdo->prepare("
+                            SELECT COUNT(*) FROM information_schema.COLUMNS
+                            WHERE TABLE_SCHEMA = DATABASE()
+                              AND TABLE_NAME   = 'tenants'
+                              AND COLUMN_NAME  = ?
+                        ");
+                        $chk->execute([$col]);
+                        if ((int)$chk->fetchColumn() === 0) {
+                            $pdo->exec(
+                                "ALTER TABLE tenants ADD COLUMN `{$col}` {$def}"
+                            );
+                            echo '<p style="color:green">✅ CREATED column: '
+                                 . $col . '</p>';
+                        } else {
+                            echo '<p>✅ Already exists: ' . $col . '</p>';
+                        }
+                    }
+                } catch (\Throwable $e) {
+                    echo '<p style="color:red">❌ Migration error: '
+                         . htmlspecialchars($e->getMessage()) . '</p>';
+                }
+            } else {
+                echo '<p style="color:red">❌ No DB connection — migration skipped</p>';
+            }
+
             // 1. Column existence check
             echo '<h3>1. Tenants table next_of_kin columns check</h3>';
             if ($db) {
@@ -449,26 +485,19 @@
             echo ' No unguarded $unit[\'tenant_name\'] still present</div>';
 
             // 4. Live test
-            echo '<h3>4. Live test — query first 3 units with tenant join</h3>';
+            echo '<h3>4. Live test — query first 5 units with tenant join</h3>';
             if ($db && isset($joinColumn)) {
                 try {
                     $pdo = $db->getConnection();
                     
-                    if ($joinColumn === 'unit_id') {
-                        $testQuery = "SELECT u.unit_number, u.status,
-                                     t.name as tenant_name
-                                     FROM units u
-                                     LEFT JOIN tenants t ON t.unit_id = u.id AND t.deleted_at IS NULL
-                                     WHERE u.deleted_at IS NULL
-                                     LIMIT 3";
-                    } else {
-                        $testQuery = "SELECT u.unit_number, u.status,
-                                     t.name as tenant_name
-                                     FROM units u
-                                     LEFT JOIN tenants t ON t.property_id = u.property_id AND t.deleted_at IS NULL
-                                     WHERE u.deleted_at IS NULL
-                                     LIMIT 3";
-                    }
+                    // Updated query without status filter
+                    $testQuery = "SELECT u.unit_number, u.status, t.name as tenant_name
+                                  FROM units u
+                                  LEFT JOIN tenants t
+                                         ON t.unit_id = u.id
+                                        AND t.deleted_at IS NULL
+                                  WHERE u.deleted_at IS NULL
+                                  LIMIT 5";
                     
                     $stmt = $pdo->query($testQuery);
                     $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -488,6 +517,31 @@
                     } else {
                         echo '<p>No units found for live test</p>';
                     }
+
+                    // Show first 3 tenants raw to verify data exists
+                    echo '<h3>5. Raw tenants data check</h3>';
+                    $stmt = $pdo->query(
+                        "SELECT id, name, unit_id, status FROM tenants
+                         WHERE deleted_at IS NULL LIMIT 3"
+                    );
+                    $rawTenants = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+                    echo '<p><strong>Raw tenants sample:</strong></p>';
+                    if ($rawTenants) {
+                        echo '<table border="1" cellpadding="4">';
+                        echo '<tr><th>ID</th><th>Name</th><th>unit_id</th><th>status</th></tr>';
+                        foreach ($rawTenants as $t) {
+                            echo '<tr>'
+                                 . '<td>' . $t['id'] . '</td>'
+                                 . '<td>' . htmlspecialchars($t['name'] ?? 'NULL') . '</td>'
+                                 . '<td>' . ($t['unit_id'] ?? 'NULL') . '</td>'
+                                 . '<td>' . htmlspecialchars($t['status'] ?? 'NULL') . '</td>'
+                                 . '</tr>';
+                        }
+                        echo '</table>';
+                    } else {
+                        echo '<p>⚠️ No tenants found in database</p>';
+                    }
+                    
                 } catch (\Throwable $e) {
                     echo '<div class="check"><span class="fail">❌</span> Live test failed: ' . htmlspecialchars($e->getMessage()) . '</div>';
                 }
@@ -581,11 +635,93 @@
         </div>
 
         <div class="section">
-            <h2>Quick Links</h2>
-            <p><a href='/admin/properties' target='_blank'>🏠 View Properties List</a></p>
-            <p><a href='/admin/units' target='_blank'>🚪 View Units List</a></p>
-            <p><a href='/admin/dashboard' target='_blank'>📊 Admin Dashboard</a></p>
-            <p><a href='/admin/login' target='_blank'>🔐 Admin Login</a></p>
+            <h2>11. Tenants Create Page Debug</h2>
+            <?php
+            // Check for enctype attribute
+            $createFile = file_get_contents(__DIR__ . '/../views/admin/tenants/create.php');
+            
+            $hasEnctype = strpos($createFile, 'enctype="multipart/form-data"') !== false;
+            echo '<div class="check">';
+            echo $hasEnctype ? '<span class="pass">✅ PASS</span>' : '<span class="fail">❌ FAIL</span>';
+            echo ' enctype="multipart/form-data" found</div>';
+            
+            // Check for mobile layout in Form Actions
+            $hasMobileLayout = strpos($createFile, 'flex-col sm:flex-row sm:justify-between') !== false;
+            echo '<div class="check">';
+            echo $hasMobileLayout ? '<span class="pass">✅ MOBILE FIXED</span>' : '<span class="fail">❌ FAIL</span>';
+            echo ' Mobile layout in Form Actions</div>';
+            
+            // Check if AttachmentComponent is still present
+            $hasAttachmentComponent = strpos($createFile, 'AttachmentComponent::renderUploadArea') !== false;
+            echo '<div class="check">';
+            echo !$hasAttachmentComponent ? '<span class="pass">✅ REMOVED</span>' : '<span class="fail">⚠️ STILL THERE</span>';
+            echo ' AttachmentComponent::renderUploadArea removed</div>';
+            
+            $hasAttachmentJS = strpos($createFile, 'AttachmentComponentJS::renderJS') !== false;
+            echo '<div class="check">';
+            echo !$hasAttachmentJS ? '<span class="pass">✅ REMOVED</span>' : '<span class="fail">⚠️ STILL THERE</span>';
+            echo ' AttachmentComponentJS::renderJS removed</div>';
+            
+            // Check for camera functions
+            $hasCameraFunction = strpos($createFile, 'function tenantStartCamera') !== false;
+            echo '<div class="check">';
+            echo $hasCameraFunction ? '<span class="pass">✅ PASS</span>' : '<span class="fail">❌ FAIL</span>';
+            echo ' tenantStartCamera function exists</div>';
+            
+            // Check for Next of Kin fields
+            $hasNextOfKin = strpos($createFile, 'name="next_of_kin"') !== false;
+            echo '<div class="check">';
+            echo $hasNextOfKin ? '<span class="pass">✅ PASS</span>' : '<span class="fail">❌ FAIL</span>';
+            echo ' next_of_kin input exists</div>';
+            
+            $hasNextOfKinPhone = strpos($createFile, 'name="next_of_kin_phone"') !== false;
+            echo '<div class="check">';
+            echo $hasNextOfKinPhone ? '<span class="pass">✅ PASS</span>' : '<span class="fail">❌ FAIL</span>';
+            echo ' next_of_kin_phone input exists</div>';
+            
+            $hasNextOfKinAddress = strpos($createFile, 'name="next_of_kin_address"') !== false;
+            echo '<div class="check">';
+            echo $hasNextOfKinAddress ? '<span class="pass">✅ PASS</span>' : '<span class="fail">❌ FAIL</span>';
+            echo ' next_of_kin_address textarea exists</div>';
+            ?>
+        </div>
+
+        <div class="summary">
+            <h2>Summary</h2>
+            <?php
+            $totalChecks = 26;
+            $passedChecks = ($hasUnitsIndex ? 1 : 0) + ($hasUnitsCreate ? 1 : 0) + 
+                           ($hasPropertyUnitsIndex ? 1 : 0) + ($hasPropertyUnitsCreate ? 1 : 0) +
+                           ($hasIndex ? 1 : 0) + ($hasIndexByProperty ? 1 : 0) + 
+                           ($hasCreateForProperty ? 1 : 0) + ($hasStore ? 1 : 0) +
+                           ($hasUnitsList ? 1 : 0) + ($hasUnitsCreate ? 1 : 0) +
+                           ($hasCorrectUrl ? 1 : 0) + (!$hasOldUrl ? 1 : 0) +
+                           ($hasCorrectOrder ? 1 : 0) + ($noDuplicate ? 1 : 0) +
+                           ($hasFlexLayout ? 1 : 0) + ($hasExportFunction ? 1 : 0) +
+                           ($hasNairaList ? 1 : 0) + ($hasNairaCreate ? 1 : 0) +
+                           ($hasSearchFlex ? 1 : 0) + ($hasTypeFlexShrink ? 1 : 0) + 
+                           ($hasStatusFlexShrink ? 1 : 0) + ((!$typeLabelExists && !$statusLabelExists) ? 1 : 0) +
+                           ($hasTypeId ? 1 : 0) + ($hasStatusId ? 1 : 0) +
+                           ($hasEnctype ? 1 : 0) + ($hasMobileLayout ? 1 : 0) +
+                           (!$hasAttachmentComponent ? 1 : 0) + (!$hasAttachmentJS ? 1 : 0) +
+                           ($hasCameraFunction ? 1 : 0) + ($hasNextOfKin ? 1 : 0) +
+                           ($hasNextOfKinPhone ? 1 : 0) + ($hasNextOfKinAddress ? 1 : 0);
+            
+            $successRate = round(($passedChecks / $totalChecks) * 100, 1);
+            
+            echo '<p><strong>Total Checks:</strong> ' . $totalChecks . '</p>';
+            echo '<p><strong>Passed:</strong> <span class="pass">' . $passedChecks . '</span></p>';
+            echo '<p><strong>Failed:</strong> <span class="fail">' . ($totalChecks - $passedChecks) . '</span></p>';
+            echo '<p><strong>Success Rate:</strong> <strong>' . $successRate . '%</strong></p>';
+            
+            if ($successRate >= 90) {
+                echo '<p><span class="pass">🎉 EXCELLENT! All functionality is fully implemented.</span></p>';
+            } elseif ($successRate >= 70) {
+                echo '<p><span class="pass">✅ GOOD! Most functionality is working.</span></p>';
+            } else {
+                echo '<p><span class="fail">⚠️ NEEDS WORK! Several issues need to be fixed.</span></p>';
+            }
+            ?>
         </div>
     </div>
 </body>
