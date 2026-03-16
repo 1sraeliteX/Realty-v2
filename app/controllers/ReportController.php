@@ -10,8 +10,8 @@ class ReportController extends BaseController {
         require_once __DIR__ . '/../../config/bootstrap.php';
         
         // Set page data through ViewManager (anti-scattering compliant)
-        ViewManager::set('title', 'Reports Dashboard');
-        ViewManager::set('user', [
+        \ViewManager::set('title', 'Reports Dashboard');
+        \ViewManager::set('user', [
             'name' => $admin['name'] ?? 'Admin User',
             'email' => $admin['email'] ?? 'admin@cornerstone.com',
             'avatar' => null
@@ -58,7 +58,7 @@ class ReportController extends BaseController {
             ]
         ];
         
-        ViewManager::set('reports', $reports);
+        \ViewManager::set('reports', $reports);
         
         // Include the dashboard layout with reports content
         include __DIR__ . '/../../views/admin/dashboard_reports.php';
@@ -70,8 +70,8 @@ class ReportController extends BaseController {
         // Initialize framework (anti-scattering compliant)
         require_once __DIR__ . '/../../config/bootstrap.php';
         
-        ViewManager::set('title', 'Generate Report');
-        ViewManager::set('user', [
+        \ViewManager::set('title', 'Generate Report');
+        \ViewManager::set('user', [
             'name' => $admin['name'] ?? 'Admin User',
             'email' => $admin['email'] ?? 'admin@cornerstone.com',
             'avatar' => null
@@ -95,13 +95,13 @@ class ReportController extends BaseController {
         // Initialize framework (anti-scattering compliant)
         require_once __DIR__ . '/../../config/bootstrap.php';
         
-        ViewManager::set('title', 'Edit Report');
-        ViewManager::set('user', [
+        \ViewManager::set('title', 'Edit Report');
+        \ViewManager::set('user', [
             'name' => $admin['name'] ?? 'Admin User',
             'email' => $admin['email'] ?? 'admin@cornerstone.com',
             'avatar' => null
         ]);
-        ViewManager::set('report_id', $id);
+        \ViewManager::set('report_id', $id);
         
         // Include the dashboard layout with report edit form
         include __DIR__ . '/../../views/admin/reports/edit.php';
