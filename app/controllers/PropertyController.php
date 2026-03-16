@@ -14,6 +14,9 @@ class PropertyController extends BaseController {
     public function index() {
         $admin = $this->requireAuth();
         
+        // One-time migration: move images from storage/ to public/
+        $this->migratePropertyImages();
+        
         // Get admin data and pass to layout
         \ViewManager::set('user', [
             'name' => $admin['name'] ?? 'Admin',
@@ -196,7 +199,12 @@ class PropertyController extends BaseController {
         // Handle file uploads
         $images = [];
         if (isset($_FILES['images']) && !empty($_FILES['images']['name'][0])) {
-            $uploadDir = __DIR__ . '/../../storage/uploads/properties';
+            $uploadDir = __DIR__ . '/../../public/uploads/properties';
+
+            // Create directory if it doesn't exist
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
             
             foreach ($_FILES['images']['name'] as $key => $name) {
                 if ($_FILES['images']['error'][$key] === UPLOAD_ERR_OK) {
@@ -387,7 +395,12 @@ class PropertyController extends BaseController {
         // Handle file uploads
         $images = [];
         if (isset($_FILES['images']) && !empty($_FILES['images']['name'][0])) {
-            $uploadDir = __DIR__ . '/../../storage/uploads/properties';
+            $uploadDir = __DIR__ . '/../../public/uploads/properties';
+
+            // Create directory if it doesn't exist
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
             
             foreach ($_FILES['images']['name'] as $key => $name) {
                 if ($_FILES['images']['error'][$key] === UPLOAD_ERR_OK) {
@@ -1008,5 +1021,30 @@ class PropertyController extends BaseController {
         </div>
         <?php
         return ob_get_clean();
+    }
+
+    /**
+     * Migrate property images from storage/ to public/ directory
+     */
+    private function migratePropertyImages(): void {
+        $source = __DIR__ . '/../../storage/uploads/properties';
+        $dest   = __DIR__ . '/../../public/uploads/properties';
+
+        if (!is_dir($source)) return;
+
+        if (!is_dir($dest)) {
+            mkdir($dest, 0755, true);
+        }
+
+        $files = glob($source . '/*');
+        foreach ($files as $file) {
+            if (is_file($file)) {
+                $filename = basename($file);
+                $destFile = $dest . '/' . $filename;
+                if (!file_exists($destFile)) {
+                    copy($file, $destFile);
+                }
+            }
+        }
     }
 }

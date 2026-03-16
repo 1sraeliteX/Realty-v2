@@ -492,11 +492,11 @@ echo "<h4>6.1 Upload Directory Status</h4>";
 $storagePath = __DIR__ . '/../storage/uploads/properties';
 $publicPath  = __DIR__ . '/uploads/properties';
 
-echo '<p>' . (is_dir($storagePath) ? '✅' : '❌') . ' storage/uploads/properties/ ' .
-     (is_dir($storagePath) ? (is_writable($storagePath) ? '— ✅ WRITABLE' : '— ❌ NOT WRITABLE') : 'MISSING') . '</p>';
-
 echo '<p>' . (is_dir($publicPath) ? '✅' : '❌') . ' public/uploads/properties/ ' .
      (is_dir($publicPath) ? (is_writable($publicPath) ? '— ✅ WRITABLE' : '— ❌ NOT WRITABLE') : 'MISSING') . '</p>';
+
+echo '<p>' . (is_dir($storagePath) ? '✅' : '❌') . ' storage/uploads/properties/ (legacy) ' .
+     (is_dir($storagePath) ? (is_writable($storagePath) ? '— ✅ WRITABLE' : '— ❌ NOT WRITABLE') : 'MISSING') . '</p>';
 
 // 6.2 Query first 5 properties and analyze images
 echo "<h4>6.2 Property Images Analysis (First 5 Properties)</h4>";
@@ -547,17 +547,17 @@ try {
                     
                     echo '<p><strong>Web path:</strong> <code>' . htmlspecialchars($webPath) . '</code></p>';
                     
-                    // Check storage/ directory
-                    $diskPath = __DIR__ . '/../storage/uploads/properties/' . $filename;
-                    $storageExists = file_exists($diskPath);
-                    echo '<p><strong>storage/ check:</strong> ' . 
-                         ($storageExists ? '✅ FILE EXISTS on disk (storage/)' : '❌ FILE MISSING from storage/') . '</p>';
-                    
-                    // Check public/ directory  
+                    // Check public/ directory first (primary location)
                     $publicDiskPath = __DIR__ . '/uploads/properties/' . $filename;
                     $publicExists = file_exists($publicDiskPath);
                     echo '<p><strong>public/ check:</strong> ' . 
-                         ($publicExists ? '✅ FILE EXISTS in public/uploads/' : '❌ FILE MISSING from public/uploads/') . '</p>';
+                         ($publicExists ? '✅ FILE ACCESSIBLE at public/uploads/properties/' : '❌ FILE MISSING from public/uploads/properties/') . '</p>';
+                    
+                    // Check storage/ directory (legacy location)
+                    $diskPath = __DIR__ . '/../storage/uploads/properties/' . $filename;
+                    $storageExists = file_exists($diskPath);
+                    echo '<p><strong>storage/ check (legacy):</strong> ' . 
+                         ($storageExists ? '✅ FILE EXISTS on disk (storage/)' : '❌ FILE MISSING from storage/') . '</p>';
                 } else {
                     echo '<p style="color: orange;">⚠️ No valid images found in JSON data</p>';
                 }
@@ -566,6 +566,24 @@ try {
             }
         } else {
             echo "<p>❌ No properties found in database</p>";
+        }
+        
+        // Add migration status check
+        echo "<h4>6.3 Migration Status Check</h4>";
+        $storageFiles = is_dir($storagePath) ? count(glob($storagePath . '/*')) : 0;
+        $publicFiles = is_dir($publicPath) ? count(glob($publicPath . '/*')) : 0;
+        
+        echo "<p><strong>Files in storage/uploads/properties/:</strong> " . $storageFiles . "</p>";
+        echo "<p><strong>Files in public/uploads/properties/:</strong> " . $publicFiles . "</p>";
+        
+        if ($storageFiles > 0 && $publicFiles >= $storageFiles) {
+            echo '<p style="color: green;">✅ Counts match — migration appears complete</p>';
+        } elseif ($storageFiles > 0 && $publicFiles < $storageFiles) {
+            echo '<p style="color: orange;">⚠️ Counts differ — migration may be incomplete (' . ($storageFiles - $publicFiles) . ' files missing from public/)</p>';
+        } elseif ($storageFiles === 0 && $publicFiles === 0) {
+            echo '<p style="color: blue;">ℹ️ No image files found in either directory</p>';
+        } else {
+            echo '<p style="color: green;">✅ All files in public/ directory</p>';
         }
     }
     

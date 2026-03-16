@@ -209,7 +209,7 @@ if (empty($properties)) {
                 if (!empty($property['images'])) {
                     $images = json_decode($property['images'], true);
                     if (is_array($images) && !empty($images[0])) {
-                        $imagePath = '/storage/uploads/properties/' . $images[0];
+                        $imagePath = '/uploads/properties/' . $images[0];
                         $imageHtml = '<img src="' . $imagePath . '" alt="' . htmlspecialchars($property['name']) . '" class="w-full h-full object-cover">';
                     }
                 }
