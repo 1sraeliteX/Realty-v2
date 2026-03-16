@@ -67,14 +67,15 @@ return [
     'POST /admin/occupants' => 'TenantOccupantController@storeOccupant',
 
     // Admin Payment routes
-    'GET /admin/payments' => 'PaymentController@index',
-    'GET /admin/payments/create' => 'PaymentController@create',
-    'POST /admin/payments' => 'PaymentController@store',
-    'GET /admin/payments/{id}' => 'PaymentController@show',
-    'GET /admin/payments/{id}/edit' => 'PaymentController@edit',
-    'POST /admin/payments/{id}' => 'PaymentController@update',
-    'POST /admin/payments/{id}/delete' => 'PaymentController@delete',
-    'GET /admin/payments/receipt/{id}/download' => 'PaymentController@downloadReceipt',
+    'GET /admin/payments' => 'PaymentsController@index',
+    'GET /admin/payments/create' => 'PaymentsController@create',
+    'POST /admin/payments' => 'PaymentsController@store',
+    'GET /admin/payments/{id}' => 'PaymentsController@show',
+    'GET /admin/payments/{id}/edit' => 'PaymentsController@edit',
+    'POST /admin/payments/{id}' => 'PaymentsController@update',
+    'POST /admin/payments/{id}/delete' => 'PaymentsController@delete',
+    'POST /admin/payments/{id}/status' => 'PaymentsController@updateStatus',
+    'GET /admin/payments/receipt/{id}/download' => 'PaymentsController@downloadReceipt',
 
     // Admin Invoice routes
     'GET /admin/invoices' => 'InvoiceController@index',

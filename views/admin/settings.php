@@ -255,6 +255,93 @@ $isSettings = strpos($currentPath, '/admin/settings') === 0;
                             </div>
                         </div>
 
+                        <!-- Currency & Regional Settings -->
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1 flex items-center">
+                                <i class="fas fa-coins mr-2 text-primary-600"></i>
+                                Currency & Regional
+                            </h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                                Choose your preferred currency for displaying financial data across your dashboard.
+                            </p>
+
+                            <form method="POST" action="/admin/settings">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <!-- Currency selector -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                            Display Currency
+                                        </label>
+                                        <select name="currency" id="currencySelect" onchange="previewCurrency(this.value)" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                                            <option value="NGN" <?php echo ($currency ?? 'NGN') === 'NGN' ? 'selected' : ''; ?>>
+                                                ₦ — Nigerian Naira (NGN)
+                                            </option>
+                                            <option value="USD" <?php echo ($currency ?? '') === 'USD' ? 'selected' : ''; ?>>
+                                                $ — US Dollar (USD)
+                                            </option>
+                                            <option value="GBP" <?php echo ($currency ?? '') === 'GBP' ? 'selected' : ''; ?>>
+                                                £ — British Pound (GBP)
+                                            </option>
+                                            <option value="EUR" <?php echo ($currency ?? '') === 'EUR' ? 'selected' : ''; ?>>
+                                                € — Euro (EUR)
+                                            </option>
+                                            <option value="GHS" <?php echo ($currency ?? '') === 'GHS' ? 'selected' : ''; ?>>
+                                                ₵ — Ghanaian Cedi (GHS)
+                                            </option>
+                                            <option value="KES" <?php echo ($currency ?? '') === 'KES' ? 'selected' : ''; ?>>
+                                                KSh — Kenyan Shilling (KES)
+                                            </option>
+                                            <option value="ZAR" <?php echo ($currency ?? '') === 'ZAR' ? 'selected' : ''; ?>>
+                                                R — South African Rand (ZAR)
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Live preview -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                            Preview
+                                        </label>
+                                        <div class="px-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                                                Rent price example:
+                                            </p>
+                                            <p class="text-2xl font-bold text-gray-900 dark:text-white mt-1" id="currencyPreview">
+                                                <?php echo $currency_symbol ?? '₦'; ?>1,200,000
+                                            </p>
+                                            <p class="text-xs text-gray-400 mt-1">
+                                                Symbol: <span id="symbolPreview" class="font-semibold text-primary-600">
+                                                    <?php echo $currency_symbol ?? '₦'; ?>
+                                                </span>
+                                                · Code: <span id="codePreview" class="font-semibold">
+                                                    <?php echo $currency ?? 'NGN'; ?>
+                                                </span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex justify-end mt-6">
+                                    <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                                        Save Currency Settings
+                                    </button>
+                                </div>
+                            </form>
+
+                            <script>
+                            const currencySymbols = {
+                                NGN: '₦', USD: '$', GBP: '£',
+                                EUR: '€', GHS: '₵', KES: 'KSh', ZAR: 'R'
+                            };
+                            function previewCurrency(code) {
+                                const sym = currencySymbols[code] || '₦';
+                                document.getElementById('currencyPreview').textContent = sym + '1,200,000';
+                                document.getElementById('symbolPreview').textContent = sym;
+                                document.getElementById('codePreview').textContent = code;
+                            }
+                            </script>
+                        </div>
+
                         <!-- Notification Settings -->
                         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
                             <div class="p-6">

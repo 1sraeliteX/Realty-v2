@@ -11,26 +11,10 @@ ViewManager::set('user', [
 ]);
 ViewManager::set('notifications', []);
 
-// Mock data for form (would come from DataProvider in production)
-$properties = DataProvider::get('properties', [
-    ['id' => 1, 'name' => 'Sunset Apartments'],
-    ['id' => 2, 'name' => 'Ocean View Condos'],
-    ['id' => 3, 'name' => 'Mountain Heights']
-]);
-
-$units = DataProvider::get('units', [
-    ['id' => 1, 'property_id' => 1, 'number' => 'A-101', 'type' => '1 Bedroom'],
-    ['id' => 2, 'property_id' => 1, 'number' => 'A-102', 'type' => '2 Bedroom'],
-    ['id' => 3, 'property_id' => 2, 'number' => 'B-201', 'type' => 'Studio'],
-    ['id' => 4, 'property_id' => 2, 'number' => 'B-202', 'type' => '1 Bedroom'],
-    ['id' => 5, 'property_id' => 3, 'number' => 'C-301', 'type' => '3 Bedroom']
-]);
-
-$tenants = DataProvider::get('tenants', [
-    ['id' => 1, 'name' => 'John Doe', 'email' => 'john@example.com'],
-    ['id' => 2, 'name' => 'Jane Smith', 'email' => 'jane@example.com'],
-    ['id' => 3, 'name' => 'Mike Johnson', 'email' => 'mike@example.com']
-]);
+// Get real data from DataProvider (set by controller)
+$properties = DataProvider::get('properties', []);
+$units = DataProvider::get('units', []);
+$tenants = DataProvider::get('tenants', []);
 
 ob_start();
 ?>

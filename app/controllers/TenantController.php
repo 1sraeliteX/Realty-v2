@@ -121,18 +121,49 @@ class TenantController extends BaseController {
     
     public function create() {
         $admin = $this->requireAuth();
-        
-        // Mock properties for dropdown
-        $properties = [
-            ['id' => 1, 'name' => 'Sunset Apartments', 'available_units' => ['101', '102', '201', '202']],
-            ['id' => 2, 'name' => 'Downtown Plaza', 'available_units' => ['301', '302', '303']],
-            ['id' => 3, 'name' => 'Riverside Complex', 'available_units' => ['401', '402']]
-        ];
-        
+        $pdo   = $this->db->getConnection();
+
+        // Fetch real properties belonging to this admin
+        $stmt = $pdo->prepare("
+            SELECT id, name
+            FROM properties
+            WHERE admin_id = ? AND deleted_at IS NULL
+            ORDER BY name ASC
+        ");
+        $stmt->execute([$admin['id']]);
+        $properties = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        // Fetch all available units for this admin's properties
+        $stmt = $pdo->prepare("
+            SELECT u.id, u.unit_number, u.type, u.rent_price,
+                   u.property_id, p.name AS property_name
+            FROM units u
+            JOIN properties p ON p.id = u.property_id
+            WHERE p.admin_id = ?
+              AND u.deleted_at IS NULL
+              AND u.status = 'available'
+            ORDER BY p.name ASC, u.unit_number ASC
+        ");
+        $stmt->execute([$admin['id']]);
+        $units = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        // Fetch existing tenants for Associated Tenant dropdown
+        $stmt = $pdo->prepare("
+            SELECT id, name, email
+            FROM tenants
+            WHERE admin_id = ?
+              AND deleted_at IS NULL
+            ORDER BY name ASC
+        ");
+        $stmt->execute([$admin['id']]);
+        $tenants = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
         $this->view('admin/tenants/create', [
-            'admin' => $admin,
+            'admin'      => $admin,
             'properties' => $properties,
-            'title' => 'Create New Tenant'
+            'units'      => $units,
+            'tenants'    => $tenants,
+            'title'      => 'Create New Tenant'
         ]);
     }
     

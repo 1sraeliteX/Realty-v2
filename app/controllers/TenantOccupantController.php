@@ -23,39 +23,49 @@ class TenantOccupantController extends BaseController {
     }
     
     public function createOccupant() {
-        // Initialize anti-scattering system
-        require_once __DIR__ . '/../../config/bootstrap.php';
-        
-        // Ensure next_of_kin_address column exists
-        $this->ensureNextOfKinAddressColumn();
-        
-        // Set page metadata
+        $admin = $this->requireAuth();
+        $pdo   = $this->db->getConnection();
+
+        // Real properties
+        $stmt = $pdo->prepare("
+            SELECT id, name FROM properties
+            WHERE admin_id = ? AND deleted_at IS NULL
+            ORDER BY name ASC
+        ");
+        $stmt->execute([$admin['id']]);
+        $properties = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        // Real available units
+        $stmt = $pdo->prepare("
+            SELECT u.id, u.unit_number, u.type,
+                   u.property_id, p.name AS property_name
+            FROM units u
+            JOIN properties p ON p.id = u.property_id
+            WHERE p.admin_id = ?
+              AND u.deleted_at IS NULL
+              AND u.status = 'available'
+            ORDER BY p.name ASC, u.unit_number ASC
+        ");
+        $stmt->execute([$admin['id']]);
+        $units = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        // Real tenants
+        $stmt = $pdo->prepare("
+            SELECT id, name, email FROM tenants
+            WHERE admin_id = ?
+              AND deleted_at IS NULL
+            ORDER BY name ASC
+        ");
+        $stmt->execute([$admin['id']]);
+        $tenants = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
         \ViewManager::set('title', 'Add New Occupant');
-        \ViewManager::set('user', ['name' => 'Admin User', 'email' => 'admin@cornerstone.com']);
+        \ViewManager::set('user', $admin);
         \ViewManager::set('notifications', []);
-        
-        // Set mock data through DataProvider
-        \DataProvider::set('properties', [
-            ['id' => 1, 'name' => 'Sunset Apartments'],
-            ['id' => 2, 'name' => 'Ocean View Condos'],
-            ['id' => 3, 'name' => 'Mountain Heights']
-        ]);
-        
-        \DataProvider::set('units', [
-            ['id' => 1, 'property_id' => 1, 'number' => 'A-101', 'type' => '1 Bedroom'],
-            ['id' => 2, 'property_id' => 1, 'number' => 'A-102', 'type' => '2 Bedroom'],
-            ['id' => 3, 'property_id' => 2, 'number' => 'B-201', 'type' => 'Studio'],
-            ['id' => 4, 'property_id' => 2, 'number' => 'B-202', 'type' => '1 Bedroom'],
-            ['id' => 5, 'property_id' => 3, 'number' => 'C-301', 'type' => '3 Bedroom']
-        ]);
-        
-        \DataProvider::set('tenants', [
-            ['id' => 1, 'name' => 'John Doe', 'email' => 'john@example.com'],
-            ['id' => 2, 'name' => 'Jane Smith', 'email' => 'jane@example.com'],
-            ['id' => 3, 'name' => 'Mike Johnson', 'email' => 'mike@example.com']
-        ]);
-        
-        // Render the occupants create view directly
+        \DataProvider::set('properties', $properties);
+        \DataProvider::set('units', $units);
+        \DataProvider::set('tenants', $tenants);
+
         include __DIR__ . '/../../views/admin/occupants/create.php';
     }
     

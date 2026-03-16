@@ -7,6 +7,34 @@ $user = ViewManager::get('user') ?? ['name' => 'Admin', 'email' => ''];
 $notifications = ViewManager::get('notifications');
 $title = ViewManager::get('title', 'Admin Dashboard');
 
+// Load currency preference for this admin
+$currencySymbol = '₦'; // default
+$currencyCode   = 'NGN';
+try {
+    if (isset($_SESSION['admin_id']) && isset($db)) {
+        $pdo  = $db->getConnection();
+        $stmt = $pdo->prepare("
+            SELECT setting_value FROM admin_settings
+            WHERE admin_id = ? AND setting_key = 'currency_symbol'
+            LIMIT 1
+        ");
+        $stmt->execute([$_SESSION['admin_id']]);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+        if ($row) $currencySymbol = $row['setting_value'];
+
+        $stmt2 = $pdo->prepare("
+            SELECT setting_value FROM admin_settings
+            WHERE admin_id = ? AND setting_key = 'currency'
+            LIMIT 1
+        ");
+        $stmt2->execute([$_SESSION['admin_id']]);
+        $row2 = $stmt2->fetch(\PDO::FETCH_ASSOC);
+        if ($row2) $currencyCode = $row2['setting_value'];
+    }
+} catch (\Throwable $e) {
+    // Use defaults silently
+}
+
 // Get current page for navigation highlighting
 $currentPath = $_SERVER['REQUEST_URI'] ?? '';
 $isDashboard = strpos($currentPath, '/admin/dashboard') === 0 && strpos($currentPath, '/admin/dashboard/') === false;
@@ -233,6 +261,45 @@ $isProfile = strpos($currentPath, '/admin/profile') === 0;
                             'id' => 'admin-theme-toggle'
                         ]);
                         ?>
+
+                        <!-- Currency Switcher -->
+                        <div class="relative" id="currencySwitcherWrapper">
+                            <button id="currencySwitcherBtn" onclick="toggleCurrencySwitcher()" title="Switch currency" class="flex items-center gap-1 px-2 py-1.5 rounded-lg text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border border-gray-200 dark:border-gray-600">
+                                <span id="navCurrencySymbol"><?php echo htmlspecialchars($currencySymbol); ?></span>
+                                <span class="text-xs text-gray-400 hidden sm:inline"><?php echo htmlspecialchars($currencyCode); ?></span>
+                                <i class="fas fa-chevron-down text-xs text-gray-400"></i>
+                            </button>
+
+                            <!-- Currency dropdown -->
+                            <div id="currencySwitcherDropdown" class="hidden absolute right-0 mt-2 w-52 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden">
+                                <div class="px-3 py-2 border-b border-gray-100 dark:border-gray-700">
+                                    <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Select Currency</p>
+                                </div>
+                                <?php
+                                $currencies = [
+                                    'NGN' => ['symbol' => '₦', 'name' => 'Nigerian Naira'],
+                                    'USD' => ['symbol' => '$', 'name' => 'US Dollar'],
+                                    'GBP' => ['symbol' => '£', 'name' => 'British Pound'],
+                                    'EUR' => ['symbol' => '€', 'name' => 'Euro'],
+                                    'GHS' => ['symbol' => '₵', 'name' => 'Ghanaian Cedi'],
+                                    'KES' => ['symbol' => 'KSh','name' => 'Kenyan Shilling'],
+                                    'ZAR' => ['symbol' => 'R',  'name' => 'South African Rand'],
+                                ];
+                                foreach ($currencies as $code => $info): ?>
+                                    <button type="button" onclick="switchCurrency('<?php echo $code; ?>', '<?php echo $info['symbol']; ?>')" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors <?php echo $currencyCode === $code ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300 font-semibold' : 'text-gray-700 dark:text-gray-300'; ?>">
+                                        <span class="w-8 text-center font-bold text-base"><?php echo $info['symbol']; ?></span>
+                                        <span class="flex-1 text-left"><?php echo $info['name']; ?></span>
+                                        <span class="text-xs text-gray-400"><?php echo $code; ?></span>
+                                        <?php if ($currencyCode === $code): ?>
+                                            <i class="fas fa-check text-primary-600 text-xs ml-1"></i>
+                                        <?php endif; ?>
+                                    </button>
+                                <?php endforeach; ?>
+                                <div class="px-3 py-2 border-t border-gray-100 dark:border-gray-700">
+                                    <a href="/admin/settings" class="text-xs text-primary-600 dark:text-primary-400 hover:underline">More settings →</a>
+                                </div>
+                            </div>
+                        </div>
 
                         <!-- Notifications -->
                         <button class="relative text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">

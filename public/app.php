@@ -14,6 +14,18 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
     }
 }
 
+// Simple autoloader for App\Models classes
+spl_autoload_register(function ($class) {
+    // Handle App\Models namespace
+    if (strpos($class, 'App\\Models\\') === 0) {
+        $modelClass = substr($class, 11); // Remove 'App\Models\'
+        $modelFile = __DIR__ . "/../app/models/{$modelClass}.php";
+        if (file_exists($modelFile)) {
+            require_once $modelFile;
+        }
+    }
+});
+
 // Simple router that uses the actual MVC controllers
 class ApplicationRouter {
     private $routes = [];

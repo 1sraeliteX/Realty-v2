@@ -2,9 +2,6 @@
 // Initialize framework (anti-scattering compliant)
 require_once __DIR__ . '/../../../config/bootstrap.php';
 
-// Load AutoFillComponent using ComponentRegistry
-ComponentRegistry::load('autofill-component');
-
 // Set data through ViewManager (anti-scattering compliant)
 ViewManager::set('title', 'Add New Tenant');
 ViewManager::set('user', [
@@ -13,21 +10,6 @@ ViewManager::set('user', [
     'avatar' => null
 ]);
 ViewManager::set('notifications', []);
-
-// Mock data for form (would come from DataProvider in production)
-$properties = DataProvider::get('properties', [
-    ['id' => 1, 'name' => 'Sunset Apartments'],
-    ['id' => 2, 'name' => 'Ocean View Condos'],
-    ['id' => 3, 'name' => 'Mountain Heights']
-]);
-
-$units = DataProvider::get('units', [
-    ['id' => 1, 'property_id' => 1, 'number' => 'A-101', 'type' => '1 Bedroom', 'rent' => 1200],
-    ['id' => 2, 'property_id' => 1, 'number' => 'A-102', 'type' => '2 Bedroom', 'rent' => 1800],
-    ['id' => 3, 'property_id' => 2, 'number' => 'B-201', 'type' => 'Studio', 'rent' => 900],
-    ['id' => 4, 'property_id' => 2, 'number' => 'B-202', 'type' => '1 Bedroom', 'rent' => 1100],
-    ['id' => 5, 'property_id' => 3, 'number' => 'C-301', 'type' => '3 Bedroom', 'rent' => 2200]
-]);
 
 ob_start();
 ?>
@@ -68,23 +50,6 @@ ob_start();
           onsubmit="submitTenantForm(event)"
           enctype="multipart/form-data">
         
-        <?php
-        // Add auto-fill button with proper namespace and error handling
-        try {
-            ComponentRegistry::load('autofill-component');
-            if (class_exists('Components\AutoFillComponent')) {
-                \Components\AutoFillComponent::generateAutoFillButton(
-                    'tenantForm', 
-                    \Components\AutoFillComponent::getTenantFillData(),
-                    'Auto-Fill Tenant Form',
-                    'bg-purple-600 hover:bg-purple-700 text-white'
-                );
-            }
-        } catch (\Throwable $e) {
-            // AutoFillComponent unavailable — silently skip
-            error_log('AutoFillComponent error in tenants/create.php: ' . $e->getMessage());
-        }
-        ?>
         <div class="p-6">
             <div class="mb-6">
                 <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Tenant Information</h2>
@@ -414,16 +379,6 @@ ob_start();
 
                 <!-- Right side buttons — stack on mobile, row on desktop -->
                 <div class="flex flex-col sm:flex-row gap-3">
-                    <button type="button" onclick="saveAsDraft()"
-                            class="w-full sm:w-auto flex items-center justify-center
-                                   px-6 py-3 sm:py-2 bg-gray-200 dark:bg-gray-700
-                                   text-gray-700 dark:text-gray-300 rounded-lg
-                                   hover:bg-gray-300 dark:hover:bg-gray-600
-                                   focus:outline-none focus:ring-2 focus:ring-gray-500
-                                   focus:ring-offset-2 transition-all duration-200
-                                   text-sm font-medium">
-                        Save as Draft
-                    </button>
                     <button type="submit"
                             class="w-full sm:w-auto flex items-center justify-center
                                    px-6 py-3 sm:py-2 bg-primary-600 text-white
@@ -454,23 +409,55 @@ document.addEventListener('DOMContentLoaded', function() {
 function updateTenantUnits() {
     const propertyId = document.querySelector('select[name="property_id"]').value;
     const unitSelect = document.querySelector('select[name="unit_id"]');
-    
-    // Clear current options
-    unitSelect.innerHTML = '<option value="">Select Unit</option>';
-    
-    if (propertyId) {
-        // Mock units data - in real app, this would come from an API call
-        const units = <?php echo json_encode($units); ?>;
-        const filteredUnits = units.filter(unit => unit.property_id == propertyId);
-        
-        filteredUnits.forEach(unit => {
-            const option = document.createElement('option');
-            option.value = unit.id;
-            option.textContent = `${unit.number} - ${unit.type} ($${unit.rent}/month)`;
-            option.dataset.rent = unit.rent;
-            unitSelect.appendChild(option);
-        });
+    unitSelect.innerHTML = '<option value="">Loading units...</option>';
+
+    if (!propertyId) {
+        unitSelect.innerHTML = '<option value="">Select Unit</option>';
+        return;
     }
+
+    fetch('/admin/units?property_id=' + propertyId + '&_ajax=1', {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        }
+    })
+    .then(r => r.json())
+    .then(data => {
+        const units = Array.isArray(data)
+            ? data
+            : (data.units || data.data || []);
+        unitSelect.innerHTML = '<option value="">Select Unit</option>';
+        if (!units.length) {
+            unitSelect.innerHTML = '<option value="">No available units</option>';
+            return;
+        }
+        units.forEach(u => {
+            const opt = document.createElement('option');
+            opt.value = u.id;
+            const rent = u.rent_price
+                ? ' — ₦' + Number(u.rent_price).toLocaleString()
+                : '';
+            opt.textContent = (u.unit_number || u.number)
+                              + ' (' + (u.type || '') + ')' + rent;
+            opt.dataset.rent = u.rent_price || '';
+            unitSelect.appendChild(opt);
+        });
+    })
+    .catch(() => {
+        // Fallback to PHP-embedded units
+        const all = <?php echo json_encode($units ?? []); ?>;
+        const filtered = all.filter(u => u.property_id == propertyId);
+        unitSelect.innerHTML = '<option value="">Select Unit</option>';
+        filtered.forEach(u => {
+            const opt = document.createElement('option');
+            opt.value = u.id;
+            opt.textContent = (u.unit_number || u.number)
+                              + ' (' + (u.type || '') + ')';
+            opt.dataset.rent = u.rent_price || '';
+            unitSelect.appendChild(opt);
+        });
+    });
 }
 
 function updateRentAmount() {
@@ -536,10 +523,6 @@ function submitTenantForm(event) {
             window.location.href = '/admin/tenants-occupants';
         }, 1500);
     }, 1500);
-}
-
-function saveAsDraft() {
-    showToast('Draft saved successfully!', 'info');
 }
 
 // ── Tenant upload tab switching ───────────────────────────────────

@@ -505,7 +505,7 @@ class PropertyController extends BaseController {
         ?>
         <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-0">Properties</h2>
-            <a href="/properties/create" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+            <a href="/admin/properties/create" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
                 <i class="fas fa-plus mr-2"></i>
                 Add Property
             </a>
@@ -605,9 +605,9 @@ class PropertyController extends BaseController {
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        <a href="/properties/<?php echo $property['id']; ?>" class="text-primary-600 hover:text-primary-900 dark:text-primary-400 mr-3">View</a>
-                                        <a href="/properties/<?php echo $property['id']; ?>/edit" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 mr-3">Edit</a>
-                                        <form action="/properties/<?php echo $property['id']; ?>/delete" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this property?')">
+                                        <a href="/admin/properties/<?php echo $property['id']; ?>" class="text-primary-600 hover:text-primary-900 dark:text-primary-400 mr-3">View</a>
+                                        <a href="/admin/properties/<?php echo $property['id']; ?>/edit" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 mr-3">Edit</a>
+                                        <form action="/admin/properties/<?php echo $property['id']; ?>/delete" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this property?')">
                                             <button type="submit" class="text-red-600 hover:text-red-900 dark:text-red-400">Delete</button>
                                         </form>
                                     </td>
@@ -674,7 +674,7 @@ class PropertyController extends BaseController {
                     <?php echo $property ? 'Edit Property' : 'Add New Property'; ?>
                 </h2>
                 
-                <form method="POST" <?php echo $property ? "action=\"/properties/{$property['id']}\"" : 'action="/properties"'; ?> enctype="multipart/form-data">
+                <form method="POST" <?php echo $property ? "action=\"/admin/properties/{$property['id']}\"" : 'action="/admin/properties"'; ?> enctype="multipart/form-data">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -825,10 +825,10 @@ class PropertyController extends BaseController {
                         </div>
                     </div>
                     <div class="mt-4 md:mt-0 flex space-x-3">
-                        <a href="/properties/<?php echo $property['id']; ?>/edit" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                        <a href="/admin/properties/<?php echo $property['id']; ?>/edit" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                             <i class="fas fa-edit mr-2"></i>Edit
                         </a>
-                        <a href="/units/create?property_id=<?php echo $property['id']; ?>" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700">
+                        <a href="/admin/units/create?property_id=<?php echo $property['id']; ?>" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700">
                             <i class="fas fa-plus mr-2"></i>Add Unit
                         </a>
                     </div>
@@ -874,13 +874,16 @@ class PropertyController extends BaseController {
                 </div>
 
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-                    <div class="flex items-center">
+                    <div class="flex items-center min-w-0">
                         <div class="flex-shrink-0 bg-purple-100 dark:bg-purple-900 rounded-lg p-3">
-                            <i class="fas fa-dollar-sign text-purple-600 dark:text-purple-400 text-xl"></i>
+                            <i class="fas fa-money-bill-wave text-purple-600 dark:text-purple-400 text-xl"></i>
                         </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Rent Price</p>
-                            <p class="text-2xl font-bold text-gray-900 dark:text-white">$<?php echo number_format($property['rent_price'] ?? 0, 2); ?></p>
+                        <div class="ml-4 min-w-0 flex-1">
+                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Annual Rent</p>
+                            <p class="text-xl font-bold text-gray-900 dark:text-white truncate"
+                               title="₦<?php echo number_format($property['rent_price'] ?? 0, 0); ?>">
+                                ₦<?php echo number_format($property['rent_price'] ?? 0, 0); ?>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -946,8 +949,9 @@ class PropertyController extends BaseController {
                             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Property Images</h3>
                             <div class="space-y-4">
                                 <?php foreach ($images as $image): ?>
-                                    <img src="/storage/uploads/properties/<?php echo htmlspecialchars($image); ?>" 
-                                         alt="Property Image" 
+                                    <img src="/uploads/properties/<?php echo htmlspecialchars($image); ?>" 
+                                         alt="Property Image"
+                                         onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23374151%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%236B7280%22 font-size=%2212%22%3ENo Image%3C/text%3E%3C/svg%3E'"
                                          class="w-full h-48 object-cover rounded-lg">
                                 <?php endforeach; ?>
                             </div>
@@ -967,7 +971,7 @@ class PropertyController extends BaseController {
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Unit</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Type</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Rent</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-32">Rent</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Tenant</th>
                             </tr>
@@ -976,7 +980,7 @@ class PropertyController extends BaseController {
                             <?php if (empty($units)): ?>
                                 <tr>
                                     <td colspan="5" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
-                                        No units found. <a href="/units/create?property_id=<?php echo $property['id']; ?>" class="text-primary-600 hover:text-primary-500 dark:text-primary-400">Add your first unit</a>
+                                        No units found. <a href="/admin/units/create?property_id=<?php echo $property['id']; ?>" class="text-primary-600 hover:text-primary-500 dark:text-primary-400">Add your first unit</a>
                                     </td>
                                 </tr>
                             <?php else: ?>
@@ -997,9 +1001,10 @@ class PropertyController extends BaseController {
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                             <?php echo ucfirst($unit['unit_type']); ?>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                            $<?php echo number_format($unit['rent_price'] ?? 0, 2); ?>
-                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-900 dark:text-white max-w-[8rem] truncate"
+                                        title="₦<?php echo number_format($unit['rent_price'] ?? 0, 0); ?>">
+                                        ₦<?php echo number_format($unit['rent_price'] ?? 0, 0); ?>
+                                    </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                                                 <?php echo $unit['status'] === 'occupied' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 
@@ -1027,7 +1032,7 @@ class PropertyController extends BaseController {
      * Migrate property images from storage/ to public/ directory
      */
     private function migratePropertyImages(): void {
-        $source = __DIR__ . '/../../storage/uploads/properties';
+        $source = __DIR__ . '/../../public/uploads/properties';
         $dest   = __DIR__ . '/../../public/uploads/properties';
 
         if (!is_dir($source)) return;

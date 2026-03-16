@@ -3,76 +3,120 @@
 namespace App\Controllers;
 
 class SettingsController extends BaseController {
+    
+    private function ensureSettingsTable(): void {
+        try {
+            $pdo = $this->db->getConnection();
+            $pdo->exec("
+                CREATE TABLE IF NOT EXISTS admin_settings (
+                    id            INT AUTO_INCREMENT PRIMARY KEY,
+                    admin_id      INT NOT NULL,
+                    setting_key   VARCHAR(100) NOT NULL,
+                    setting_value TEXT NULL,
+                    updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                                  ON UPDATE CURRENT_TIMESTAMP,
+                    UNIQUE KEY unique_admin_setting (admin_id, setting_key)
+                )
+            ");
+        } catch (\Throwable $e) {
+            error_log('ensureSettingsTable error: ' . $e->getMessage());
+        }
+    }
+
+    private function getSetting(int $adminId, string $key, string $default = ''): string {
+        try {
+            $pdo  = $this->db->getConnection();
+            $stmt = $pdo->prepare("
+                SELECT setting_value FROM admin_settings
+                WHERE admin_id = ? AND setting_key = ?
+                LIMIT 1
+            ");
+            $stmt->execute([$adminId, $key]);
+            $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+            return $row ? (string)$row['setting_value'] : $default;
+        } catch (\Throwable $e) {
+            return $default;
+        }
+    }
+
+    private function saveSetting(int $adminId, string $key, string $value): void {
+        try {
+            $pdo = $this->db->getConnection();
+            $pdo->prepare("
+                INSERT INTO admin_settings (admin_id, setting_key, setting_value)
+                VALUES (?, ?, ?)
+                ON DUPLICATE KEY UPDATE
+                    setting_value = VALUES(setting_value),
+                    updated_at    = CURRENT_TIMESTAMP
+            ")->execute([$adminId, $key, $value]);
+        } catch (\Throwable $e) {
+            error_log('saveSetting error: ' . $e->getMessage());
+        }
+    }
+
     public function index() {
         $admin = $this->requireAuth();
-        
-        // Initialize anti-scattering system
-        require_once __DIR__ . '/../../config/bootstrap.php';
-        
-        // Set user data for ViewManager (anti-scattering compliant)
-        \ViewManager::set('user', [
-            'name' => $admin['name'] ?? 'Admin User',
-            'email' => $admin['email'] ?? 'admin@example.com'
-        ]);
-        
-        // Centralize settings data in controller (anti-scattering compliant)
-        \ViewManager::set('settings', [
-            'general' => [
-                'site_name' => 'Cornerstone Realty',
-                'site_email' => 'admin@cornerstone.com',
-                'site_phone' => '+1 (555) 123-4567',
-                'site_address' => '123 Business Ave, Suite 100, City, State 12345',
-                'timezone' => 'America/New_York',
-                'currency' => 'USD',
-                'date_format' => 'Y-m-d',
-                'time_format' => '12-hour'
-            ],
-            'email' => [
-                'smtp_host' => 'smtp.gmail.com',
-                'smtp_port' => '587',
-                'smtp_username' => 'admin@cornerstone.com',
-                'smtp_encryption' => 'tls',
-                'email_from_name' => 'Cornerstone Realty',
-                'email_from_address' => 'noreply@cornerstone.com'
-            ],
-            'security' => [
-                'session_timeout' => '30',
-                'password_min_length' => '8',
-                'require_2fa' => false,
-                'login_attempts' => '5',
-                'lockout_duration' => '15'
-            ],
-            'notifications' => [
-                'email_notifications' => true,
-                'sms_notifications' => false,
-                'payment_reminders' => true,
-                'maintenance_alerts' => true,
-                'new_application_alerts' => true
-            ],
-            'appearance' => [
-                'default_theme' => 'dark',
-                'primary_color' => '#3b82f6',
-                'company_logo' => '/assets/images/logo.png',
-                'favicon' => '/assets/images/favicon.ico'
-            ]
-        ]);
-        
-        // Set page title
+        $this->ensureSettingsTable();
+
+        // Load all settings for this admin from DB
+        $currency = $this->getSetting($admin['id'], 'currency', 'NGN');
+        $currencySymbol = $this->getSetting($admin['id'], 'currency_symbol', '₦');
+
         \ViewManager::set('title', 'Settings');
-        
-        // Capture settings content (anti-scattering compliant)
-        ob_start();
-        include __DIR__ . '/../../views/admin/settings/settings_content.php';
-        $content = ob_get_clean();
-        
-        // Set content and render with layout (anti-scattering compliant)
-        \ViewManager::set('content', $content);
-        echo \ViewManager::render('admin.dashboard_layout');
+        \ViewManager::set('user', $admin);
+        \ViewManager::set('settings', [
+            'currency'        => $currency,
+            'currency_symbol' => $currencySymbol,
+        ]);
+
+        // Render settings view
+        $this->view('admin/settings', [
+            'admin'    => $admin,
+            'currency' => $currency,
+            'currency_symbol' => $currencySymbol,
+        ]);
     }
     
     public function update() {
         $admin = $this->requireAuth();
-        $_SESSION['info'] = 'Settings update is not yet implemented.';
-        $this->redirect('/admin/settings');
+        $this->ensureSettingsTable();
+        $data  = $this->getPostData();
+
+        // Save currency setting
+        if (!empty($data['currency'])) {
+            $currencyMap = [
+                'NGN' => '₦',
+                'USD' => '$',
+                'GBP' => '£',
+                'EUR' => '€',
+                'GHS' => '₵',
+                'KES' => 'KSh',
+                'ZAR' => 'R',
+            ];
+            $code   = strtoupper($data['currency']);
+            $symbol = $currencyMap[$code] ?? '₦';
+
+            $this->saveSetting($admin['id'], 'currency', $code);
+            $this->saveSetting($admin['id'], 'currency_symbol', $symbol);
+        }
+
+        // Save other settings as key-value pairs
+        $allowedKeys = ['timezone', 'date_format', 'language', 'notifications_email'];
+        foreach ($allowedKeys as $key) {
+            if (isset($data[$key])) {
+                $this->saveSetting($admin['id'], $key, $data[$key]);
+            }
+        }
+
+        if ($this->isApiRequest()) {
+            $this->json([
+                'success' => true,
+                'message' => 'Settings saved successfully',
+                'currency_symbol' => $this->getSetting($admin['id'], 'currency_symbol', '₦'),
+            ]);
+        } else {
+            $_SESSION['success'] = 'Settings saved successfully!';
+            $this->redirect('/admin/settings');
+        }
     }
 }

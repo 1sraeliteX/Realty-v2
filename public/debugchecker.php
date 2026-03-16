@@ -1,728 +1,1211 @@
 <?php
-// Debug checker for Units Button & Property-Scoped Units functionality
-?>
-<!DOCTYPE html>
+// Load framework bootstrap — MUST be first
+if (!class_exists('ComponentRegistry')) {
+    require_once __DIR__ . '/../config/bootstrap.php';
+}
+
+// Load database config if not already loaded
+if (!class_exists('Config\Database')) {
+    $dbConfigPath = __DIR__ . '/../config/database.php';
+    if (file_exists($dbConfigPath)) {
+        require_once $dbConfigPath;
+    }
+}
+
+echo '<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Units Button & Property-Scoped Units Debug</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
-        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        h1 { color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px; }
-        h2 { color: #007bff; margin-top: 30px; }
-        .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
-        .check { margin: 10px 0; padding: 8px; background: #f8f9fa; border-radius: 4px; }
-        .pass { color: #28a745; font-weight: bold; }
-        .fail { color: #dc3545; font-weight: bold; }
-        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-        th, td { padding: 10px; text-align: left; border: 1px solid #ddd; }
-        th { background: #007bff; color: white; }
-        .summary { background: #e9ecef; padding: 15px; border-radius: 5px; margin: 20px 0; }
-    </style>
+    <title>Property Details Page Debug</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <div class="container">
-        <h1>Units Button & Property-Scoped Units Debug</h1>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8">Property Details Page Debug</h1>';
+
+try {
+
+// Section 1: Image path check for property ID 40
+echo '<div class="bg-white rounded-lg shadow p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4">1. Image Path Check (Property ID 40)</h2>';
+
+// Safe DB instantiation — works regardless of namespace
+$db  = null;
+$pdo = null;
+
+$dbCandidates = [
+    'Config\Database',
+    'Database',
+    '\Config\Database',
+];
+
+foreach ($dbCandidates as $candidate) {
+    if (class_exists($candidate)) {
+        try {
+            $db  = $candidate::getInstance();
+            $pdo = $db->getConnection();
+            break;
+        } catch (\Throwable $e) {
+            $db  = null;
+            $pdo = null;
+        }
+    }
+}
+
+if (!$db || !$pdo) {
+    // Last resort: try manual require
+    $dbFile = __DIR__ . '/../config/database.php';
+    if (file_exists($dbFile)) {
+        require_once $dbFile;
+        if (class_exists('Config\Database')) {
+            try {
+                $db  = \Config\Database::getInstance();
+                $pdo = $db->getConnection();
+            } catch (\Throwable $e) {
+                $db  = null;
+                $pdo = null;
+            }
+        }
+    }
+}
+
+if (!$pdo) {
+    echo '<p style="color:red">❌ Database not available — skipping this section</p>';
+} else {
+    try {
+        $stmt = $pdo->prepare(
+            "SELECT id, name, images
+             FROM properties
+             WHERE id = ?
+             LIMIT 1"
+        );
+        $stmt->execute([40]);
+        $prop = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        if (!$prop) {
+            echo '<p>⚠️ Property ID 40 not found in database.
+                    Try another property ID.</p>';
+
+            // Show available property IDs instead
+            $all = $pdo->query(
+                "SELECT id, name FROM properties
+                 WHERE deleted_at IS NULL
+                 ORDER BY id DESC LIMIT 5"
+            )->fetchAll(\PDO::FETCH_ASSOC);
+
+            if ($all) {
+                echo '<p>Available properties:</p><ul>';
+                foreach ($all as $p) {
+                    echo '<li>ID: ' . $p['id']
+                         . ' — ' . htmlspecialchars($p['name']) . '</li>';
+                }
+                echo '</ul>';
+            }
+        } else {
+            echo '<p>Property: <strong>'
+                 . htmlspecialchars($prop['name']) . '</strong></p>';
+            echo '<p>Raw images field: <code>'
+                 . htmlspecialchars($prop['images'] ?? 'NULL') . '</code></p>';
+
+            $images = json_decode($prop['images'] ?? '[]', true);
+
+            if (empty($images)) {
+                echo '<p>⚠️ No images stored for this property</p>';
+            } else {
+                foreach ($images as $filename) {
+                    $pubPath     = __DIR__ . '/uploads/properties/'
+                                   . $filename;
+                    $storagePath = __DIR__ . '/../storage/uploads/properties/'
+                                   . $filename;
+
+                    $inPublic  = file_exists($pubPath);
+                    $inStorage = file_exists($storagePath);
+
+                    echo '<p>Filename: <code>'
+                         . htmlspecialchars($filename) . '</code></p>';
+                    echo '<p>'
+                         . ($inPublic
+                             ? '✅ FILE EXISTS in public/uploads/properties/'
+                             : '❌ FILE MISSING from public/uploads/properties/')
+                         . '</p>';
+                    echo '<p>'
+                         . ($inStorage
+                             ? '✅ FILE EXISTS in storage/uploads/properties/'
+                             : '❌ FILE MISSING from storage/uploads/properties/')
+                         . '</p>';
+                    echo '<p>Web path: <code>/uploads/properties/'
+                         . htmlspecialchars($filename) . '</code></p>';
+                }
+            }
+        }
+    } catch (\Throwable $e) {
+        echo '<p style="color:red">❌ Query failed: '
+             . htmlspecialchars($e->getMessage()) . '</p>';
+    }
+}
+
+echo '</div>';
+
+// Section 2: Currency symbol audit
+echo '<div class="bg-white rounded-lg shadow p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4">2. Currency Symbol Audit</h2>';
+
+$filesToCheck = [
+    'app/controllers/PropertyController.php' => 'renderPropertyDetails method',
+    'views/admin/properties/list.php' => 'properties list view',
+    'views/admin/units/list.php' => 'units list view'
+];
+
+foreach ($filesToCheck as $file => $description) {
+    echo '<div class="mb-4">
+            <h3 class="font-medium">' . htmlspecialchars($description) . ' (' . htmlspecialchars($file) . ')</h3>';
+    
+    $filePath = __DIR__ . '/../' . $file;
+    if (file_exists($filePath)) {
+        $content = file_get_contents($filePath);
         
-        <div class="section">
-            <h2>1. Route Checks</h2>
-            <?php
-            $routesFile = file_get_contents(__DIR__ . '/../routes/web.php');
-            
-            // Check main unit routes
-            $hasUnitsIndex = strpos($routesFile, "'GET /admin/units' => 'UnitController@index'") !== false;
-            echo '<div class="check">';
-            echo $hasUnitsIndex ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
-            echo ' GET /admin/units → UnitController@index</div>';
-            
-            $hasUnitsCreate = strpos($routesFile, "'GET /admin/units/create' => 'UnitController@create'") !== false;
-            echo '<div class="check">';
-            echo $hasUnitsCreate ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
-            echo ' GET /admin/units/create → UnitController@create</div>';
-            
-            // Check property-scoped routes
-            $hasPropertyUnitsIndex = strpos($routesFile, "'GET /admin/properties/{id}/units' => 'UnitController@indexByProperty'") !== false;
-            echo '<div class="check">';
-            echo $hasPropertyUnitsIndex ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
-            echo ' GET /admin/properties/{id}/units → UnitController@indexByProperty</div>';
-            
-            $hasPropertyUnitsCreate = strpos($routesFile, "'GET /admin/properties/{id}/units/create' => 'UnitController@createForProperty'") !== false;
-            echo '<div class="check">';
-            echo $hasPropertyUnitsCreate ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
-            echo ' GET /admin/properties/{id}/units/create → UnitController@createForProperty</div>';
-            ?>
-        </div>
+        // Count dollar signs in currency context (not PHP variables)
+        $dollarCount = preg_match_all('/\$\s*<?php.*number_format/', $content);
+        $nairaCount = substr_count($content, '₦');
+        
+        echo '<p><strong>$ currency symbols:</strong> ' . $dollarCount . ' (should be 0)</p>';
+        echo '<p><strong>₦ currency symbols:</strong> ' . $nairaCount . '</p>';
+        
+        if ($dollarCount === 0) {
+            echo '<p class="text-green-600">✅ No dollar currency symbols found</p>';
+        } else {
+            echo '<p class="text-red-600">❌ Found ' . $dollarCount . ' dollar currency symbols</p>';
+        }
+    } else {
+        echo '<p class="text-red-600">File not found</p>';
+    }
+    echo '</div>';
+}
 
-        <div class="section">
-            <h2>2. Controller Method Checks</h2>
-            <?php
-            $controllerFile = file_get_contents(__DIR__ . '/../app/controllers/UnitController.php');
-            
-            $hasIndex = strpos($controllerFile, 'public function index()') !== false;
-            echo '<div class="check">';
-            echo $hasIndex ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
-            echo ' index() method exists</div>';
-            
-            $hasIndexByProperty = strpos($controllerFile, 'public function indexByProperty(') !== false;
-            echo '<div class="check">';
-            echo $hasIndexByProperty ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
-            echo ' indexByProperty() method exists</div>';
-            
-            $hasCreateForProperty = strpos($controllerFile, 'public function createForProperty(') !== false;
-            echo '<div class="check">';
-            echo $hasCreateForProperty ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
-            echo ' createForProperty() method exists</div>';
-            
-            $hasStore = strpos($controllerFile, 'public function store()') !== false;
-            echo '<div class="check">';
-            echo $hasStore ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
-            echo ' store() method exists</div>';
-            ?>
-        </div>
+echo '</div>';
 
-        <div class="section">
-            <h2>3. View File Checks</h2>
-            <?php
-            $unitsListFile = __DIR__ . '/../views/admin/units/list.php';
-            $unitsCreateFile = __DIR__ . '/../views/admin/units/create.php';
-            
-            $hasUnitsList = file_exists($unitsListFile);
-            echo '<div class="check">';
-            echo $hasUnitsList ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
-            echo ' views/admin/units/list.php exists</div>';
-            
-            $hasUnitsCreate = file_exists($unitsCreateFile);
-            echo '<div class="check">';
-            echo $hasUnitsCreate ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
-            echo ' views/admin/units/create.php exists</div>';
-            ?>
-        </div>
+// Section 3: URL fix check
+echo '<div class="bg-white rounded-lg shadow p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4">3. URL Fix Check</h2>';
 
-        <div class="section">
-            <h2>4. viewUnits() JavaScript Check</h2>
-            <?php
-            $propertiesListFile = file_get_contents(__DIR__ . '/../views/admin/properties/list.php');
-            
-            $hasCorrectUrl = strpos($propertiesListFile, '/admin/units?property_id=') !== false;
-            echo '<div class="check">';
-            echo $hasCorrectUrl ? '<span class="pass">✅ CORRECT URL</span>' : '<span class="fail">❌ MISSING</span>';
-            echo ' viewUnits() uses /admin/units?property_id=</div>';
-            
-            $hasOldUrl = strpos($propertiesListFile, '/admin/properties/${id}/units') !== false;
-            echo '<div class="check">';
-            echo !$hasOldUrl ? '<span class="pass">✅ OLD URL REMOVED</span>' : '<span class="fail">❌ OLD URL STILL EXISTS</span>';
-            echo ' Old /admin/properties/${id}/units URL removed</div>';
-            ?>
-        </div>
+// Read the full controller file
+$controllerFile = __DIR__ . '/../app/controllers/PropertyController.php';
+$controllerSrc = file_exists($controllerFile)
+    ? file_get_contents($controllerFile)
+    : '';
 
-        <div class="section">
-            <h2>5. Property Filter Banner Check</h2>
-            <?php
-            $unitsListContent = file_get_contents($unitsListFile);
-            
-            $hasBanner = strpos($unitsListContent, 'Showing units for') !== false;
-            echo '<div class="check">';
-            echo $hasBanner ? '<span class="pass">✅ BANNER EXISTS</span>' : '<span class="fail">❌ BANNER MISSING</span>';
-            echo ' Property context banner exists</div>';
-            
-            $hasViewAllLink = strpos($unitsListContent, 'View all units') !== false;
-            echo '<div class="check">';
-            echo $hasViewAllLink ? '<span class="pass">✅ VIEW ALL LINK</span>' : '<span class="fail">❌ VIEW ALL MISSING</span>';
-            echo ' "View all units" link exists</div>';
-            ?>
-        </div>
+if (!$controllerSrc) {
+    echo '<p style="color:red">❌ Could not read PropertyController.php</p>';
+} else {
+    // Check 3 — URL fixes
+    echo '<h4><strong>3. URL Fix Check</strong></h4>';
 
-        <div class="section">
-            <h2>6. Live Units Count</h2>
-            <?php
-            // Use app's own database config — never hardcode DB name
-            $dbConfigFile = __DIR__ . '/../config/database.php';
-            if (!class_exists('Config\Database') && file_exists($dbConfigFile)) {
-                require_once $dbConfigFile;
-            }
+    $hasAdminEditUrl = strpos($controllerSrc, '/admin/properties/') !== false;
+    $hasAdminUnitUrl = strpos($controllerSrc, '/admin/units/create') !== false;
+    $hasOldEditUrl = strpos($controllerSrc, "'/properties/") !== false
+        || strpos($controllerSrc, '"/properties/') !== false;
+    $hasOldUnitUrl = strpos($controllerSrc, "'/units/create") !== false
+        || strpos($controllerSrc, '"/units/create') !== false;
 
-            $db = null;
-            try {
-                if (class_exists('Config\Database')) {
-                    $db = \Config\Database::getInstance();
-                }
-            } catch (\Throwable $e) {
-                echo '<p style="color:red">❌ DB connection failed: '
-                     . htmlspecialchars($e->getMessage()) . '</p>';
-            }
+    echo '<p>'
+        . ($hasAdminEditUrl ? '✅' : '❌')
+        . ' /admin/properties/ in edit link — '
+        . ($hasAdminEditUrl ? 'CORRECT' : 'MISSING') . '</p>';
 
-            if ($db) {
-                try {
-                    $pdo = $db->getConnection();
-                    
-                    // Show which database we're connected to
-                    $stmt = $pdo->query("SELECT DATABASE()");
-                    $dbName = $stmt->fetchColumn();
-                    echo '<p>ℹ️ Connected to database: <strong>'
-                         . htmlspecialchars($dbName) . '</strong></p>';
-                    
-                    $stmt = $pdo->query("
-                        SELECT p.name, COUNT(u.id) as unit_count
-                        FROM properties p
-                        LEFT JOIN units u ON u.property_id = p.id AND u.deleted_at IS NULL
-                        WHERE p.deleted_at IS NULL
-                        GROUP BY p.id, p.name
-                        ORDER BY p.created_at DESC
-                        LIMIT 5
-                    ");
-                    
-                    $properties = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                    
-                    if (count($properties) > 0) {
-                        echo '<table>';
-                        echo '<tr><th>Property Name</th><th>Unit Count</th></tr>';
-                        foreach ($properties as $property) {
-                            echo '<tr>';
-                            echo '<td>' . htmlspecialchars($property['name']) . '</td>';
-                            echo '<td>' . $property['unit_count'] . '</td>';
-                            echo '</tr>';
-                        }
-                        echo '</table>';
-                    } else {
-                        echo '<p>No properties found in database.</p>';
-                    }
-                    
-                    echo '<div class="check"><span class="pass">✅</span> Database connection successful</div>';
-                    
-                } catch (\Throwable $e) {
-                    echo '<div class="check"><span class="fail">❌</span> Database query failed: '
-                         . htmlspecialchars($e->getMessage()) . '</div>';
-                }
-            }
-            ?>
-        </div>
+    echo '<p>'
+        . ($hasAdminUnitUrl ? '✅' : '❌')
+        . ' /admin/units/create in add unit link — '
+        . ($hasAdminUnitUrl ? 'CORRECT' : 'MISSING') . '</p>';
 
-        <div class="section">
-            <h2>7. Units List Page Debug</h2>
-            <?php
-            $listFile = file_get_contents(__DIR__ . '/../views/admin/units/list.php');
-            $createFile = file_get_contents(__DIR__ . '/../views/admin/units/create.php');
-            
-            // Variable order check
-            $hasCorrectOrder = strpos($listFile, '$filteredPropertyId = ViewManager::get') !== false && 
-                              strpos($listFile, '// MUST be assigned here') !== false;
-            echo '<div class="check">';
-            echo $hasCorrectOrder ? '<span class="pass">✅ CORRECT ORDER</span>' : '<span class="fail">❌ WRONG ORDER</span>';
-            echo ' $filteredPropertyId assigned before HTML output</div>';
-            
-            $noDuplicate = strpos($listFile, '$filteredPropertyId = ViewManager::get', strpos($listFile, '<!-- Units Management Content -->')) === false;
-            echo '<div class="check">';
-            echo $noDuplicate ? '<span class="pass">✅ NO DUPLICATE</span>' : '<span class="fail">❌ DUPLICATE EXISTS</span>';
-            echo ' No duplicate $filteredPropertyId assignment after HTML</div>';
-            
-            // Header layout check
-            $hasFlexLayout = strpos($listFile, 'flex-col sm:flex-row sm:items-center sm:justify-between') !== false;
-            echo '<div class="check">';
-            echo $hasFlexLayout ? '<span class="pass">✅ FLEX LAYOUT</span>' : '<span class="fail">❌ MISSING</span>';
-            echo ' Header has responsive flex layout</div>';
-            
-            $hasExportFunction = strpos($listFile, 'onclick="exportUnits()"') !== false;
-            echo '<div class="check">';
-            echo $hasExportFunction ? '<span class="pass">✅ EXPORT FUNCTION</span>' : '<span class="fail">❌ MISSING</span>';
-            echo ' Export button calls exportUnits()</div>';
-            
-            // Currency check
-            $hasNairaList = strpos($listFile, '₦') !== false;
-            echo '<div class="check">';
-            echo $hasNairaList ? '<span class="pass">✅ NAIRA</span>' : '<span class="fail">❌ STILL DOLLAR</span>';
-            echo ' ₦ symbol in list.php table</div>';
-            
-            $hasNairaCreate = strpos($createFile, '₦') !== false;
-            echo '<div class="check">';
-            echo $hasNairaCreate ? '<span class="pass">✅ NAIRA</span>' : '<span class="fail">❌ STILL DOLLAR</span>';
-            echo ' ₦ symbol in create.php</div>';
-            
-            // Live unit count
-            $db = null;
-            try {
-                if (class_exists('Config\Database')) {
-                    $db = \Config\Database::getInstance();
-                }
-            } catch (\Throwable $e) {
-                // Database already initialized above, just continue
-            }
-            
-            if ($db) {
-                try {
-                    $pdo = $db->getConnection();
-                    $stmt = $pdo->query("SELECT COUNT(*) FROM units WHERE deleted_at IS NULL");
-                    $unitCount = $stmt->fetchColumn();
-                    echo '<div class="check"><span class="pass">✅</span> ' . $unitCount . ' total units in database</div>';
-                } catch (\Throwable $e) {
-                    echo '<div class="check"><span class="fail">❌</span> Database query failed: ' . htmlspecialchars($e->getMessage()) . '</div>';
-                }
-            } else {
-                echo '<div class="check"><span class="fail">❌</span> Database not available</div>';
-            }
-            ?>
-        </div>
+    echo '<p>'
+        . (!$hasOldEditUrl ? '✅' : '⚠️')
+        . ' Old /properties/ URL — '
+        . (!$hasOldEditUrl ? 'REMOVED' : 'STILL PRESENT') . '</p>';
 
-        <div class="section">
-            <h2>9. Occupant Create Page Debug</h2>
-            <?php
-            // ── FORCE MIGRATION: add missing next_of_kin columns ──────────────
-            echo '<h4><strong>0. Force Migration — next_of_kin columns</strong></h4>';
-            if ($db) {
-                try {
-                    $pdo = $db->getConnection();
-                    $migrations = [
-                        'next_of_kin'         => "VARCHAR(255) NULL",
-                        'next_of_kin_phone'   => "VARCHAR(50) NULL",
-                        'next_of_kin_address' => "TEXT NULL",
-                    ];
-                    foreach ($migrations as $col => $def) {
-                        $chk = $pdo->prepare("
-                            SELECT COUNT(*) FROM information_schema.COLUMNS
-                            WHERE TABLE_SCHEMA = DATABASE()
-                              AND TABLE_NAME   = 'tenants'
-                              AND COLUMN_NAME  = ?
-                        ");
-                        $chk->execute([$col]);
-                        if ((int)$chk->fetchColumn() === 0) {
-                            $pdo->exec(
-                                "ALTER TABLE tenants ADD COLUMN `{$col}` {$def}"
-                            );
-                            echo '<p style="color:green">✅ CREATED column: '
-                                 . $col . '</p>';
-                        } else {
-                            echo '<p>✅ Already exists: ' . $col . '</p>';
+    echo '<p>'
+        . (!$hasOldUnitUrl ? '✅' : '⚠️')
+        . ' Old /units/create URL — '
+        . (!$hasOldUnitUrl ? 'REMOVED' : 'STILL PRESENT') . '</p>';
+
+    // Check 4 — Overflow protection
+    echo '<h4><strong>4. Overflow Protection Check</strong></h4>';
+
+    $hasTruncate = strpos($controllerSrc, 'truncate') !== false;
+    $hasMinW0 = strpos($controllerSrc, 'min-w-0') !== false;
+    $hasStoragePath = strpos($controllerSrc, '/storage/uploads/properties/') !== false;
+    $hasCorrectPath = strpos($controllerSrc, '/uploads/properties/') !== false;
+
+    echo '<p>'
+        . ($hasTruncate ? '✅' : '❌')
+        . ' truncate class on rent price — '
+        . ($hasTruncate ? 'PRESENT' : 'MISSING') . '</p>';
+
+    echo '<p>'
+        . ($hasMinW0 ? '✅' : '❌')
+        . ' min-w-0 on stat card — '
+        . ($hasMinW0 ? 'PRESENT' : 'MISSING') . '</p>';
+
+    echo '<p>'
+        . (!$hasStoragePath ? '✅' : '❌')
+        . ' /storage/uploads/properties/ path — '
+        . (!$hasStoragePath ? 'REMOVED ✅' : 'STILL PRESENT ❌ needs fix') . '</p>';
+
+    echo '<p>'
+        . ($hasCorrectPath ? '✅' : '❌')
+        . ' /uploads/properties/ correct path — '
+        . ($hasCorrectPath ? 'PRESENT' : 'MISSING') . '</p>';
+}
+
+echo '</div>';
+
+// Section 5: Property Card Buttons Debug
+echo '<div class="bg-white rounded-lg shadow p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4">5. Property Card Buttons Debug</h2>';
+
+$propertiesListFile = __DIR__ . '/../views/admin/properties/list.php';
+if (file_exists($propertiesListFile)) {
+    $content = file_get_contents($propertiesListFile);
+    
+    $hasGridButtons = strpos($content, 'grid grid-cols-2 gap-2') !== false;
+    $hasEditButton = strpos($content, 'fas fa-edit') !== false && strpos($content, 'Edit') !== false;
+    $hasDeleteButton = strpos($content, 'fas fa-trash') !== false && strpos($content, 'Delete') !== false;
+    $hasOldIconButtons = strpos($content, 'text-gray-400 hover:text-blue-600') !== false;
+    
+    echo '<p><strong>Grid Buttons Layout:</strong> ' . ($hasGridButtons ? '✅ GRID BUTTONS' : '❌ MISSING') . '</p>';
+    echo '<p><strong>Edit Button with Text:</strong> ' . ($hasEditButton ? '✅' : '❌') . '</p>';
+    echo '<p><strong>Delete Button with Text:</strong> ' . ($hasDeleteButton ? '✅' : '❌') . '</p>';
+    echo '<p><strong>Old Icon-Only Buttons:</strong> ' . ($hasOldIconButtons ? '⚠️ OLD BUTTONS STILL THERE' : '✅ REMOVED') . '</p>';
+} else {
+    echo '<p class="text-red-600">views/admin/properties/list.php not found</p>';
+}
+
+echo '</div>';
+
+// Section 6: Broken Require/Include Path Audit
+echo '<div class="bg-white rounded-lg shadow p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4">6. Broken Path Audit — require/include errors</h2>';
+
+$projectRoot = __DIR__ . '/..';
+$scanDirs = [
+    $projectRoot . '/app/models',
+    $projectRoot . '/app/controllers',
+    $projectRoot . '/app/components',
+    $projectRoot . '/config',
+];
+
+$brokenPaths  = [];
+$checkedFiles = 0;
+$totalRequires = 0;
+
+// Recursive file scanner
+function scanPhpFiles(string $dir): array {
+    $files = [];
+    if (!is_dir($dir)) return $files;
+    $iterator = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator(
+            $dir, RecursiveDirectoryIterator::SKIP_DOTS)
+    );
+    foreach ($iterator as $file) {
+        if ($file->getExtension() === 'php') {
+            $files[] = $file->getPathname();
+        }
+    }
+    return $files;
+}
+
+foreach ($scanDirs as $dir) {
+    $files = scanPhpFiles($dir);
+    foreach ($files as $filepath) {
+        $checkedFiles++;
+        $content = file_get_contents($filepath);
+        $lines   = explode("\n", $content);
+
+        foreach ($lines as $lineNum => $line) {
+            // Match require/include with __DIR__ paths
+            if (preg_match(
+                '/(?:require_once|require|include_once|include)\s*[(\s]'
+                . '[\'"]?(__DIR__|dirname\(__FILE__\))'
+                . '\s*\.\s*[\'"]([^\'"]+)[\'"]/',
+                $line, $matches
+            )) {
+                $totalRequires++;
+                $relPath  = $matches[2];
+                $fileDir  = dirname($filepath);
+                $resolved = realpath($fileDir . '/' . ltrim($relPath, '/'));
+
+                // Also try resolving manually if realpath fails
+                if (!$resolved) {
+                    $manual = $fileDir . $relPath;
+                    // Normalize .. segments
+                    $parts  = explode('/', str_replace('\\', '/', $manual));
+                    $stack  = [];
+                    foreach ($parts as $part) {
+                        if ($part === '..') {
+                            array_pop($stack);
+                        } elseif ($part !== '.') {
+                            $stack[] = $part;
                         }
                     }
-                } catch (\Throwable $e) {
-                    echo '<p style="color:red">❌ Migration error: '
-                         . htmlspecialchars($e->getMessage()) . '</p>';
-                }
-            } else {
-                echo '<p style="color:red">❌ No DB connection — migration skipped</p>';
-            }
-
-            // 1. Column existence check
-            echo '<h3>1. Tenants table next_of_kin columns check</h3>';
-            if ($db) {
-                try {
-                    $pdo = $db->getConnection();
-                    $stmt = $pdo->query("SHOW COLUMNS FROM tenants LIKE 'next_of_kin%'");
-                    $columns = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                    
-                    echo '<table>';
-                    echo '<tr><th>Column Name</th><th>Type</th><th>Null</th><th>Status</th></tr>';
-                    
-                    $nextOfKinExists = false;
-                    $nextOfKinPhoneExists = false;
-                    $nextOfKinAddressExists = false;
-                    
-                    foreach ($columns as $col) {
-                        echo '<tr>';
-                        echo '<td>' . htmlspecialchars($col['Field']) . '</td>';
-                        echo '<td>' . htmlspecialchars($col['Type']) . '</td>';
-                        echo '<td>' . htmlspecialchars($col['Null']) . '</td>';
-                        
-                        if ($col['Field'] === 'next_of_kin') {
-                            $nextOfKinExists = true;
-                            echo '<td><span class="pass">✅ next_of_kin</span></td>';
-                        } elseif ($col['Field'] === 'next_of_kin_phone') {
-                            $nextOfKinPhoneExists = true;
-                            echo '<td><span class="pass">✅ next_of_kin_phone</span></td>';
-                        } elseif ($col['Field'] === 'next_of_kin_address') {
-                            $nextOfKinAddressExists = true;
-                            echo '<td><span class="pass">✅ next_of_kin_address</span></td>';
-                        } else {
-                            echo '<td>-</td>';
-                        }
-                        echo '</tr>';
-                    }
-                    echo '</table>';
-                    
-                    if (!$nextOfKinExists) {
-                        echo '<div class="check"><span class="fail">❌ next_of_kin column missing</span></div>';
-                    }
-                    if (!$nextOfKinPhoneExists) {
-                        echo '<div class="check"><span class="fail">❌ next_of_kin_phone column missing</span></div>';
-                    }
-                    if (!$nextOfKinAddressExists) {
-                        echo '<div class="check"><span class="fail">❌ next_of_kin_address column missing</span></div>';
-                    }
-                    
-                } catch (\Throwable $e) {
-                    echo '<div class="check"><span class="fail">❌ Could not check tenants table: ' . htmlspecialchars($e->getMessage()) . '</div></div>';
-                }
-            } else {
-                echo '<p style="color:red">Database not available for column check</p>';
-            }
-
-            // 2. Upload directory check
-            echo '<h3>2. Upload directory check</h3>';
-            $uploadDir = __DIR__ . '/../public/uploads/documents';
-            if (is_dir($uploadDir)) {
-                if (is_writable($uploadDir)) {
-                    echo '<div class="check"><span class="pass">✅</span> public/uploads/documents exists and writable</div>';
+                    $manual = implode(DIRECTORY_SEPARATOR, $stack);
+                    $exists = file_exists($manual);
                 } else {
-                    echo '<div class="check"><span class="fail">❌</span> public/uploads/documents exists but not writable</div>';
+                    $exists = true;
                 }
-            } else {
-                echo '<div class="check"><span class="fail">❌</span> public/uploads/documents does not exist</div>';
-            }
 
-            // 3. storeOccupant() implementation check
-            echo '<h3>3. storeOccupant() implementation check</h3>';
-            $controllerFile = file_get_contents(__DIR__ . '/../app/controllers/TenantOccupantController.php');
-            
-            $hasDbInsert = strpos($controllerFile, 'db->insert') !== false && strpos($controllerFile, 'storeOccupant') !== false;
-            echo '<div class="check">';
-            echo $hasDbInsert ? '<span class="pass">✅ IMPLEMENTED</span>' : '<span class="fail">❌ STUB</span>';
-            echo ' db->insert exists in storeOccupant</div>';
-            
-            $hasNextOfKinAddress = strpos($controllerFile, 'next_of_kin_address') !== false;
-            echo '<div class="check">';
-            echo $hasNextOfKinAddress ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
-            echo ' next_of_kin_address in storeOccupant</div>';
-
-            // 4. Form fields check
-            echo '<h3>4. Form fields check</h3>';
-            $createFile = file_get_contents(__DIR__ . '/../views/admin/occupants/create.php');
-            
-            $hasNextOfKinField = strpos($createFile, 'name="next_of_kin"') !== false;
-            echo '<div class="check">';
-            echo $hasNextOfKinField ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
-            echo ' next_of_kin input exists</div>';
-            
-            $hasNextOfKinPhoneField = strpos($createFile, 'name="next_of_kin_phone"') !== false;
-            echo '<div class="check">';
-            echo $hasNextOfKinPhoneField ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
-            echo ' next_of_kin_phone input exists</div>';
-            
-            $hasNextOfKinAddressField = strpos($createFile, 'name="next_of_kin_address"') !== false;
-            echo '<div class="check">';
-            echo $hasNextOfKinAddressField ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
-            echo ' next_of_kin_address textarea exists</div>';
-            
-            $hasCameraCaptureLogic = strpos($createFile, 'camera_capture_data') !== false;
-            echo '<div class="check">';
-            echo $hasCameraCaptureLogic ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
-            echo ' camera_capture_data hidden input logic exists</div>';
-            
-            $hasStartCamera = strpos($createFile, 'function startCamera') !== false;
-            echo '<div class="check">';
-            echo $hasStartCamera ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
-            echo ' startCamera function exists</div>';
-            
-            $hasEnctype = strpos($createFile, 'enctype="multipart/form-data"') !== false;
-            echo '<div class="check">';
-            echo $hasEnctype ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
-            echo ' enctype="multipart/form-data" on form</div>';
-
-            // 5. Route check
-            echo '<h3>5. Route check</h3>';
-            $routesFile = file_get_contents(__DIR__ . '/../routes/web.php');
-            
-            $hasOccupantsRoute = strpos($routesFile, "'POST /admin/occupants' => 'TenantOccupantController@storeOccupant'") !== false;
-            echo '<div class="check">';
-            echo $hasOccupantsRoute ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
-            echo ' POST /admin/occupants → TenantOccupantController@storeOccupant</div>';
-            ?>
-        </div>
-            <?php
-            // 1. Tenants table structure check
-            echo '<h3>1. Tenants table structure check</h3>';
-            if ($db) {
-                try {
-                    $pdo = $db->getConnection();
-                    $stmt = $pdo->query("SHOW COLUMNS FROM tenants");
-                    $columns = $stmt->fetchAll(PDO::FETCH_COLUMN);
-                    
-                    echo '<p><strong>Columns found:</strong> ' . implode(', ', $columns) . '</p>';
-                    
-                    if (in_array('unit_id', $columns)) {
-                        echo '<div class="check"><span class="pass">✅</span> unit_id column exists</div>';
-                        $joinColumn = 'unit_id';
-                    } elseif (in_array('property_id', $columns)) {
-                        echo '<div class="check"><span class="pass">✅</span> property_id column exists</div>';
-                        $joinColumn = 'property_id';
-                    } else {
-                        echo '<div class="check"><span class="fail">❌</span> Neither unit_id nor property_id found — JOIN will fail</div>';
-                        $joinColumn = null;
-                    }
-                } catch (\Throwable $e) {
-                    echo '<div class="check"><span class="fail">❌</span> Could not check tenants table: ' . htmlspecialchars($e->getMessage()) . '</div>';
+                if (!$resolved && !($exists ?? false)) {
+                    $brokenPaths[] = [
+                        'file'     => str_replace(
+                            $projectRoot, '', $filepath),
+                        'line'     => $lineNum + 1,
+                        'require'  => trim($line),
+                        'resolved' => $fileDir . $relPath,
+                    ];
                 }
-            } else {
-                echo '<p style="color:red">Database not available for table structure check</p>';
             }
+        }
+    }
+}
 
-            // 2. tenant_name in query check
-            echo '<h3>2. tenant_name in query check</h3>';
-            $controllerFile = file_get_contents(__DIR__ . '/../app/controllers/UnitController.php');
-            
-            $hasTenantNameInQuery = strpos($controllerFile, 'tenant_name') !== false;
-            echo '<div class="check">';
-            echo $hasTenantNameInQuery ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
-            echo " 'tenant_name' exists in getFilteredUnits() query</div>";
-            
-            $hasLeftJoinTenants = strpos($controllerFile, 'LEFT JOIN tenants') !== false;
-            echo '<div class="check">';
-            echo $hasLeftJoinTenants ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
-            echo ' LEFT JOIN tenants exists in getFilteredUnits()</div>';
+// Output results
+echo '<p>📂 Files scanned: <strong>' . $checkedFiles . '</strong></p>';
+echo '<p>🔍 require/include statements found: <strong>'
+     . $totalRequires . '</strong></p>';
 
-            // 3. Defensive access check
-            echo '<h3>3. Defensive access check</h3>';
-            $listFile = file_get_contents(__DIR__ . '/../views/admin/units/list.php');
-            
-            $hasDefensiveAccess = strpos($listFile, '!empty($unit[\'tenant_name\'])') !== false || strpos($listFile, '$unit[\'tenant_name\'] ?? null') !== false;
-            echo '<div class="check">';
-            echo $hasDefensiveAccess ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
-            echo ' Defensive tenant_name access (!empty or ?? null)</div>';
-            
-            $hasUnguardedAccess = strpos($listFile, '$unit[\'tenant_name\'] ?:') !== false && strpos($listFile, '!empty($unit[\'tenant_name\'])') === false;
-            echo '<div class="check">';
-            echo !$hasUnguardedAccess ? '<span class="pass">✅</span>' : '<span class="fail">⚠️ UNGUARDED</span>';
-            echo ' No unguarded $unit[\'tenant_name\'] still present</div>';
+if (empty($brokenPaths)) {
+    echo '<p style="color:green">✅ No broken require/include paths found</p>';
+} else {
+    echo '<p style="color:red"><strong>❌ '
+         . count($brokenPaths)
+         . ' broken path(s) found:</strong></p>';
 
-            // 4. Live test
-            echo '<h3>4. Live test — query first 5 units with tenant join</h3>';
-            if ($db && isset($joinColumn)) {
-                try {
-                    $pdo = $db->getConnection();
-                    
-                    // Updated query without status filter
-                    $testQuery = "SELECT u.unit_number, u.status, t.name as tenant_name
-                                  FROM units u
-                                  LEFT JOIN tenants t
-                                         ON t.unit_id = u.id
-                                        AND t.deleted_at IS NULL
-                                  WHERE u.deleted_at IS NULL
-                                  LIMIT 5";
-                    
-                    $stmt = $pdo->query($testQuery);
-                    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                    
-                    if (count($results) > 0) {
-                        echo '<table>';
-                        echo '<tr><th>Unit Number</th><th>Status</th><th>Tenant Name</th></tr>';
-                        foreach ($results as $row) {
-                            echo '<tr>';
-                            echo '<td>' . htmlspecialchars($row['unit_number']) . '</td>';
-                            echo '<td>' . htmlspecialchars($row['status']) . '</td>';
-                            echo '<td>' . ($row['tenant_name'] ? htmlspecialchars($row['tenant_name']) : '<em>NULL</em>') . '</td>';
-                            echo '</tr>';
-                        }
-                        echo '</table>';
-                        echo '<div class="check"><span class="pass">✅</span> Live query test successful</div>';
-                    } else {
-                        echo '<p>No units found for live test</p>';
-                    }
+    echo '<table border="1" cellpadding="6"
+           style="border-collapse:collapse;width:100%;
+                  font-family:monospace;font-size:12px">';
+    echo '<tr style="background:#fee2e2">
+            <th>File</th>
+            <th>Line</th>
+            <th>Broken Path</th>
+            <th>Suggested Fix</th>
+          </tr>';
 
-                    // Show first 3 tenants raw to verify data exists
-                    echo '<h3>5. Raw tenants data check</h3>';
-                    $stmt = $pdo->query(
-                        "SELECT id, name, unit_id, status FROM tenants
-                         WHERE deleted_at IS NULL LIMIT 3"
-                    );
-                    $rawTenants = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-                    echo '<p><strong>Raw tenants sample:</strong></p>';
-                    if ($rawTenants) {
-                        echo '<table border="1" cellpadding="4">';
-                        echo '<tr><th>ID</th><th>Name</th><th>unit_id</th><th>status</th></tr>';
-                        foreach ($rawTenants as $t) {
-                            echo '<tr>'
-                                 . '<td>' . $t['id'] . '</td>'
-                                 . '<td>' . htmlspecialchars($t['name'] ?? 'NULL') . '</td>'
-                                 . '<td>' . ($t['unit_id'] ?? 'NULL') . '</td>'
-                                 . '<td>' . htmlspecialchars($t['status'] ?? 'NULL') . '</td>'
-                                 . '</tr>';
-                        }
-                        echo '</table>';
-                    } else {
-                        echo '<p>⚠️ No tenants found in database</p>';
-                    }
-                    
-                } catch (\Throwable $e) {
-                    echo '<div class="check"><span class="fail">❌</span> Live test failed: ' . htmlspecialchars($e->getMessage()) . '</div>';
+    foreach ($brokenPaths as $b) {
+        // Suggest the correct path
+        $broken   = $b['resolved'];
+        $filename = basename($broken);
+
+        // Try to find the file in the project
+        $suggestion = 'File not found in project';
+        $searchDirs = [
+            $projectRoot . '/config/',
+            $projectRoot . '/app/',
+            $projectRoot . '/public/',
+        ];
+        foreach ($searchDirs as $sd) {
+            $found = glob($sd . '**/' . $filename, GLOB_BRACE);
+            if (empty($found)) {
+                // Try direct
+                $direct = $sd . $filename;
+                if (file_exists($direct)) {
+                    $suggestion = "__DIR__ . '/"
+                        . str_replace(
+                            str_replace('\\','/',
+                                dirname($projectRoot
+                                    . $b['file'])) . '/',
+                            '',
+                            str_replace('\\', '/', $direct))
+                        . "'";
+                    break;
                 }
-            } else {
-                echo '<p style="color:red">Cannot perform live test — database unavailable or no join column found</p>';
             }
-            ?>
-        </div>
+        }
 
-        <div class="section">
-            <h2>10. Properties Filter Bar Alignment Debug</h2>
-            <?php
-            $propertiesListFile = file_get_contents(__DIR__ . '/../views/admin/properties/list.php');
-            
-            // Check search container has flex-1 min-w-0
-            $hasSearchFlex = strpos($propertiesListFile, 'flex-1 min-w-0') !== false;
-            echo '<div class="check">';
-            echo $hasSearchFlex ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
-            echo ' flex-1 min-w-0 on search container</div>';
-            
-            // Check type_filter has flex-shrink-0
-            $hasTypeFlexShrink = strpos($propertiesListFile, 'id="type_filter"') !== false && 
-                                 strpos($propertiesListFile, 'flex-shrink-0', strpos($propertiesListFile, 'id="type_filter"')) !== false;
-            echo '<div class="check">';
-            echo $hasTypeFlexShrink ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
-            echo ' flex-shrink-0 on type_filter container</div>';
-            
-            // Check status_filter has flex-shrink-0
-            $hasStatusFlexShrink = strpos($propertiesListFile, 'id="status_filter"') !== false && 
-                                  strpos($propertiesListFile, 'flex-shrink-0', strpos($propertiesListFile, 'id="status_filter"')) !== false;
-            echo '<div class="check">';
-            echo $hasStatusFlexShrink ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
-            echo ' flex-shrink-0 on status_filter container</div>';
-            
-            // Check no labels before selects
-            $typeLabelExists = strpos($propertiesListFile, '<label') !== false && 
-                              strpos($propertiesListFile, 'type_filter', strpos($propertiesListFile, '<label')) !== false;
-            $statusLabelExists = strpos($propertiesListFile, '<label') !== false && 
-                                strpos($propertiesListFile, 'status_filter', strpos($propertiesListFile, '<label')) !== false;
-            
-            echo '<div class="check">';
-            echo (!$typeLabelExists && !$statusLabelExists) ? '<span class="pass">✅ CLEAN</span>' : '<span class="fail">⚠️ LABELS STILL PRESENT</span>';
-            echo ' No <label> elements immediately before type_filter or status_filter selects</div>';
-            
-            // Check type_filter ID exists
-            $hasTypeId = strpos($propertiesListFile, 'id="type_filter"') !== false;
-            echo '<div class="check">';
-            echo $hasTypeId ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
-            echo ' id="type_filter" exists</div>';
-            
-            // Check status_filter ID exists
-            $hasStatusId = strpos($propertiesListFile, 'id="status_filter"') !== false;
-            echo '<div class="check">';
-            echo $hasStatusId ? '<span class="pass">✅</span>' : '<span class="fail">❌</span>';
-            echo ' id="status_filter" exists</div>';
-            ?>
-        </div>
+        echo '<tr>'
+             . '<td style="color:#dc2626">'
+             . htmlspecialchars($b['file']) . '</td>'
+             . '<td style="text-align:center">'
+             . $b['line'] . '</td>'
+             . '<td style="color:#9a3412;word-break:break-all">'
+             . htmlspecialchars(trim($b['require'])) . '</td>'
+             . '<td style="color:#166534">'
+             . htmlspecialchars($suggestion) . '</td>'
+             . '</tr>';
+    }
+    echo '</table>';
 
-        <div class="summary">
-            <h2>Summary</h2>
-            <?php
-            $totalChecks = 25;
-            $passedChecks = ($hasUnitsIndex ? 1 : 0) + ($hasUnitsCreate ? 1 : 0) + 
-                           ($hasPropertyUnitsIndex ? 1 : 0) + ($hasPropertyUnitsCreate ? 1 : 0) +
-                           ($hasIndex ? 1 : 0) + ($hasIndexByProperty ? 1 : 0) + 
-                           ($hasCreateForProperty ? 1 : 0) + ($hasStore ? 1 : 0) +
-                           ($hasUnitsList ? 1 : 0) + ($hasUnitsCreate ? 1 : 0) +
-                           ($hasCorrectUrl ? 1 : 0) + (!$hasOldUrl ? 1 : 0) +
-                           ($hasCorrectOrder ? 1 : 0) + ($noDuplicate ? 1 : 0) +
-                           ($hasFlexLayout ? 1 : 0) + ($hasExportFunction ? 1 : 0) +
-                           ($hasNairaList ? 1 : 0) + ($hasNairaCreate ? 1 : 0) +
-                           ($hasSearchFlex ? 1 : 0) + ($hasTypeFlexShrink ? 1 : 0) + 
-                           ($hasStatusFlexShrink ? 1 : 0) + ((!$typeLabelExists && !$statusLabelExists) ? 1 : 0) +
-                           ($hasTypeId ? 1 : 0) + ($hasStatusId ? 1 : 0);
+    // Also show the correct root path for reference
+    echo '<p style="margin-top:10px">
+            <strong>Project root:</strong>
+            <code>' . htmlspecialchars($projectRoot) . '</code>
+          </p>';
+    echo '<p>
+            <strong>config/database.php full path:</strong>
+            <code>'
+         . htmlspecialchars($projectRoot . '/config/database.php')
+         . '</code> — '
+         . (file_exists($projectRoot . '/config/database.php')
+             ? '<span style="color:green">✅ EXISTS</span>'
+             : '<span style="color:red">❌ MISSING</span>')
+         . '</p>';
+}
+
+echo '</div>';
+
+// Section 7: Known Broken File Check
+echo '<div class="bg-white rounded-lg shadow p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4">7. Known Broken File Check</h2>';
+
+$knownBroken = [
+    $projectRoot . '/app/models/PaymentModel.php',
+];
+
+foreach ($knownBroken as $kf) {
+    if (!file_exists($kf)) {
+        echo '<p>⚠️ ' . basename($kf) . ' — FILE NOT FOUND</p>';
+        continue;
+    }
+
+    $content = file_get_contents($kf);
+    $lines   = explode("\n", $content);
+
+    // Show lines 1-10 for quick inspection
+    echo '<p><strong>' . basename($kf) . '</strong> — '
+         . 'First 10 lines:</p>';
+    echo '<pre style="background:#f3f4f6;padding:10px;
+                      font-size:11px;overflow-x:auto">';
+    for ($i = 0; $i < min(10, count($lines)); $i++) {
+        $marker = ($i === 5) ? ' ← Line ' . ($i+1) . ' (error here)' : '';
+        echo htmlspecialchars(($i+1) . ': ' . $lines[$i]) . $marker . "\n";
+    }
+    echo '</pre>';
+
+    // Check if the path it requires actually exists
+    if (preg_match(
+        '/require_once\s+__DIR__\s*\.\s*[\'"]([^\'"]+)[\'"]/',
+        $content, $m)) {
+        $reqPath = dirname($kf) . $m[1];
+        echo '<p>Requires: <code>'
+             . htmlspecialchars($m[1]) . '</code></p>';
+        echo '<p>Resolves to: <code>'
+             . htmlspecialchars($reqPath) . '</code></p>';
+        echo '<p>'
+             . (file_exists($reqPath)
+                 ? '✅ FILE EXISTS'
+                 : '❌ FILE MISSING — <strong>this is the bug</strong>')
+             . '</p>';
+
+        if (!file_exists($reqPath)) {
+            $correctPath = $projectRoot . '/config/database.php';
+            echo '<p>✅ Correct path should be: <code>'
+                 . htmlspecialchars(
+                     '__DIR__ . \'/../../config/database.php\'')
+                 . '</code></p>';
+            echo '<p>'
+                 . (file_exists($correctPath)
+                     ? '✅ Correct file EXISTS at: '
+                       . htmlspecialchars($correctPath)
+                     : '❌ Even correct path is missing')
+                 . '</p>';
+        }
+    }
+}
+
+echo '</div>';
+
+// Section 10: Payments Table Schema Debug
+echo '<div class="bg-white rounded-lg shadow p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4">10. Payments Table Schema Debug</h2>';
+
+// 1. Actual columns check
+echo '<h3 class="font-medium mb-2">1. Actual columns check</h3>';
+if ($pdo) {
+    try {
+        $stmt = $pdo->prepare("SHOW COLUMNS FROM payments");
+        $stmt->execute();
+        $columns = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        echo '<table border="1" cellpadding="4" style="border-collapse:collapse;width:100%;font-size:12px">';
+        echo '<tr style="background:#f3f4f6"><th>Column</th><th>Status</th></tr>';
+        
+        $expectedColumns = [
+            'deleted_at' => '✅ or ❌',
+            'unit_id' => '✅ or ❌', 
+            'receipt_reference' => '✅ (should exist already)',
+            'paystack_reference' => 'should NOT exist → ✅ ABSENT or ⚠️ PRESENT'
+        ];
+        
+        $foundColumns = [];
+        foreach ($columns as $col) {
+            $foundColumns[$col['Field']] = $col;
+        }
+        
+        foreach ($expectedColumns as $col => $expected) {
+            $exists = isset($foundColumns[$col]);
+            $status = $exists ? '✅ EXISTS' : '❌ MISSING';
+            $color = $exists ? 'green' : 'red';
             
-            $successRate = round(($passedChecks / $totalChecks) * 100, 1);
-            
-            echo '<p><strong>Total Checks:</strong> ' . $totalChecks . '</p>';
-            echo '<p><strong>Passed:</strong> <span class="pass">' . $passedChecks . '</span></p>';
-            echo '<p><strong>Failed:</strong> <span class="fail">' . ($totalChecks - $passedChecks) . '</span></p>';
-            echo '<p><strong>Success Rate:</strong> <strong>' . $successRate . '%</strong></p>';
-            
-            if ($successRate >= 90) {
-                echo '<p><span class="pass">🎉 EXCELLENT! Units functionality is fully implemented.</span></p>';
-            } elseif ($successRate >= 70) {
-                echo '<p><span class="pass">✅ GOOD! Most units functionality is working.</span></p>';
-            } else {
-                echo '<p><span class="fail">⚠️ NEEDS WORK! Several issues need to be fixed.</span></p>';
+            echo '<tr>';
+            echo '<td style="font-family:monospace">' . htmlspecialchars($col) . '</td>';
+            echo '<td style="color:' . $color . '">' . $status . '</td>';
+            echo '</tr>';
+        }
+        
+        // Check for unwanted paystack_reference
+        if (isset($foundColumns['paystack_reference'])) {
+            echo '<tr>';
+            echo '<td style="font-family:monospace">paystack_reference</td>';
+            echo '<td style="color:orange">⚠️ UNWANTED COLUMN EXISTS</td>';
+            echo '</tr>';
+        } else {
+            echo '<tr>';
+            echo '<td style="font-family:monospace">paystack_reference</td>';
+            echo '<td style="color:green">✅ CORRECTLY ABSENT</td>';
+            echo '</tr>';
+        }
+        
+        echo '</table>';
+        
+    } catch (Throwable $e) {
+        echo '<p style="color:red">❌ Error checking columns: ' . htmlspecialchars($e->getMessage()) . '</p>';
+    }
+} else {
+    echo '<p style="color:red">❌ Database not available</p>';
+}
+
+// 2. PaymentModel.php column reference audit
+echo '<h3 class="font-medium mb-2 mt-4">2. PaymentModel.php column reference audit</h3>';
+$paymentModelFile = $projectRoot . '/app/models/PaymentModel.php';
+if (file_exists($paymentModelFile)) {
+    $modelContent = file_get_contents($paymentModelFile);
+    
+    $checks = [
+        'paystack_reference' => '❌ STILL WRONG or ✅ REMOVED',
+        'receipt_reference' => '✅ or ❌',
+        'deleted_at' => '✅ or ❌',
+        'ensurePaymentsSchema' => '✅ or ❌'
+    ];
+    
+    echo '<table border="1" cellpadding="4" style="border-collapse:collapse;width:100%;font-size:12px">';
+    echo '<tr style="background:#f3f4f6"><th>Check</th><th>Result</th></tr>';
+    
+    foreach ($checks as $check => $expected) {
+        $found = strpos($modelContent, $check) !== false;
+        $result = '';
+        
+        if ($check === 'paystack_reference') {
+            $result = $found ? '❌ STILL WRONG' : '✅ REMOVED';
+        } elseif ($check === 'receipt_reference') {
+            $result = $found ? '✅ PRESENT' : '❌ MISSING';
+        } elseif ($check === 'deleted_at') {
+            $result = $found ? '✅ USED IN QUERIES' : '❌ NOT FOUND';
+        } elseif ($check === 'ensurePaymentsSchema') {
+            $result = $found ? '✅ METHOD EXISTS' : '❌ METHOD MISSING';
+        }
+        
+        $color = strpos($result, '✅') !== false ? 'green' : 'red';
+        
+        echo '<tr>';
+        echo '<td style="font-family:monospace">' . htmlspecialchars($check) . '</td>';
+        echo '<td style="color:' . $color . '">' . $result . '</td>';
+        echo '</tr>';
+    }
+    
+    echo '</table>';
+} else {
+    echo '<p style="color:red">❌ PaymentModel.php not found</p>';
+}
+
+// 3. Live query test
+echo '<h3 class="font-medium mb-2 mt-4">3. Live query test</h3>';
+if ($pdo) {
+    try {
+        $testQuery = "
+            SELECT p.id, p.amount, p.status,
+                   p.receipt_reference, p.deleted_at,
+                   t.first_name as tenant_name
+            FROM payments p
+            LEFT JOIN tenants t ON t.id = p.tenant_id
+            WHERE p.admin_id IS NOT NULL
+            LIMIT 3
+        ";
+        $stmt = $pdo->prepare($testQuery);
+        $stmt->execute();
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        echo '<p style="color:green">✅ QUERY WORKS - Returned ' . count($results) . ' rows</p>';
+        
+        if (!empty($results)) {
+            echo '<table border="1" cellpadding="4" style="border-collapse:collapse;width:100%;font-size:11px">';
+            echo '<tr style="background:#f3f4f6">';
+            foreach (array_keys($results[0]) as $key) {
+                echo '<th>' . htmlspecialchars($key) . '</th>';
             }
-            ?>
-        </div>
-
-        <div class="section">
-            <h2>11. Tenants Create Page Debug</h2>
-            <?php
-            // Check for enctype attribute
-            $createFile = file_get_contents(__DIR__ . '/../views/admin/tenants/create.php');
+            echo '</tr>';
             
-            $hasEnctype = strpos($createFile, 'enctype="multipart/form-data"') !== false;
-            echo '<div class="check">';
-            echo $hasEnctype ? '<span class="pass">✅ PASS</span>' : '<span class="fail">❌ FAIL</span>';
-            echo ' enctype="multipart/form-data" found</div>';
-            
-            // Check for mobile layout in Form Actions
-            $hasMobileLayout = strpos($createFile, 'flex-col sm:flex-row sm:justify-between') !== false;
-            echo '<div class="check">';
-            echo $hasMobileLayout ? '<span class="pass">✅ MOBILE FIXED</span>' : '<span class="fail">❌ FAIL</span>';
-            echo ' Mobile layout in Form Actions</div>';
-            
-            // Check if AttachmentComponent is still present
-            $hasAttachmentComponent = strpos($createFile, 'AttachmentComponent::renderUploadArea') !== false;
-            echo '<div class="check">';
-            echo !$hasAttachmentComponent ? '<span class="pass">✅ REMOVED</span>' : '<span class="fail">⚠️ STILL THERE</span>';
-            echo ' AttachmentComponent::renderUploadArea removed</div>';
-            
-            $hasAttachmentJS = strpos($createFile, 'AttachmentComponentJS::renderJS') !== false;
-            echo '<div class="check">';
-            echo !$hasAttachmentJS ? '<span class="pass">✅ REMOVED</span>' : '<span class="fail">⚠️ STILL THERE</span>';
-            echo ' AttachmentComponentJS::renderJS removed</div>';
-            
-            // Check for camera functions
-            $hasCameraFunction = strpos($createFile, 'function tenantStartCamera') !== false;
-            echo '<div class="check">';
-            echo $hasCameraFunction ? '<span class="pass">✅ PASS</span>' : '<span class="fail">❌ FAIL</span>';
-            echo ' tenantStartCamera function exists</div>';
-            
-            // Check for Next of Kin fields
-            $hasNextOfKin = strpos($createFile, 'name="next_of_kin"') !== false;
-            echo '<div class="check">';
-            echo $hasNextOfKin ? '<span class="pass">✅ PASS</span>' : '<span class="fail">❌ FAIL</span>';
-            echo ' next_of_kin input exists</div>';
-            
-            $hasNextOfKinPhone = strpos($createFile, 'name="next_of_kin_phone"') !== false;
-            echo '<div class="check">';
-            echo $hasNextOfKinPhone ? '<span class="pass">✅ PASS</span>' : '<span class="fail">❌ FAIL</span>';
-            echo ' next_of_kin_phone input exists</div>';
-            
-            $hasNextOfKinAddress = strpos($createFile, 'name="next_of_kin_address"') !== false;
-            echo '<div class="check">';
-            echo $hasNextOfKinAddress ? '<span class="pass">✅ PASS</span>' : '<span class="fail">❌ FAIL</span>';
-            echo ' next_of_kin_address textarea exists</div>';
-            ?>
-        </div>
-
-        <div class="summary">
-            <h2>Summary</h2>
-            <?php
-            $totalChecks = 26;
-            $passedChecks = ($hasUnitsIndex ? 1 : 0) + ($hasUnitsCreate ? 1 : 0) + 
-                           ($hasPropertyUnitsIndex ? 1 : 0) + ($hasPropertyUnitsCreate ? 1 : 0) +
-                           ($hasIndex ? 1 : 0) + ($hasIndexByProperty ? 1 : 0) + 
-                           ($hasCreateForProperty ? 1 : 0) + ($hasStore ? 1 : 0) +
-                           ($hasUnitsList ? 1 : 0) + ($hasUnitsCreate ? 1 : 0) +
-                           ($hasCorrectUrl ? 1 : 0) + (!$hasOldUrl ? 1 : 0) +
-                           ($hasCorrectOrder ? 1 : 0) + ($noDuplicate ? 1 : 0) +
-                           ($hasFlexLayout ? 1 : 0) + ($hasExportFunction ? 1 : 0) +
-                           ($hasNairaList ? 1 : 0) + ($hasNairaCreate ? 1 : 0) +
-                           ($hasSearchFlex ? 1 : 0) + ($hasTypeFlexShrink ? 1 : 0) + 
-                           ($hasStatusFlexShrink ? 1 : 0) + ((!$typeLabelExists && !$statusLabelExists) ? 1 : 0) +
-                           ($hasTypeId ? 1 : 0) + ($hasStatusId ? 1 : 0) +
-                           ($hasEnctype ? 1 : 0) + ($hasMobileLayout ? 1 : 0) +
-                           (!$hasAttachmentComponent ? 1 : 0) + (!$hasAttachmentJS ? 1 : 0) +
-                           ($hasCameraFunction ? 1 : 0) + ($hasNextOfKin ? 1 : 0) +
-                           ($hasNextOfKinPhone ? 1 : 0) + ($hasNextOfKinAddress ? 1 : 0);
-            
-            $successRate = round(($passedChecks / $totalChecks) * 100, 1);
-            
-            echo '<p><strong>Total Checks:</strong> ' . $totalChecks . '</p>';
-            echo '<p><strong>Passed:</strong> <span class="pass">' . $passedChecks . '</span></p>';
-            echo '<p><strong>Failed:</strong> <span class="fail">' . ($totalChecks - $passedChecks) . '</span></p>';
-            echo '<p><strong>Success Rate:</strong> <strong>' . $successRate . '%</strong></p>';
-            
-            if ($successRate >= 90) {
-                echo '<p><span class="pass">🎉 EXCELLENT! All functionality is fully implemented.</span></p>';
-            } elseif ($successRate >= 70) {
-                echo '<p><span class="pass">✅ GOOD! Most functionality is working.</span></p>';
-            } else {
-                echo '<p><span class="fail">⚠️ NEEDS WORK! Several issues need to be fixed.</span></p>';
+            foreach ($results as $row) {
+                echo '<tr>';
+                foreach ($row as $value) {
+                    echo '<td>' . htmlspecialchars($value ?? 'NULL') . '</td>';
+                }
+                echo '</tr>';
             }
-            ?>
-        </div>
-    </div>
+            echo '</table>';
+        }
+        
+    } catch (Throwable $e) {
+        echo '<p style="color:red">❌ QUERY ERROR: ' . htmlspecialchars($e->getMessage()) . '</p>';
+    }
+} else {
+    echo '<p style="color:red">❌ Database not available</p>';
+}
+
+// 4. Page load simulation
+echo '<h3 class="font-medium mb-2 mt-4">4. Page load simulation</h3>';
+try {
+    require_once $projectRoot . '/app/models/PaymentModel.php';
+    echo '<p style="color:green">✅ PaymentModel.php loads without fatal error</p>';
+} catch (Throwable $e) {
+    echo '<p style="color:red">❌ PaymentModel fatal: ' . htmlspecialchars($e->getMessage()) . '</p>';
+}
+
+echo '</div>';
+
+// Section 12: PaymentsController Namespace Fix Verification
+echo '<div class="bg-white rounded-lg shadow p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4">12. PaymentsController Namespace Fix Verification</h2>';
+
+// Namespace prefix check
+$pcSrc = file_get_contents($projectRoot . '/app/controllers/PaymentsController.php');
+
+$bareVM = substr_count($pcSrc, 'ViewManager::') - substr_count($pcSrc, '\\ViewManager::');
+$bareDP = substr_count($pcSrc, 'DataProvider::') - substr_count($pcSrc, '\\DataProvider::');
+$bareCR = substr_count($pcSrc, 'ComponentRegistry::') - substr_count($pcSrc, '\\ComponentRegistry::');
+
+echo '<p>'
+     . ($bareVM === 0 ? '✅' : '❌')
+     . ' ViewManager:: namespace — '
+     . ($bareVM === 0 ? 'CORRECT' : $bareVM . ' bare calls remaining')
+     . '</p>';
+echo '<p>'
+     . ($bareDP === 0 ? '✅' : '❌')
+     . ' DataProvider:: namespace — '
+     . ($bareDP === 0 ? 'CORRECT' : $bareDP . ' bare calls remaining')
+     . '</p>';
+echo '<p>'
+     . ($bareCR === 0 ? '✅' : '❌')
+     . ' ComponentRegistry:: namespace — '
+     . ($bareCR === 0 ? 'CORRECT' : $bareCR . ' bare calls remaining')
+     . '</p>';
+
+echo '</div>';
+
+// Section 11: Payments Fix Verification
+echo '<div class="bg-white rounded-lg shadow p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4">11. Payments Fix Verification</h2>';
+
+// 1. paystack_reference final check
+echo '<h3 class="font-medium mb-2">1. paystack_reference final check</h3>';
+$paymentModelFile = $projectRoot . '/app/models/PaymentModel.php';
+if (file_exists($paymentModelFile)) {
+    $modelContent = file_get_contents($paymentModelFile);
+    $paystackCount = substr_count($modelContent, 'paystack_reference');
+    
+    if ($paystackCount === 0) {
+        echo '<p style="color:green">✅ FULLY REMOVED - 0 occurrences of paystack_reference</p>';
+    } else {
+        echo '<p style="color:red">❌ STILL PRESENT - ' . $paystackCount . ' occurrences of paystack_reference</p>';
+    }
+} else {
+    echo '<p style="color:red">❌ PaymentModel.php not found</p>';
+}
+
+// 2. t.first_name fix check
+echo '<h3 class="font-medium mb-2 mt-4">2. t.first_name fix check</h3>';
+if (file_exists($paymentModelFile)) {
+    $hasFirstName = strpos($modelContent, 't.first_name') !== false;
+    $hasNameField = strpos($modelContent, 't.name as tenant_name') !== false;
+    
+    if (!$hasFirstName && $hasNameField) {
+        echo '<p style="color:green">✅ FIXED - Using t.name as tenant_name</p>';
+    } else {
+        echo '<p style="color:red">❌ STILL WRONG - ';
+        if ($hasFirstName) echo 't.first_name still present';
+        if (!$hasNameField) echo 't.name as tenant_name missing';
+        echo '</p>';
+    }
+} else {
+    echo '<p style="color:red">❌ PaymentModel.php not found</p>';
+}
+
+// 3. Missing pages re-check
+echo '<h3 class="font-medium mb-2 mt-4">3. Missing pages re-check</h3>';
+$expectedNewPages = [
+    'views/admin/auth/login.php',
+    'views/admin/auth/register.php', 
+    'views/admin/dashboard.php',
+    'views/admin/payments/list.php',
+    'views/admin/reports/index.php',
+    'views/admin/profile.php'
+];
+
+$newPagesExist = 0;
+$newPagesMissing = [];
+foreach ($expectedNewPages as $page) {
+    $fullPath = $projectRoot . '/' . $page;
+    if (file_exists($fullPath)) {
+        $newPagesExist++;
+    } else {
+        $newPagesMissing[] = $page;
+    }
+}
+
+echo '<p><strong>New Pages Status:</strong> ' . $newPagesExist . '/6 exist, ' . count($newPagesMissing) . ' missing</p>';
+if (!empty($newPagesMissing)) {
+    echo '<p style="color:red">❌ Missing pages:</p><ul>';
+    foreach ($newPagesMissing as $missing) {
+        echo '<li style="color:red">' . htmlspecialchars($missing) . '</li>';
+    }
+    echo '</ul>';
+} else {
+    echo '<p style="color:green">✅ All 6 new pages created successfully</p>';
+}
+
+// 4. Live payments query test
+echo '<h3 class="font-medium mb-2 mt-4">4. Live payments query test</h3>';
+if ($pdo) {
+    try {
+        $testQuery = "
+            SELECT p.id, p.amount, p.status,
+                   p.receipt_reference,
+                   t.name as tenant_name
+            FROM payments p
+            LEFT JOIN tenants t ON t.id = p.tenant_id
+            WHERE p.deleted_at IS NULL
+            LIMIT 3
+        ";
+        $stmt = $pdo->prepare($testQuery);
+        $stmt->execute();
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        echo '<p style="color:green">✅ QUERY WORKS - Returned ' . count($results) . ' rows</p>';
+        
+        if (!empty($results)) {
+            echo '<table border="1" cellpadding="4" style="border-collapse:collapse;width:100%;font-size:11px">';
+            echo '<tr style="background:#f3f4f6">';
+            foreach (array_keys($results[0]) as $key) {
+                echo '<th>' . htmlspecialchars($key) . '</th>';
+            }
+            echo '</tr>';
+            
+            foreach ($results as $row) {
+                echo '<tr>';
+                foreach ($row as $value) {
+                    echo '<td>' . htmlspecialchars($value ?? 'NULL') . '</td>';
+                }
+                echo '</tr>';
+            }
+            echo '</table>';
+        }
+        
+    } catch (Throwable $e) {
+        echo '<p style="color:red">❌ QUERY ERROR: ' . htmlspecialchars($e->getMessage()) . '</p>';
+    }
+} else {
+    echo '<p style="color:red">❌ Database not available</p>';
+}
+
+echo '</div>';
+
+// Section 8: Fix Verification
+echo '<div class="bg-white rounded-lg shadow p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4">8. Fix Verification</h2>';
+
+$fixChecks = [
+    [
+        'label' => 'PaymentModel.php path fixed',
+        'file'  => $projectRoot . '/app/models/PaymentModel.php',
+        'check' => function($src) {
+            return strpos($src, "'/../config/") === false
+                && strpos($src, "'/../../config/") !== false;
+        }
+    ],
+    [
+        'label' => 'views/errors/500.php created',
+        'file'  => $projectRoot . '/views/errors/500.php',
+        'check' => fn($src) => strlen($src) > 100
+    ],
+    [
+        'label' => 'views/errors/404.php created',
+        'file'  => $projectRoot . '/views/errors/404.php',
+        'check' => fn($src) => strlen($src) > 100
+    ],
+    [
+        'label' => 'views/admin/invoices/index.php created',
+        'file'  => $projectRoot . '/views/admin/invoices/index.php',
+        'check' => fn($src) => strlen($src) > 100
+    ],
+    [
+        'label' => 'views/admin/invoices/show.php created',
+        'file'  => $projectRoot . '/views/admin/invoices/show.php',
+        'check' => fn($src) => strlen($src) > 100
+    ],
+    [
+        'label' => 'views/admin/maintenance/index.php created',
+        'file'  => $projectRoot . '/views/admin/maintenance/index.php',
+        'check' => fn($src) => strlen($src) > 100
+    ],
+    [
+        'label' => 'views/admin/reports/create.php created',
+        'file'  => $projectRoot . '/views/admin/reports/create.php',
+        'check' => fn($src) => strlen($src) > 100
+    ],
+    [
+        'label' => 'views/admin/reports/edit.php created',
+        'file'  => $projectRoot . '/views/admin/reports/edit.php',
+        'check' => fn($src) => strlen($src) > 100
+    ],
+    [
+        'label' => 'views/admin/communications/bulk.php created',
+        'file'  => $projectRoot
+                   . '/views/admin/communications/bulk.php',
+        'check' => fn($src) => strlen($src) > 100
+    ],
+];
+
+foreach ($fixChecks as $fc) {
+    if (!file_exists($fc['file'])) {
+        echo '<p>❌ ' . $fc['label'] . ' — FILE MISSING</p>';
+        continue;
+    }
+    $src    = file_get_contents($fc['file']);
+    $passed = ($fc['check'])($src);
+    echo '<p>'
+         . ($passed ? '✅' : '❌')
+         . ' ' . $fc['label']
+         . ' — ' . ($passed ? 'PASS' : 'FAIL')
+         . '</p>';
+}
+
+echo '</div>';
+
+// Section 9: Missing Pages Audit
+echo '<div class="bg-white rounded-lg shadow p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4">9. Missing Pages Audit</h2>';
+echo '<p style="color:#6b7280;font-size:13px">
+        Checking all routes against their expected view files...
+        </p>';
+
+$projectRoot = realpath(__DIR__ . '/..');
+
+// Complete map of: Route => Expected view file path
+// (relative to project root)
+$routeViewMap = [
+
+    // ── Admin Auth ──────────────────────────────────────────────
+    'GET /admin/login'
+        => 'views/auth/login.php',
+    'GET /admin/register'
+        => 'views/auth/register.php',
+
+    // ── Admin Dashboard ─────────────────────────────────────────
+    'GET /admin/dashboard'
+        => 'views/admin/dashboard_enhanced.php',
+
+    // ── Superadmin ──────────────────────────────────────────────
+    'GET /superadmin/dashboard'
+        => 'views/superadmin/dashboard.php',
+    'GET /superadmin/admins'
+        => 'views/superadmin/admins.php',
+    'GET /superadmin/login'
+        => 'views/superadmin/login.php',
+
+    // ── Properties ──────────────────────────────────────────────
+    'GET /admin/properties'
+        => 'views/admin/properties/list.php',
+    'GET /admin/properties/create'
+        => 'views/admin/properties/add.php',
+    'GET /admin/properties/{id}'
+        => 'views/admin/properties/show.php',
+    'GET /admin/properties/{id}/edit'
+        => 'views/admin/properties/edit.php',
+
+    // ── Units ───────────────────────────────────────────────────
+    'GET /admin/units'
+        => 'views/admin/units/list.php',
+    'GET /admin/units/create'
+        => 'views/admin/units/create.php',
+    'GET /admin/units/{id}/edit'
+        => 'views/admin/units/edit.php',
+
+    // ── Tenants ─────────────────────────────────────────────────
+    'GET /admin/tenants'
+        => 'views/admin/tenants/list.php',
+    'GET /admin/tenants/create'
+        => 'views/admin/tenants/create.php',
+    'GET /admin/tenants/{id}'
+        => 'views/admin/tenants/show.php',
+    'GET /admin/tenants/{id}/edit'
+        => 'views/admin/tenants/edit.php',
+
+    // ── Tenants & Occupants ─────────────────────────────────────
+    'GET /admin/tenants-occupants'
+        => 'views/admin/tenants_occupants/index.php',
+    'GET /admin/occupants/create'
+        => 'views/admin/occupants/create.php',
+
+    // ── Payments ────────────────────────────────────────────────
+    'GET /admin/payments'
+        => 'views/admin/payments/index.php',
+    'GET /admin/payments/create'
+        => 'views/admin/payments/create.php',
+    'GET /admin/payments/{id}'
+        => 'views/admin/payments/show.php',
+    'GET /admin/payments/{id}/edit'
+        => 'views/admin/payments/edit.php',
+
+    // ── Invoices ────────────────────────────────────────────────
+    'GET /admin/invoices'
+        => 'views/admin/invoices/index.php',
+    'GET /admin/invoices/create'
+        => 'views/admin/invoices/create.php',
+    'GET /admin/invoices/{id}'
+        => 'views/admin/invoices/show.php',
+    'GET /admin/invoices/{id}/edit'
+        => 'views/admin/invoices/edit.php',
+
+    // ── Finances ────────────────────────────────────────────────
+    'GET /admin/finances'
+        => 'views/admin/finances/index.php',
+
+    // ── Maintenance ─────────────────────────────────────────────
+    'GET /admin/maintenance'
+        => 'views/admin/maintenance/index.php',
+    'GET /admin/maintenance/create'
+        => 'views/admin/maintenance/create.php',
+    'GET /admin/maintenance/{id}/edit'
+        => 'views/admin/maintenance/edit.php',
+
+    // ── Communications ──────────────────────────────────────────
+    'GET /admin/communications'
+        => 'views/admin/communications/index.php',
+    'GET /admin/communications/create'
+        => 'views/admin/communications/create.php',
+    'GET /admin/communications/{id}/edit'
+        => 'views/admin/communications/edit.php',
+    'POST /admin/communications (bulk)'
+        => 'views/admin/communications/bulk.php',
+
+    // ── Documents ───────────────────────────────────────────────
+    'GET /admin/documents'
+        => 'views/admin/documents/index.php',
+    'GET /admin/documents/create'
+        => 'views/admin/documents/create.php',
+    'GET /admin/documents/{id}/edit'
+        => 'views/admin/documents/edit.php',
+
+    // ── Reports ─────────────────────────────────────────────────
+    'GET /admin/reports'
+        => 'views/admin/dashboard_reports.php',
+    'GET /admin/reports/create'
+        => 'views/admin/reports/create.php',
+    'GET /admin/reports/{id}/edit'
+        => 'views/admin/reports/edit.php',
+
+    // ── Settings & Profile ───────────────────────────────────────
+    'GET /admin/settings'
+        => 'views/admin/settings.php',
+    'GET /admin/profile'
+        => 'views/admin/profile/index.php',
+
+    // ── Error Pages ─────────────────────────────────────────────
+    '404 error page'
+        => 'views/errors/404.php',
+    '500 error page'
+        => 'views/errors/500.php',
+];
+
+$existingPages = [];
+$missingPages  = [];
+
+foreach ($routeViewMap as $route => $viewPath) {
+    $fullPath = $projectRoot . '/' . $viewPath;
+    if (file_exists($fullPath)) {
+        $existingPages[] = [
+            'route'    => $route,
+            'view'     => $viewPath,
+            'size'     => filesize($fullPath),
+            'modified' => date('Y-m-d H:i', filemtime($fullPath)),
+        ];
+    } else {
+        $missingPages[] = [
+            'route' => $route,
+            'view'  => $viewPath,
+        ];
+    }
+}
+
+// Summary counts
+$total   = count($routeViewMap);
+$present = count($existingPages);
+$missing = count($missingPages);
+$pct     = round(($present / $total) * 100);
+
+echo '<div style="display:flex;gap:16px;margin:12px 0;
+                  flex-wrap:wrap">';
+echo '<div style="padding:12px 20px;background:#dcfce7;
+                  border-radius:8px;text-align:center">
+      <div style="font-size:1.8rem;font-weight:800;
+                  color:#16a34a">' . $present . '</div>
+      <div style="font-size:12px;color:#166534">
+          Pages Exist</div>
+    </div>';
+echo '<div style="padding:12px 20px;background:#fee2e2;
+                  border-radius:8px;text-align:center">
+      <div style="font-size:1.8rem;font-weight:800;
+                  color:#dc2626">' . $missing . '</div>
+      <div style="font-size:12px;color:#991b1b">
+          Pages Missing</div>
+    </div>';
+echo '<div style="padding:12px 20px;background:#dbeafe;
+                  border-radius:8px;text-align:center">
+      <div style="font-size:1.8rem;font-weight:800;
+                  color:#2563eb">' . $pct . '%</div>
+      <div style="font-size:12px;color:#1e40af">
+          Complete</div>
+    </div>';
+echo '</div>';
+
+// ── Missing pages table ────────────────────────────────────────
+if (!empty($missingPages)) {
+    echo '<h4 style="color:#dc2626;margin:16px 0 8px">
+            ❌ Missing Pages (' . $missing . ')
+          </h4>';
+
+    // Group by section
+    $grouped = [];
+    foreach ($missingPages as $mp) {
+        preg_match(
+            '/views\/(?:admin|superadmin|errors)\/([^\/]+)/',
+            $mp['view'], $m);
+        $section = ucfirst($m[1] ?? 'other');
+        $grouped[$section][] = $mp;
+    }
+
+    foreach ($grouped as $section => $pages) {
+        echo '<p style="font-weight:600;margin:10px 0 4px;
+                        color:#374151">' . $section . '</p>';
+        echo '<table border="1" cellpadding="6"
+               style="border-collapse:collapse;width:100%;
+                      font-size:12px;margin-bottom:8px">';
+        echo '<tr style="background:#fef2f2">
+                <th style="text-align:left">Route</th>
+                <th style="text-align:left">Expected File</th>
+                <th style="text-align:left">Priority</th>
+              </tr>';
+        foreach ($pages as $p) {
+            // Assign priority based on route type
+            $priority = 'Medium';
+            $pColor   = '#f59e0b';
+            if (strpos($p['route'], 'create') !== false
+                || strpos($p['route'], 'index') !== false
+                || strpos($p['route'], 'list') !== false
+                || strpos($p['route'], 'dashboard') !== false) {
+                $priority = 'High';
+                $pColor   = '#dc2626';
+            }
+            if (strpos($p['route'], 'edit') !== false
+                || strpos($p['route'], 'show') !== false) {
+                $priority = 'Medium';
+                $pColor   = '#f59e0b';
+            }
+            if (strpos($p['route'], 'error') !== false) {
+                $priority = 'Low';
+                $pColor   = '#6b7280';
+            }
+            echo '<tr>'
+                 . '<td style="color:#6b7280">'
+                 . htmlspecialchars($p['route']) . '</td>'
+                 . '<td style="color:#dc2626;font-family:monospace">'
+                 . htmlspecialchars($p['view']) . '</td>'
+                 . '<td style="color:' . $pColor
+                 . ';font-weight:600">' . $priority . '</td>'
+                 . '</tr>';
+        }
+        echo '</table>';
+    }
+}
+
+// ── Existing pages table ───────────────────────────────────────
+echo '<h4 style="color:#16a34a;margin:16px 0 8px">
+        ✅ Existing Pages (' . $present . ')
+      </h4>';
+echo '<table border="1" cellpadding="6"
+       style="border-collapse:collapse;width:100%;
+              font-size:12px">';
+echo '<tr style="background:#f0fdf4">
+        <th style="text-align:left">Route</th>
+        <th style="text-align:left">View File</th>
+        <th style="text-align:left">Size</th>
+        <th style="text-align:left">Last Modified</th>
+      </tr>';
+foreach ($existingPages as $ep) {
+    echo '<tr>'
+         . '<td style="color:#6b7280">'
+         . htmlspecialchars($ep['route']) . '</td>'
+         . '<td style="font-family:monospace;color:#166534">'
+         . htmlspecialchars($ep['view']) . '</td>'
+         . '<td>' . number_format($ep['size'] / 1024, 1)
+         . ' KB</td>'
+         . '<td style="color:#6b7280">'
+         . $ep['modified'] . '</td>'
+         . '</tr>';
+}
+echo '</table>';
+
+// ── Proceed prompt ─────────────────────────────────────────────
+if (!empty($missingPages)) {
+    echo '<div style="margin-top:20px;padding:16px;
+                      background:#fffbeb;border:1px solid #f59e0b;
+                      border-radius:8px">';
+    echo '<p style="font-weight:700;color:#92400e;margin-bottom:8px">
+            ⚠️ ' . $missing . ' pages are missing.
+          </p>';
+    echo '<p style="color:#78350f;font-size:13px;margin-bottom:12px">
+            Review the missing pages above. To create all missing
+            pages with proper structure, run the page creation
+            prompt in your IDE.
+          </p>';
+    echo '<p style="color:#78350f;font-size:12px">
+            <strong>High priority:</strong> These pages will cause
+            fatal errors when visited.<br>
+            <strong>Medium priority:</strong> These are detail/edit
+            pages that degrade functionality.<br>
+            <strong>Low priority:</strong> Error pages and minor
+            supporting views.
+          </p>';
+    echo '</div>';
+} else {
+    echo '<div style="margin-top:16px;padding:16px;
+                      background:#f0fdf4;border:1px solid #86efac;
+                      border-radius:8px">
+            <p style="color:#166534;font-weight:700">
+                🎉 All pages exist! No missing views found.
+            </p>
+          </div>';
+}
+
+echo '</div>';
+
+echo '</div>
 </body>
-</html>
+</html>';
+
+} catch (\Throwable $e) {
+    echo '<div style="color:red;padding:20px;font-family:monospace">';
+    echo '<strong>❌ Debugchecker Fatal Error:</strong><br>';
+    echo htmlspecialchars($e->getMessage()) . '<br>';
+    echo 'File: ' . htmlspecialchars($e->getFile())
+         . ' Line: ' . $e->getLine();
+    echo '</div>';
+}
+?>
