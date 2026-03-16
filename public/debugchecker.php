@@ -697,6 +697,26 @@ echo '<p>'
      . ($bareCR === 0 ? 'CORRECT' : $bareCR . ' bare calls remaining')
      . '</p>';
 
+// Check other affected controllers
+$affectedControllers = [
+    'InvoiceController', 'MaintenanceController', 
+    'ReportController', 'CommunicationController'
+];
+
+echo '<h3 class="font-medium mb-2 mt-4">Other Controllers Check</h3>';
+foreach ($affectedControllers as $controller) {
+    $controllerFile = $projectRoot . '/app/controllers/' . $controller . '.php';
+    if (file_exists($controllerFile)) {
+        $content = file_get_contents($controllerFile);
+        $bare = substr_count($content, 'ViewManager::') - substr_count($content, '\\ViewManager::');
+        echo '<p>'
+             . ($bare === 0 ? '✅' : '❌')
+             . ' ' . $controller . ' — '
+             . ($bare === 0 ? 'CORRECT' : $bare . ' bare calls')
+             . '</p>';
+    }
+}
+
 echo '</div>';
 
 // Section 11: Payments Fix Verification
