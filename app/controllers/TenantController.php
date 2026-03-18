@@ -197,7 +197,12 @@ class TenantController extends BaseController {
         // In production, save to database here
         // For now, just show success message
         
-        $_SESSION['success'] = "Tenant '{$_POST['first_name']} {$_POST['last_name']}' has been created successfully!";
+        $tenantName = "{$_POST['first_name']} {$_POST['last_name']}";
+        
+        // Create notification
+        \App\Helpers\NotificationHelper::createTenantNotification($admin['id'], $tenantName, 'registered');
+        
+        $_SESSION['success'] = "Tenant '{$tenantName}' has been created successfully!";
         $this->redirect('/admin/tenants');
     }
     

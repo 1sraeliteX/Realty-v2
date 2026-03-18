@@ -7,33 +7,9 @@ $user = ViewManager::get('user') ?? ['name' => 'Admin', 'email' => ''];
 $notifications = ViewManager::get('notifications');
 $title = ViewManager::get('title', 'Admin Dashboard');
 
-// Load currency preference for this admin
-$currencySymbol = '₦'; // default
-$currencyCode   = 'NGN';
-try {
-    if (isset($_SESSION['admin_id']) && isset($db)) {
-        $pdo  = $db->getConnection();
-        $stmt = $pdo->prepare("
-            SELECT setting_value FROM admin_settings
-            WHERE admin_id = ? AND setting_key = 'currency_symbol'
-            LIMIT 1
-        ");
-        $stmt->execute([$_SESSION['admin_id']]);
-        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
-        if ($row) $currencySymbol = $row['setting_value'];
-
-        $stmt2 = $pdo->prepare("
-            SELECT setting_value FROM admin_settings
-            WHERE admin_id = ? AND setting_key = 'currency'
-            LIMIT 1
-        ");
-        $stmt2->execute([$_SESSION['admin_id']]);
-        $row2 = $stmt2->fetch(\PDO::FETCH_ASSOC);
-        if ($row2) $currencyCode = $row2['setting_value'];
-    }
-} catch (\Throwable $e) {
-    // Use defaults silently
-}
+// Load currency preference for this admin using CurrencyHelper (anti-scattering compliant)
+$currencySymbol = CurrencyHelper::getSymbol('₦');
+$currencyCode   = CurrencyHelper::getCode('NGN');
 
 // Get current page for navigation highlighting
 $currentPath = $_SERVER['REQUEST_URI'] ?? '';
@@ -100,6 +76,7 @@ $isProfile = strpos($currentPath, '/admin/profile') === 0;
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/assets/css/fontawesome.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900">
     <div id="toast-container" class="fixed top-4 right-4 z-50"></div>
@@ -243,8 +220,15 @@ $isProfile = strpos($currentPath, '/admin/profile') === 0;
                         <!-- Search -->
                         <div class="hidden md:block">
                             <div class="relative">
-                                <input type="text" placeholder="Search..." class="w-64 pl-10 pr-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                                <input type="text" id="global-search-input" placeholder="Search..." class="w-64 pl-10 pr-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
                                 <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                
+                                <!-- Search Results Dropdown -->
+                                <div id="search-results-dropdown" class="hidden absolute left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 max-h-96 overflow-y-auto">
+                                    <div id="search-results-content" class="p-2">
+                                        <!-- Search results will be populated here -->
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -302,10 +286,31 @@ $isProfile = strpos($currentPath, '/admin/profile') === 0;
                         </div>
 
                         <!-- Notifications -->
-                        <button class="relative text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
-                            <i class="fas fa-bell"></i>
-                            <span class="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">3</span>
-                        </button>
+                        <div class="relative">
+                            <button onclick="toggleNotifications()" class="relative text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                                <i class="fas fa-bell"></i>
+                                <span id="notification-badge" class="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center hidden">0</span>
+                            </button>
+                            
+                            <!-- Notifications Dropdown -->
+                            <div id="notifications-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                                <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+                                    <div class="flex items-center justify-between">
+                                        <h3 class="text-sm font-medium text-gray-900 dark:text-white">Notifications</h3>
+                                        <button onclick="markAllAsRead()" class="text-xs text-primary-600 hover:text-primary-700 dark:text-primary-400">Mark all read</button>
+                                    </div>
+                                </div>
+                                <div id="notifications-list" class="max-h-96 overflow-y-auto">
+                                    <div class="p-4 text-center text-gray-500 dark:text-gray-400">
+                                        <i class="fas fa-bell mb-2"></i>
+                                        <p class="text-sm">No notifications</p>
+                                    </div>
+                                </div>
+                                <div class="p-3 border-t border-gray-200 dark:border-gray-700">
+                                    <a href="/admin/notifications" class="text-xs text-primary-600 hover:text-primary-700 dark:text-primary-400">View all notifications</a>
+                                </div>
+                            </div>
+                        </div>
 
                         <!-- User Profile Dropdown -->
                         <div class="relative">
@@ -422,6 +427,167 @@ $isProfile = strpos($currentPath, '/admin/profile') === 0;
 
         // Show PHP session messages as toasts
         document.addEventListener('DOMContentLoaded', function() {
+            // Notification system
+            let notificationsOpen = false;
+            
+            // Load notification count
+            async function loadNotificationCount() {
+                try {
+                    const response = await fetch('/api/notifications/count');
+                    const data = await response.json();
+                    if (data.success) {
+                        const badge = document.getElementById('notification-badge');
+                        if (data.count > 0) {
+                            badge.textContent = data.count > 99 ? '99+' : data.count;
+                            badge.classList.remove('hidden');
+                        } else {
+                            badge.classList.add('hidden');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading notification count:', error);
+                }
+            }
+            
+            // Load recent notifications
+            async function loadNotifications() {
+                try {
+                    const response = await fetch('/api/notifications/recent');
+                    const data = await response.json();
+                    if (data.success) {
+                        renderNotifications(data.notifications);
+                    }
+                } catch (error) {
+                    console.error('Error loading notifications:', error);
+                }
+            }
+            
+            // Render notifications in dropdown
+            function renderNotifications(notifications) {
+                const list = document.getElementById('notifications-list');
+                
+                if (notifications.length === 0) {
+                    list.innerHTML = `
+                        <div class="p-4 text-center text-gray-500 dark:text-gray-400">
+                            <i class="fas fa-bell mb-2"></i>
+                            <p class="text-sm">No notifications</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                list.innerHTML = notifications.map(notification => `
+                    <div class="notification-item p-4 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer ${!notification.is_read ? 'bg-blue-50 dark:bg-blue-900/20' : ''}" 
+                         onclick="markAsRead(${notification.id})">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mr-3">
+                                <i class="fas ${getNotificationIcon(notification.type, notification.activity_type)} text-${getNotificationColor(notification.type)}-500"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-900 dark:text-white ${!notification.is_read ? 'font-semibold' : ''}">${notification.title}</p>
+                                <p class="text-xs text-gray-600 dark:text-gray-400 mt-1">${notification.message}</p>
+                                <p class="text-xs text-gray-400 dark:text-gray-500 mt-2">${notification.time_ago}</p>
+                            </div>
+                            ${!notification.is_read ? '<div class="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-2"></div>' : ''}
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            // Get notification icon
+            function getNotificationIcon(type, activityType) {
+                const icons = {
+                    'tenant_created': 'fa-user-plus',
+                    'payment_received': 'fa-money-bill',
+                    'maintenance_request': 'fa-tools',
+                    'lease_expiring': 'fa-clock',
+                    'unit_status_change': 'fa-home',
+                    'property_created': 'fa-building',
+                    'invoice_created': 'fa-file-invoice'
+                };
+                return icons[activityType] || 'fa-info-circle';
+            }
+            
+            // Get notification color
+            function getNotificationColor(type) {
+                const colors = {
+                    'success': 'green',
+                    'warning': 'yellow',
+                    'error': 'red',
+                    'info': 'blue'
+                };
+                return colors[type] || 'blue';
+            }
+            
+            // Toggle notifications dropdown
+            window.toggleNotifications = function() {
+                const dropdown = document.getElementById('notifications-dropdown');
+                notificationsOpen = !notificationsOpen;
+                
+                if (notificationsOpen) {
+                    dropdown.classList.remove('hidden');
+                    loadNotifications();
+                } else {
+                    dropdown.classList.add('hidden');
+                }
+            };
+            
+            // Mark notification as read
+            window.markAsRead = async function(id) {
+                try {
+                    const response = await fetch('/api/notifications/mark-read', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ id: id })
+                    });
+                    
+                    if (response.ok) {
+                        loadNotifications();
+                        loadNotificationCount();
+                    }
+                } catch (error) {
+                    console.error('Error marking notification as read:', error);
+                }
+            };
+            
+            // Mark all notifications as read
+            window.markAllAsRead = async function() {
+                try {
+                    const response = await fetch('/api/notifications/mark-all-read', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        loadNotifications();
+                        loadNotificationCount();
+                    }
+                } catch (error) {
+                    console.error('Error marking all notifications as read:', error);
+                }
+            };
+            
+            // Close notifications when clicking outside
+            document.addEventListener('click', (e) => {
+                const dropdown = document.getElementById('notifications-dropdown');
+                const button = e.target.closest('button[onclick="toggleNotifications()"]');
+                
+                if (!button && !dropdown.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                    notificationsOpen = false;
+                }
+            });
+            
+            // Load notification count on page load
+            loadNotificationCount();
+            
+            // Refresh notification count every 30 seconds
+            setInterval(loadNotificationCount, 30000);
+
             // User dropdown functionality
             const userMenuBtn = document.getElementById('user-menu-btn');
             const userDropdown = document.getElementById('user-dropdown');
@@ -435,6 +601,207 @@ $isProfile = strpos($currentPath, '/admin/profile') === 0;
             document.addEventListener('click', (e) => {
                 if (!userMenuBtn?.contains(e.target) && !userDropdown?.contains(e.target)) {
                     userDropdown?.classList.add('hidden');
+                }
+            });
+
+            // Global Search functionality
+            let searchTimeout;
+            const searchInput = document.getElementById('global-search-input');
+            const searchDropdown = document.getElementById('search-results-dropdown');
+            const searchContent = document.getElementById('search-results-content');
+
+            // Debounced search function
+            function performSearch(query) {
+                if (query.length < 2) {
+                    searchDropdown.classList.add('hidden');
+                    return;
+                }
+
+                fetch(`/admin/search?q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        displaySearchResults(data);
+                    })
+                    .catch(error => {
+                        console.error('Search error:', error);
+                        searchDropdown.classList.add('hidden');
+                    });
+            }
+
+            // Display search results
+            function displaySearchResults(data) {
+                const hasResults = data.properties?.length || data.tenants?.length || 
+                                 data.units?.length || data.payments?.length;
+
+                if (!hasResults) {
+                    searchContent.innerHTML = `
+                        <div class="p-4 text-center text-gray-500 dark:text-gray-400">
+                            <i class="fas fa-search mb-2"></i>
+                            <p class="text-sm">No results found</p>
+                        </div>
+                    `;
+                } else {
+                    let html = '';
+                    
+                    // Properties
+                    if (data.properties?.length) {
+                        html += `
+                            <div class="mb-2">
+                                <div class="px-2 py-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Properties</div>
+                                ${data.properties.map(prop => `
+                                    <a href="/admin/properties/${prop.id}" class="block px-2 py-1.5 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
+                                        <div class="flex items-center">
+                                            <i class="fas fa-building text-blue-500 mr-2"></i>
+                                            <div>
+                                                <div class="font-medium text-gray-900 dark:text-white">${prop.name}</div>
+                                                <div class="text-xs text-gray-500 dark:text-gray-400">${prop.address}</div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                `).join('')}
+                            </div>
+                        `;
+                    }
+
+                    // Tenants
+                    if (data.tenants?.length) {
+                        html += `
+                            <div class="mb-2">
+                                <div class="px-2 py-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Tenants</div>
+                                ${data.tenants.map(tenant => `
+                                    <a href="/admin/tenants/${tenant.id}" class="block px-2 py-1.5 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
+                                        <div class="flex items-center">
+                                            <i class="fas fa-user text-green-500 mr-2"></i>
+                                            <div>
+                                                <div class="font-medium text-gray-900 dark:text-white">${tenant.name}</div>
+                                                <div class="text-xs text-gray-500 dark:text-gray-400">${tenant.email || tenant.phone}</div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                `).join('')}
+                            </div>
+                        `;
+                    }
+
+                    // Units
+                    if (data.units?.length) {
+                        html += `
+                            <div class="mb-2">
+                                <div class="px-2 py-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Units</div>
+                                ${data.units.map(unit => `
+                                    <a href="/admin/units?id=${unit.id}" class="block px-2 py-1.5 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
+                                        <div class="flex items-center">
+                                            <i class="fas fa-door-open text-purple-500 mr-2"></i>
+                                            <div>
+                                                <div class="font-medium text-gray-900 dark:text-white">${unit.unit_number}</div>
+                                                <div class="text-xs text-gray-500 dark:text-gray-400">${unit.property_name}</div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                `).join('')}
+                            </div>
+                        `;
+                    }
+
+                    // Payments
+                    if (data.payments?.length) {
+                        html += `
+                            <div class="mb-2">
+                                <div class="px-2 py-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Payments</div>
+                                ${data.payments.map(payment => `
+                                    <a href="/admin/payments?id=${payment.id}" class="block px-2 py-1.5 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
+                                        <div class="flex items-center">
+                                            <i class="fas fa-dollar-sign text-yellow-500 mr-2"></i>
+                                            <div>
+                                                <div class="font-medium text-gray-900 dark:text-white">${payment.amount}</div>
+                                                <div class="text-xs text-gray-500 dark:text-gray-400">${payment.tenant_name} - ${payment.status}</div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                `).join('')}
+                            </div>
+                        `;
+                    }
+
+                    searchContent.innerHTML = html;
+                }
+
+                searchDropdown.classList.remove('hidden');
+            }
+
+            // Search input event listener
+            searchInput?.addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                const query = e.target.value.trim();
+                
+                if (query.length >= 2) {
+                    searchTimeout = setTimeout(() => performSearch(query), 300);
+                } else {
+                    searchDropdown.classList.add('hidden');
+                }
+            });
+
+            // Close search dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!searchInput?.contains(e.target) && !searchDropdown?.contains(e.target)) {
+                    searchDropdown.classList.add('hidden');
+                }
+            });
+
+            // Close search dropdown on Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    searchDropdown.classList.add('hidden');
+                    searchInput?.blur();
+                }
+            });
+
+            // Currency Switcher functionality
+            window.toggleCurrencySwitcher = function() {
+                const dropdown = document.getElementById('currencySwitcherDropdown');
+                dropdown.classList.toggle('hidden');
+            };
+
+            window.switchCurrency = function(code, symbol) {
+                // Update button display
+                document.getElementById('navCurrencySymbol').textContent = symbol;
+                const codeDisplay = document.querySelector('#currencySwitcherBtn .text-xs');
+                if (codeDisplay) {
+                    codeDisplay.textContent = code;
+                }
+
+                // Close dropdown
+                document.getElementById('currencySwitcherDropdown').classList.add('hidden');
+
+                // Persist to backend
+                fetch('/admin/settings/currency', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ currency: code, symbol: symbol })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('Currency updated successfully', 'success');
+                        // Reload to propagate symbol app-wide via CurrencyHelper
+                        setTimeout(() => window.location.reload(), 1000);
+                    } else {
+                        showToast('Failed to update currency', 'error');
+                    }
+                })
+                .catch(err => {
+                    console.error('Currency switch failed:', err);
+                    showToast('Failed to update currency', 'error');
+                });
+            };
+
+            // Close currency dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                const wrapper = document.getElementById('currencySwitcherWrapper');
+                const dropdown = document.getElementById('currencySwitcherDropdown');
+                
+                if (wrapper && !wrapper.contains(e.target)) {
+                    dropdown.classList.add('hidden');
                 }
             });
 

@@ -7,6 +7,8 @@ require_once __DIR__ . '/../../config/database.php';
 
 use Config\Database;
 
+require_once __DIR__ . '/../Helpers/PropertyHelper.php';
+
 class AdminDashboardController extends BaseController {
     public function index() {
         // Require authentication
@@ -122,7 +124,7 @@ class AdminDashboardController extends BaseController {
         
         // Set content and render with layout (anti-scattering compliant)
         \ViewManager::set('content', $content);
-        echo \ViewManager::render('admin.dashboard_layout');
+        include __DIR__ . '/../../views/admin/dashboard_layout.php';
     }
 
     private function getDashboardStats($adminId) {
@@ -366,16 +368,17 @@ class AdminDashboardController extends BaseController {
             $stmt->execute([$adminId, $limit]);
             $properties = $stmt->fetchAll();
             
-            // Add default image if none exists
+            // Process images data - don't modify, let PropertyHelper handle it
             foreach ($properties as &$property) {
-                $images = json_decode($property['images'] ?? '[]', true);
-                if (!empty($images) && is_array($images)) {
-                    $property['image'] = $images[0] ?? '/assets/images/placeholder-property.jpg';
-                } else {
-                    $property['image'] = '/assets/images/placeholder-property.jpg';
-                }
+                // Ensure images field is available for PropertyHelper
+                // Don't add 'image' key - let the view use PropertyHelper::getImageSrc()
+                $property['images'] = $property['images'] ?? null;
+                
                 // Ensure status field is set
                 $property['status'] = $property['status'] ?? 'active';
+                
+                // Ensure name field is set (use title fallback)
+                $property['name'] = $property['name'] ?? $property['title'] ?? 'Untitled Property';
             }
             
             return $properties;

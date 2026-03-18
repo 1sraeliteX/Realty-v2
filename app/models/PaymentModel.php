@@ -380,6 +380,70 @@ class PaymentModel {
     }
     
     /**
+     * Search payments by keyword
+     * 
+     * @param string $q - Search query
+     * @param int|null $userId - Admin user ID (null for superadmin to see all)
+     * @return array - Search results
+     */
+    public function searchByKeyword($q, $userId = null) {
+        try {
+            $params = [];
+            $whereConditions = [];
+            
+            // Base query with joins to get related data
+            $query = "
+                SELECT 
+                    p.id,
+                    p.amount,
+                    p.status,
+                    p.payment_date,
+                    p.receipt_reference,
+                    t.name as tenant_name,
+                    t.email as tenant_email,
+                    prop.name as property_name,
+                    u.unit_number
+                FROM payments p
+                LEFT JOIN tenants t ON p.tenant_id = t.id
+                LEFT JOIN properties prop ON p.property_id = prop.id
+                LEFT JOIN units u ON p.unit_id = u.id
+                WHERE p.deleted_at IS NULL
+            ";
+            
+            // Add admin filter (superadmin sees all, regular admin sees only their own)
+            if ($userId !== null) {
+                $whereConditions[] = "p.admin_id = ?";
+                $params[] = $userId;
+            }
+            
+            // Add search condition
+            $whereConditions[] = "(p.receipt_reference LIKE ? OR t.name LIKE ? OR t.email LIKE ? OR prop.name LIKE ? OR u.unit_number LIKE ?)";
+            $searchTerm = '%' . $q . '%';
+            $params[] = $searchTerm;
+            $params[] = $searchTerm;
+            $params[] = $searchTerm;
+            $params[] = $searchTerm;
+            $params[] = $searchTerm;
+            
+            // Combine WHERE conditions
+            if (!empty($whereConditions)) {
+                $query .= " AND " . implode(" AND ", $whereConditions);
+            }
+            
+            // Add limit and order
+            $query .= " ORDER BY p.payment_date DESC LIMIT 5";
+            
+            $stmt = $this->db->prepare($query);
+            $stmt->execute($params);
+            return $stmt->fetchAll();
+            
+        } catch (\Exception $e) {
+            error_log("PaymentModel::searchByKeyword error: " . $e->getMessage());
+            return [];
+        }
+    }
+    
+    /**
      * Soft delete a payment
      * 
      * @param int $id - Payment ID

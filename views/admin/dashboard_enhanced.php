@@ -23,14 +23,15 @@ $upcomingTasks = ViewManager::get('upcomingTasks', []);
 
 // Helper functions for dashboard (anti-scattering compliant - isolated in view)
 function formatAmount($amount) {
+    $symbol = CurrencyHelper::getSymbol('₦');
     if ($amount >= 1000000000) {
-        return 'N' . number_format($amount / 1000000000, 2) . 'B';
+        return $symbol . number_format($amount / 1000000000, 2) . 'B';
     } elseif ($amount >= 1000000) {
-        return 'N' . number_format($amount / 1000000, 2) . 'M';
+        return $symbol . number_format($amount / 1000000, 2) . 'M';
     } elseif ($amount >= 1000) {
-        return 'N' . number_format($amount / 1000, 1) . 'K';
+        return $symbol . number_format($amount / 1000, 1) . 'K';
     } else {
-        return 'N' . number_format($amount);
+        return $symbol . number_format($amount);
     }
 }
 
@@ -52,10 +53,10 @@ function calculateTrend($current, $previous) {
         'revenue_trend' => 0
     ]);
     
-    echo UIComponents::statsCard('Total Properties', number_format($stats['total_properties']), 'home', $trends['property_trend'], 'primary'); 
-    echo UIComponents::statsCard('Total Units', number_format($stats['total_units']), 'door-open', $trends['units_trend'], 'blue'); 
-    echo UIComponents::statsCard('Active Tenants', number_format($stats['active_tenants']), 'users', $trends['tenants_trend'], 'green'); 
-    echo UIComponents::statsCard('Occupancy Rate', $stats['occupancy_rate'] . '%', 'percentage', $trends['occupancy_trend'], 'yellow'); 
+    echo UIComponents::statsCard('Total Properties', number_format($stats['total_properties']), 'home', null, 'primary'); 
+    echo UIComponents::statsCard('Total Units', number_format($stats['total_units']), 'door-open', null, 'blue'); 
+    echo UIComponents::statsCard('Active Tenants', number_format($stats['active_tenants']), 'users', null, 'green'); 
+    echo UIComponents::statsCard('Occupancy Rate', $stats['occupancy_rate'] . '%', 'percentage', null, 'yellow'); 
     ?>
 </div>
 
@@ -63,9 +64,9 @@ function calculateTrend($current, $previous) {
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
     <?php 
     // Format monthly revenue with proper thousand/million suffix (anti-scattering compliant)
-    echo UIComponents::statsCard('Monthly Revenue', formatAmount($stats['monthly_revenue']), 'money-bill-wave', $trends['revenue_trend'], 'green'); 
-    echo UIComponents::statsCard('Occupied Units', number_format($stats['occupied_units']), 'check-circle', $trends['units_trend'], 'blue'); 
-    echo UIComponents::statsCard('Pending Payments', number_format($stats['pending_payments']), 'exclamation-triangle', -25.0, 'red'); 
+    echo UIComponents::statsCard('Monthly Revenue', formatAmount($stats['monthly_revenue']), 'money-bill-wave', null, 'green'); 
+    echo UIComponents::statsCard('Occupied Units', number_format($stats['occupied_units']), 'check-circle', null, 'blue'); 
+    echo UIComponents::statsCard('Pending Payments', number_format($stats['pending_payments']), 'exclamation-triangle', null, 'red'); 
     ?>
 </div>
 
@@ -138,10 +139,11 @@ function calculateTrend($current, $previous) {
         $propertiesContent = '<div class="space-y-4">';
         foreach ($recentProperties as $property) {
             $statusColor = arr_get($property, 'status') === 'occupied' ? 'success' : (arr_get($property, 'status') === 'available' ? 'info' : 'warning');
+            $imageSrc = PropertyHelper::getImageSrc(arr_get($property, 'images'));
             $propertiesContent .= "
                 <div class=\"flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-pointer\" onclick=\"window.location.href='/admin/properties/" . arr_get($property, 'id') . "'\">
                     <div class=\"flex items-center space-x-4 min-w-0 flex-1\">
-                        <img src=\"" . arr_escape($property, 'image') . "\" alt=\"" . arr_escape($property, 'name') . "\" class=\"w-16 h-16 rounded-lg object-cover flex-shrink-0\">
+                        <img src=\"" . htmlspecialchars($imageSrc) . "\" alt=\"" . arr_escape($property, 'name') . "\" class=\"w-16 h-16 rounded-lg object-cover flex-shrink-0\" onerror=\"this.src='/assets/images/property-placeholder.svg'\">
                         <div class=\"min-w-0 flex-1\">
                             <h4 class=\"text-sm font-semibold text-gray-900 dark:text-white truncate\">" . arr_escape($property, 'name') . "</h4>
                             <p class=\"text-xs text-gray-500 dark:text-gray-400 truncate\">" . arr_escape($property, 'address') . "</p>

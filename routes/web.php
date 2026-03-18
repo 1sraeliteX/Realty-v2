@@ -127,8 +127,18 @@ return [
     // Admin Settings routes
     'GET /admin/settings' => 'SettingsController@index',
     'POST /admin/settings' => 'SettingsController@update',
+    'POST /admin/settings/currency' => 'SettingsController@updateCurrency',
     'GET /admin/profile' => 'ProfileController@index',
     'POST /admin/profile' => 'ProfileController@update',
+
+    // Admin Search routes
+    'GET /admin/search' => 'SearchController@search',
+
+    // Notification API routes
+    'GET /api/notifications/count' => 'NotificationController@getUnreadCount',
+    'GET /api/notifications/recent' => 'NotificationController@getRecent',
+    'POST /api/notifications/mark-read' => 'NotificationController@markAsRead',
+    'POST /api/notifications/mark-all-read' => 'NotificationController@markAllAsRead',
 
     // Direct access routes (for development/testing)
     'GET /admin-direct' => 'AdminDashboardController@index',

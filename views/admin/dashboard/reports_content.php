@@ -103,10 +103,6 @@ function calculateTrend($current, $previous) {
                         <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Total Properties</dt>
                         <dd class="flex items-baseline">
                             <div class="text-2xl font-semibold text-gray-900 dark:text-white"><?php echo number_format($stats['total_properties']); ?></div>
-                            <div class="ml-2 flex items-baseline text-sm font-semibold <?php echo $trends['property_trend'] >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'; ?>">
-                                <i class="fas fa-<?php echo $trends['property_trend'] >= 0 ? 'arrow-up' : 'arrow-down'; ?> text-xs mr-1"></i>
-                                <?php echo abs($trends['property_trend']); ?>%
-                            </div>
                         </dd>
                     </dl>
                 </div>
@@ -131,10 +127,6 @@ function calculateTrend($current, $previous) {
                         <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Total Units</dt>
                         <dd class="flex items-baseline">
                             <div class="text-2xl font-semibold text-gray-900 dark:text-white"><?php echo number_format($stats['total_units']); ?></div>
-                            <div class="ml-2 flex items-baseline text-sm font-semibold <?php echo $trends['units_trend'] >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'; ?>">
-                                <i class="fas fa-<?php echo $trends['units_trend'] >= 0 ? 'arrow-up' : 'arrow-down'; ?> text-xs mr-1"></i>
-                                <?php echo abs($trends['units_trend']); ?>%
-                            </div>
                         </dd>
                     </dl>
                 </div>
@@ -159,10 +151,6 @@ function calculateTrend($current, $previous) {
                         <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Active Tenants</dt>
                         <dd class="flex items-baseline">
                             <div class="text-2xl font-semibold text-gray-900 dark:text-white"><?php echo number_format($stats['active_tenants']); ?></div>
-                            <div class="ml-2 flex items-baseline text-sm font-semibold <?php echo $trends['tenants_trend'] >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'; ?>">
-                                <i class="fas fa-<?php echo $trends['tenants_trend'] >= 0 ? 'arrow-up' : 'arrow-down'; ?> text-xs mr-1"></i>
-                                <?php echo abs($trends['tenants_trend']); ?>%
-                            </div>
                         </dd>
                     </dl>
                 </div>
@@ -187,10 +175,6 @@ function calculateTrend($current, $previous) {
                         <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Monthly Revenue</dt>
                         <dd class="flex items-baseline">
                             <div class="text-2xl font-semibold text-gray-900 dark:text-white"><?php echo formatAmount($stats['monthly_revenue']); ?></div>
-                            <div class="ml-2 flex items-baseline text-sm font-semibold <?php echo $trends['revenue_trend'] >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'; ?>">
-                                <i class="fas fa-<?php echo $trends['revenue_trend'] >= 0 ? 'arrow-up' : 'arrow-down'; ?> text-xs mr-1"></i>
-                                <?php echo abs($trends['revenue_trend']); ?>%
-                            </div>
                         </dd>
                     </dl>
                 </div>
@@ -236,7 +220,7 @@ function calculateTrend($current, $previous) {
                                 </div>
                             </div>
                             <div class="text-right">
-                                <div class="text-sm font-medium text-gray-900 dark:text-white"><?php echo $property['occupancy_rate'] ?? 0; ?>% Occupancy</div>
+                                <div class="text-sm font-medium text-gray-900 dark:text-white"><?php echo $property['occupancy_rate'] ?? 0; ?> Occupancy</div>
                                 <div class="text-sm text-gray-500 dark:text-gray-400"><?php echo formatAmount($property['monthly_revenue'] ?? 0); ?>/mo</div>
                             </div>
                         </div>
@@ -392,11 +376,11 @@ function exportReports() {
     
     // Create a simple CSV export
     const csvContent = "data:text/csv;charset=utf-8," 
-        + "Report,Value,Trend\n"
-        + "Properties," + <?php echo $stats['total_properties']; ?> + "," + <?php echo $trends['property_trend']; ?> + "%\n"
-        + "Units," + <?php echo $stats['total_units']; ?> + "," + <?php echo $trends['units_trend']; ?> + "%\n"
-        + "Tenants," + <?php echo $stats['active_tenants']; ?> + "," + <?php echo $trends['tenants_trend']; ?> + "%\n"
-        + "Revenue," + "<?php echo $stats['monthly_revenue']; ?>," + <?php echo $trends['revenue_trend']; ?> + "%";
+        + "Report,Value\n"
+        + "Properties," + <?php echo $stats['total_properties']; ?> + "\n"
+        + "Units," + <?php echo $stats['total_units']; ?> + "\n"
+        + "Tenants," + <?php echo $stats['active_tenants']; ?> + "\n"
+        + "Revenue," + "<?php echo $stats['monthly_revenue']; ?>\n";
     
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");

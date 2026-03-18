@@ -119,4 +119,59 @@ class SettingsController extends BaseController {
             $this->redirect('/admin/settings');
         }
     }
+    
+    public function updateCurrency() {
+        $admin = $this->requireAuth();
+        $this->ensureSettingsTable();
+        $data = $this->getPostData();
+
+        // Validate currency data
+        if (empty($data['currency']) || empty($data['symbol'])) {
+            if ($this->isApiRequest()) {
+                $this->json(['success' => false, 'message' => 'Invalid currency data'], 400);
+                return;
+            }
+            $_SESSION['error'] = 'Invalid currency data';
+            $this->redirect('/admin/settings');
+            return;
+        }
+
+        // Validate currency code against allowed currencies
+        $currencyMap = [
+            'NGN' => '₦',
+            'USD' => '$',
+            'GBP' => '£',
+            'EUR' => '€',
+            'GHS' => '₵',
+            'KES' => 'KSh',
+            'ZAR' => 'R',
+        ];
+        
+        $code = strtoupper($data['currency']);
+        if (!isset($currencyMap[$code]) || $currencyMap[$code] !== $data['symbol']) {
+            if ($this->isApiRequest()) {
+                $this->json(['success' => false, 'message' => 'Invalid currency code or symbol'], 400);
+                return;
+            }
+            $_SESSION['error'] = 'Invalid currency code or symbol';
+            $this->redirect('/admin/settings');
+            return;
+        }
+
+        // Save currency settings
+        $this->saveSetting($admin['id'], 'currency', $code);
+        $this->saveSetting($admin['id'], 'currency_symbol', $data['symbol']);
+
+        if ($this->isApiRequest()) {
+            $this->json([
+                'success' => true,
+                'message' => 'Currency updated successfully',
+                'currency' => $code,
+                'symbol' => $data['symbol'],
+            ]);
+        } else {
+            $_SESSION['success'] = 'Currency updated successfully!';
+            $this->redirect('/admin/settings');
+        }
+    }
 }

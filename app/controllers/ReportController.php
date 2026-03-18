@@ -60,8 +60,14 @@ class ReportController extends BaseController {
         
         \ViewManager::set('reports', $reports);
         
-        // Include the dashboard layout with reports content
+        // Set the content directly (anti-scattering compliant)
+        ob_start();
         include __DIR__ . '/../../views/admin/dashboard_reports.php';
+        $content = ob_get_clean();
+        \ViewManager::set('content', $content);
+        
+        // Include the dashboard layout to render everything
+        include __DIR__ . '/../../views/admin/dashboard_layout.php';
     }
     
     public function create() {

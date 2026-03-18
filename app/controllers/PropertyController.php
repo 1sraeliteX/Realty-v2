@@ -284,6 +284,9 @@ class PropertyController extends BaseController {
         // Log activity
         $this->logActivity($admin['id'], 'create', "Created property: {$mappedData['property_name']}", 'property', $propertyId);
 
+        // Create notification
+        \App\Helpers\NotificationHelper::createPropertyNotification($admin['id'], $mappedData['property_name'], 'created', $propertyId);
+
         if ($forceJson) {
             $this->json([
                 'success' => true,
