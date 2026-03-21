@@ -28,9 +28,9 @@ ob_start();
 
 <!-- Financial Overview Stats -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-    <?php echo UIComponents::statsCard('Monthly Revenue', '$' . number_format($stats['monthly_revenue'], 0), 'dollar-sign', 12.5, 'green'); ?>
-    <?php echo UIComponents::statsCard('Monthly Expenses', '$' . number_format($stats['monthly_expenses'], 0), 'chart-line', -8.2, 'red'); ?>
-    <?php echo UIComponents::statsCard('Net Profit', '$' . number_format($stats['net_profit'], 0), 'chart-pie', 18.7, 'blue'); ?>
+    <?php echo UIComponents::statsCard('Monthly Revenue', '₦' . number_format($stats['monthly_revenue'], 0), 'dollar-sign', 12.5, 'green'); ?>
+    <?php echo UIComponents::statsCard('Monthly Expenses', '₦' . number_format($stats['monthly_expenses'], 0), 'chart-line', -8.2, 'red'); ?>
+    <?php echo UIComponents::statsCard('Net Profit', '₦' . number_format($stats['net_profit'], 0), 'chart-pie', 18.7, 'blue'); ?>
     <?php echo UIComponents::statsCard('Pending Payments', $stats['pending_payments_count'], 'clock', 0, 'yellow'); ?>
 </div>
 
@@ -126,7 +126,7 @@ ob_start();
                     </div>
                     <div class='text-right'>
                         <p class='text-sm font-medium {$amountClass}'>
-                            " . ($transaction['amount'] > 0 ? '+' : '') . "$" . number_format(abs($transaction['amount']), 0) . "
+                            " . ($transaction['amount'] > 0 ? '+' : '') . "₦" . number_format(abs($transaction['amount']), 0) . "
                         </p>
                         <p class='text-xs text-gray-500 dark:text-gray-400'>" . htmlspecialchars($transaction['method']) . "</p>
                     </div>
@@ -165,7 +165,7 @@ ob_start();
                         </div>
                     </div>
                     <div class='text-right'>
-                        <p class='text-sm font-medium text-gray-900 dark:text-white'>$" . number_format($payment['amount'], 0) . "</p>
+                        <p class='text-sm font-medium text-gray-900 dark:text-white'>₦" . number_format($payment['amount'], 0) . "</p>
                         <p class='text-xs text-gray-500 dark:text-gray-400'>" . date('M j', strtotime($payment['due_date'])) . "</p>
                     </div>
                 </div>
@@ -195,7 +195,7 @@ echo UIComponents::card(
             <div>
                 <h3 class="text-sm font-medium text-red-800 dark:text-red-200">Overdue Payments</h3>
                 <p class="text-sm text-red-700 dark:text-red-300 mt-1">
-                    ' . count($overduePayments) . ' overdue payments totaling $' . number_format($stats['overdue_payments_total'], 0) . '
+                    ' . count($overduePayments) . ' overdue payments totaling ₦' . number_format($stats['overdue_payments_total'], 0) . '
                 </p>
             </div>
         </div>
@@ -252,7 +252,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     beginAtZero: true,
                     ticks: {
                         callback: function(value) {
-                            return '$' + value.toLocaleString();
+                            return '₦' + value.toLocaleString();
                         }
                     }
                 }

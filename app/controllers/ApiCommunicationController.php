@@ -17,8 +17,8 @@ class ApiCommunicationController extends BaseController {
         $recipientId = $_GET['recipient_id'] ?? '';
         
         // Build query
-        $where = ["c.admin_id = ?"];
-        $params = [$admin['id']];
+        $where = ["c.deleted_at IS NULL"];
+        $params = [];
         
         if (!empty($search)) {
             $where[] = "(c.subject LIKE ? OR c.message LIKE ?)";
@@ -82,9 +82,9 @@ class ApiCommunicationController extends BaseController {
                  FROM communications c
                  LEFT JOIN admins s ON c.sender_id = s.id
                  LEFT JOIN tenants r ON c.recipient_id = r.id
-                 WHERE c.id = ? AND c.admin_id = ? AND c.deleted_at IS NULL";
+                 WHERE c.id = ? AND c.deleted_at IS NULL";
         
-        $communication = $this->db->query($sql, [$id, $admin['id']])->fetch();
+        $communication = $this->db->query($sql, [$id])->fetch();
         
         if (!$communication) {
             $this->json(['success' => false, 'message' => 'Communication not found'], 404);
@@ -245,9 +245,9 @@ class ApiCommunicationController extends BaseController {
         $sql = "SELECT c.*, t.name as recipient_name, t.email as recipient_email, t.phone as recipient_phone
                  FROM communications c
                  LEFT JOIN tenants t ON c.recipient_id = t.id
-                 WHERE c.id = ? AND c.admin_id = ? AND c.deleted_at IS NULL";
+                 WHERE c.id = ? AND c.deleted_at IS NULL";
         
-        $communication = $this->db->query($sql, [$id, $admin['id']])->fetch();
+        $communication = $this->db->query($sql, [$id])->fetch();
         
         if (!$communication) {
             $this->json(['success' => false, 'message' => 'Communication not found'], 404);

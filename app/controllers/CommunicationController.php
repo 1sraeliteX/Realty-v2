@@ -17,8 +17,8 @@ class CommunicationController extends BaseController {
         $recipientId = $_GET['recipient_id'] ?? '';
         
         // Build query
-        $where = ["c.admin_id = ?", "c.deleted_at IS NULL"];
-        $params = [$admin['id']];
+        $where = ["c.deleted_at IS NULL"];
+        $params = [];
         
         if (!empty($search)) {
             $where[] = "(c.subject LIKE ? OR c.message LIKE ?)";
@@ -38,13 +38,12 @@ class CommunicationController extends BaseController {
         
         // Get communications with sender and recipient info
         $sql = "SELECT c.*, 
-                        s.name as sender_name,
-                        s.email as sender_email,
-                        r.name as recipient_name,
-                        r.email as recipient_email
+                        t.name as tenant_name,
+                        t.email as tenant_email,
+                        p.name as property_name
                  FROM communications c
-                 LEFT JOIN admins s ON c.sender_id = s.id
-                 LEFT JOIN tenants r ON c.recipient_id = r.id
+                 LEFT JOIN tenants t ON c.tenant_id = t.id
+                 LEFT JOIN properties p ON c.property_id = p.id
                  WHERE " . implode(' AND ', $where) . "
                  ORDER BY c.created_at DESC
                  LIMIT ? OFFSET ?";
@@ -66,8 +65,9 @@ class CommunicationController extends BaseController {
                         SUM(CASE WHEN status = 'sent' THEN 1 ELSE 0 END) as sent_count,
                         SUM(CASE WHEN status = 'draft' THEN 1 ELSE 0 END) as draft_count
                      FROM communications 
-                     WHERE admin_id = ? AND deleted_at IS NULL";
-        $stats = $this->db->query($statsSql, [$admin['id']])->fetch();
+                     WHERE deleted_at IS NULL";
+        
+        $stats = $this->db->query($statsSql, $params)->fetch();
         
         // Get tenants for recipient selection
         $tenantsSql = "SELECT id, name, email FROM tenants WHERE admin_id = ? AND deleted_at IS NULL ORDER BY name";
@@ -206,9 +206,9 @@ class CommunicationController extends BaseController {
                  FROM communications c
                  LEFT JOIN admins s ON c.sender_id = s.id
                  LEFT JOIN tenants r ON c.recipient_id = r.id
-                 WHERE c.id = ? AND c.admin_id = ? AND c.deleted_at IS NULL";
+                 WHERE c.id = ? AND c.deleted_at IS NULL";
         
-        $communication = $this->db->query($sql, [$id, $admin['id']])->fetch();
+        $communication = $this->db->query($sql, [$id])->fetch();
         
         if (!$communication) {
             $_SESSION['error'] = 'Communication not found';
@@ -367,9 +367,9 @@ class CommunicationController extends BaseController {
         $sql = "SELECT c.*, t.name as recipient_name, t.email as recipient_email, t.phone as recipient_phone
                  FROM communications c
                  LEFT JOIN tenants t ON c.recipient_id = t.id
-                 WHERE c.id = ? AND c.admin_id = ? AND c.deleted_at IS NULL";
+                 WHERE c.id = ? AND c.deleted_at IS NULL";
         
-        $communication = $this->db->query($sql, [$id, $admin['id']])->fetch();
+        $communication = $this->db->query($sql, [$id])->fetch();
         
         if (!$communication) {
             $_SESSION['error'] = 'Communication not found';

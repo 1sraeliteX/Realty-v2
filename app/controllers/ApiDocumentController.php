@@ -19,7 +19,7 @@ class ApiDocumentController extends BaseController {
         $tenantId = $_GET['tenant_id'] ?? '';
         
         // Build query
-        $where = ["d.admin_id = ?", "d.deleted_at IS NULL"];
+        $where = ["d.uploaded_by = ?", "d.deleted_at IS NULL"];
         $params = [$admin['id']];
         
         if (!empty($search)) {
@@ -99,7 +99,7 @@ class ApiDocumentController extends BaseController {
                  LEFT JOIN tenants t ON d.tenant_id = t.id
                  LEFT JOIN properties pr ON d.property_id = pr.id
                  LEFT JOIN units u ON d.unit_id = u.id
-                 WHERE d.id = ? AND d.admin_id = ? AND d.deleted_at IS NULL";
+                 WHERE d.id = ? AND d.uploaded_by = ? AND d.deleted_at IS NULL";
         
         $document = $this->db->query($sql, [$id, $admin['id']])->fetch();
         

@@ -1,25 +1,43 @@
 <?php
-// Initialize framework (anti-scattering compliant)
-require_once __DIR__ . '/../../../config/bootstrap.php';
+// Get data from ViewManager (anti-scattering compliant)
+$properties = ViewManager::get('properties', []);
+$tenants = ViewManager::get('tenants', []);
+$contractors = ViewManager::get('contractors', []);
+$categories = ViewManager::get('categories', []);
+$priorities = ViewManager::get('priorities', []);
+$statuses = ViewManager::get('statuses', []);
 
-// Load AutoFillComponent using ComponentRegistry
-ComponentRegistry::load('autofill-component');
+// Define default values if not provided
+if (empty($categories)) {
+    $categories = [
+        ['value' => 'plumbing', 'label' => 'Plumbing'],
+        ['value' => 'electrical', 'label' => 'Electrical'],
+        ['value' => 'hvac', 'label' => 'HVAC'],
+        ['value' => 'appliance', 'label' => 'Appliance'],
+        ['value' => 'structural', 'label' => 'Structural'],
+        ['value' => 'pest_control', 'label' => 'Pest Control'],
+        ['value' => 'landscaping', 'label' => 'Landscaping'],
+        ['value' => 'other', 'label' => 'Other']
+    ];
+}
 
-// Set data through ViewManager (anti-scattering compliant)
-ViewManager::set('title', $title ?? 'Create Maintenance Request');
-ViewManager::set('pageTitle', $pageTitle ?? 'Create Maintenance Request');
-ViewManager::set('pageDescription', $pageDescription ?? 'Create a new maintenance request or work order');
+if (empty($priorities)) {
+    $priorities = [
+        ['value' => 'low', 'label' => 'Low'],
+        ['value' => 'medium', 'label' => 'Medium'],
+        ['value' => 'high', 'label' => 'High'],
+        ['value' => 'urgent', 'label' => 'Urgent']
+    ];
+}
 
-// Set data for the view
-ViewManager::set('properties', $properties ?? []);
-ViewManager::set('tenants', $tenants ?? []);
-ViewManager::set('contractors', $contractors ?? []);
-ViewManager::set('categories', $categories ?? []);
-ViewManager::set('priorities', $priorities ?? []);
-ViewManager::set('statuses', $statuses ?? []);
-
-// Capture page content
-ob_start();
+if (empty($statuses)) {
+    $statuses = [
+        ['value' => 'pending', 'label' => 'Pending'],
+        ['value' => 'in_progress', 'label' => 'In Progress'],
+        ['value' => 'completed', 'label' => 'Completed'],
+        ['value' => 'cancelled', 'label' => 'Cancelled']
+    ];
+}
 ?>
 
 <!-- Page Header -->
@@ -27,7 +45,7 @@ ob_start();
     <div class="flex items-center justify-between">
         <div>
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Create Maintenance Request</h1>
-            <p class="text-gray-600 dark:text-gray-400 text-sm mt-1"><?php echo htmlspecialchars($pageDescription ?? 'Create a new maintenance request or work order'); ?></p>
+            <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">Create a new maintenance request or work order</p>
         </div>
         <a href="/admin/maintenance" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
             <i class="fas fa-arrow-left mr-2"></i>
@@ -38,29 +56,14 @@ ob_start();
 
 <!-- Form -->
 <form id="maintenanceForm" method="POST" action="/admin/maintenance" class="space-y-6">
-    <?php
-    // Add auto-fill button
-    AutoFillComponent::generateAutoFillButton(
-        'maintenanceForm', 
-        AutoFillComponent::getMaintenanceFillData(),
-        'Auto-Fill Maintenance Form',
-        'bg-purple-600 hover:bg-purple-700 text-white'
-    );
-    ?>
-    <?php 
-    // Get data from ViewManager (anti-scattering compliant)
-    $properties = $properties ?? [];
-    $tenants = $tenants ?? [];
-    $contractors = $contractors ?? [];
-    $categories = $categories ?? [];
-    $priorities = $priorities ?? [];
-    $statuses = $statuses ?? [];
-    
-    // Load UIComponents (anti-scattering compliant)
-    ComponentRegistry::load('ui-components');
-    
-    // Build form content dynamically to avoid syntax errors
-    $basicInfoContent = '<div class="space-y-6">
+    <!-- Basic Information -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div class="flex items-center mb-6">
+            <i class="fas fa-info-circle mr-2 text-primary-600"></i>
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Basic Information</h3>
+        </div>
+        
+        <div class="space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Title/Request Summary -->
                 <div class="md:col-span-2">
@@ -70,74 +73,76 @@ ob_start();
                         name="title" 
                         required
                         placeholder="Brief summary of the maintenance issue"
-                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     >
                 </div>
                 
                 <!-- Property/Unit -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Property / Unit *</label>
-                    <select name="property_unit" required class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                        <option value="">Select Property/Unit</option>';
-    
-    foreach ($properties as $property) {
-        $basicInfoContent .= '<option value="' . htmlspecialchars($property['id']) . '">' . htmlspecialchars($property['name']) . '</option>';
-    }
-    
-    $basicInfoContent .= '</select>
+                    <select name="property_unit" required class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        <option value="">Select Property/Unit</option>
+                        <?php foreach ($properties as $property): ?>
+                            <option value="<?php echo htmlspecialchars($property['id']); ?>">
+                                <?php echo htmlspecialchars($property['name']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
                 
                 <!-- Tenant -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tenant</label>
-                    <select name="tenant" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                        <option value="">Select Tenant (Optional)</option>';
-    
-    foreach ($tenants as $tenant) {
-        $tenantName = ($tenant['first_name'] ?? '') . ' ' . ($tenant['last_name'] ?? '');
-        $basicInfoContent .= '<option value="' . htmlspecialchars($tenant['id']) . '">' . htmlspecialchars(trim($tenantName)) . '</option>';
-    }
-    
-    $basicInfoContent .= '</select>
+                    <select name="tenant" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        <option value="">Select Tenant (Optional)</option>
+                        <?php foreach ($tenants as $tenant): ?>
+                            <?php 
+                            $tenantName = ($tenant['first_name'] ?? '') . ' ' . ($tenant['last_name'] ?? '');
+                            $tenantName = trim($tenantName);
+                            ?>
+                            <option value="<?php echo htmlspecialchars($tenant['id']); ?>">
+                                <?php echo htmlspecialchars($tenantName); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
                 
                 <!-- Category -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category *</label>
-                    <select name="category" required class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                        <option value="">Select Category</option>';
-    
-    foreach ($categories as $category) {
-        $basicInfoContent .= '<option value="' . htmlspecialchars($category['value']) . '">' . htmlspecialchars($category['label']) . '</option>';
-    }
-    
-    $basicInfoContent .= '</select>
+                    <select name="category" required class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        <option value="">Select Category</option>
+                        <?php foreach ($categories as $category): ?>
+                            <option value="<?php echo htmlspecialchars($category['value']); ?>">
+                                <?php echo htmlspecialchars($category['label']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
                 
                 <!-- Priority -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Priority *</label>
-                    <select name="priority" required class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                        <option value="">Select Priority</option>';
-    
-    foreach ($priorities as $priority) {
-        $basicInfoContent .= '<option value="' . htmlspecialchars($priority['value']) . '">' . htmlspecialchars($priority['label']) . '</option>';
-    }
-    
-    $basicInfoContent .= '</select>
+                    <select name="priority" required class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        <option value="">Select Priority</option>
+                        <?php foreach ($priorities as $priority): ?>
+                            <option value="<?php echo htmlspecialchars($priority['value']); ?>">
+                                <?php echo htmlspecialchars($priority['label']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
                 
                 <!-- Status -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status *</label>
-                    <select name="status" required class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">';
-    
-    foreach ($statuses as $status) {
-        $selected = $status['value'] === 'pending' ? ' selected' : '';
-        $basicInfoContent .= '<option value="' . htmlspecialchars($status['value']) . '"' . $selected . '>' . htmlspecialchars($status['label']) . '</option>';
-    }
-    
-    $basicInfoContent .= '</select>
+                    <select name="status" required class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        <?php foreach ($statuses as $status): ?>
+                            <option value="<?php echo htmlspecialchars($status['value']); ?>" <?php echo $status['value'] === 'pending' ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars($status['label']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
             </div>
             
@@ -149,38 +154,32 @@ ob_start();
                     required 
                     rows="4" 
                     placeholder="Detailed description of the maintenance issue..."
-                    class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 ></textarea>
             </div>
-        </div>';
-    
-    echo UIComponents::card(
-        $basicInfoContent,
-        '<div class="flex items-center">
-            <i class="fas fa-info-circle mr-2 text-primary-600"></i>
-            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Basic Information</h3>
-        </div>',
-        null,
-        'bg-cream-50 dark:bg-gray-800 rounded-lg shadow'
-    );
-    ?>
+        </div>
+    </div>
 
     <!-- Assignment & Scheduling -->
-    <?php 
-    // Build assignment content dynamically to avoid syntax errors
-    $assignmentContent = '<div class="space-y-6">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div class="flex items-center mb-6">
+            <i class="fas fa-calendar-alt mr-2 text-primary-600"></i>
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Assignment & Scheduling</h3>
+        </div>
+        
+        <div class="space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Assigned To -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Assigned To</label>
-                    <select name="assigned_to" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                        <option value="">Select Contractor/Staff</option>';
-    
-    foreach ($contractors as $contractor) {
-        $assignmentContent .= '<option value="' . htmlspecialchars($contractor['id']) . '">' . htmlspecialchars($contractor['name']) . '</option>';
-    }
-    
-    $assignmentContent .= '</select>
+                    <select name="assigned_to" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        <option value="">Select Contractor/Staff</option>
+                        <?php foreach ($contractors as $contractor): ?>
+                            <option value="<?php echo htmlspecialchars($contractor['id']); ?>">
+                                <?php echo htmlspecialchars($contractor['name']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
                 
                 <!-- Scheduled Date -->
@@ -189,7 +188,7 @@ ob_start();
                     <input 
                         type="date" 
                         name="scheduled_date"
-                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     >
                 </div>
                 
@@ -202,11 +201,11 @@ ob_start();
                         </div>
                         <input 
                             type="number" 
-                            name="estimated_cost"
+                            name="cost_estimate"
                             placeholder="0.00"
                             step="0.01"
                             min="0"
-                            class="w-full pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            class="w-full pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         >
                     </div>
                 </div>
@@ -220,24 +219,14 @@ ob_start();
                             name="attachments"
                             multiple
                             accept="image/*,.pdf,.doc,.docx"
-                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary-600 file:text-white hover:file:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary-600 file:text-white hover:file:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         >
                     </div>
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Upload images or documents (optional)</p>
                 </div>
             </div>
-        </div>';
-    
-    echo UIComponents::card(
-        $assignmentContent,
-        '<div class="flex items-center">
-            <i class="fas fa-calendar-alt mr-2 text-primary-600"></i>
-            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Assignment & Scheduling</h3>
-        </div>',
-        null,
-        'bg-cream-50 dark:bg-gray-800 rounded-lg shadow'
-    );
-    ?>
+        </div>
+    </div>
 
     <!-- Form Actions -->
     <div class="flex justify-end space-x-4">
@@ -251,10 +240,3 @@ ob_start();
     </div>
 </form>
 
-<?php
-// Capture content and set for layout
-$content = ob_get_clean();
-
-// Use the admin dashboard layout (anti-scattering compliant)
-include __DIR__ . '/../dashboard_layout.php';
-?>

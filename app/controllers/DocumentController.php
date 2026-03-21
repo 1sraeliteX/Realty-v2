@@ -19,33 +19,33 @@ class DocumentController extends BaseController {
         $tenantId = $_GET['tenant_id'] ?? '';
         
         // Build query
-        $where = ["d.admin_id = ?", "d.deleted_at IS NULL"];
+        $where = ["d.uploaded_by = ?", "d.deleted_at IS NULL"];
         $params = [$admin['id']];
         
         if (!empty($search)) {
-            $where[] = "(d.title LIKE ? OR d.description LIKE ? OR d.file_name LIKE ?)";
+            $where[] = "(title LIKE ? OR description LIKE ? OR file_name LIKE ?)";
             $params[] = "%$search%";
             $params[] = "%$search%";
             $params[] = "%$search%";
         }
         
         if (!empty($type)) {
-            $where[] = "d.type = ?";
+            $where[] = "type = ?";
             $params[] = $type;
         }
         
         if (!empty($category)) {
-            $where[] = "d.category = ?";
+            $where[] = "category = ?";
             $params[] = $category;
         }
         
         if (!empty($propertyId)) {
-            $where[] = "d.property_id = ?";
+            $where[] = "property_id = ?";
             $params[] = $propertyId;
         }
         
         if (!empty($tenantId)) {
-            $where[] = "d.tenant_id = ?";
+            $where[] = "tenant_id = ?";
             $params[] = $tenantId;
         }
         
@@ -68,8 +68,9 @@ class DocumentController extends BaseController {
         $documents = $this->db->query($sql, $params)->fetchAll();
         
         // Get total count for pagination
-        $countSql = "SELECT COUNT(*) FROM documents d WHERE " . implode(' AND ', $where);
-        $total = $this->db->query($countSql, $params)->fetchColumn();
+        $countParams = array_slice($params, 0, -2); // Remove LIMIT and OFFSET parameters
+        $countSql = "SELECT COUNT(*) FROM documents WHERE " . implode(' AND ', $where);
+        $total = $this->db->query($countSql, $countParams)->fetchColumn();
         
         // Get statistics
         $statsSql = "SELECT 
@@ -79,7 +80,7 @@ class DocumentController extends BaseController {
                         SUM(CASE WHEN type = 'image' THEN 1 ELSE 0 END) as image_count,
                         SUM(CASE WHEN type = 'document' THEN 1 ELSE 0 END) as document_count
                      FROM documents 
-                     WHERE admin_id = ? AND deleted_at IS NULL";
+                     WHERE uploaded_by = ? AND deleted_at IS NULL";
         $stats = $this->db->query($statsSql, [$admin['id']])->fetch();
         
         // Get properties and tenants for filters
@@ -263,7 +264,7 @@ class DocumentController extends BaseController {
                  LEFT JOIN tenants t ON d.tenant_id = t.id
                  LEFT JOIN properties pr ON d.property_id = pr.id
                  LEFT JOIN units u ON d.unit_id = u.id
-                 WHERE d.id = ? AND d.admin_id = ? AND d.deleted_at IS NULL";
+                 WHERE d.id = ? AND d.uploaded_by = ? AND d.deleted_at IS NULL";
         
         $document = $this->db->query($sql, [$id, $admin['id']])->fetch();
         

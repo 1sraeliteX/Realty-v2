@@ -1,6 +1,6 @@
 <?php
 // Initialize framework (anti-scattering compliant)
-require_once __DIR__ . '/../../../config/init_framework.php';
+require_once __DIR__ . '/../../config/init_framework.php';
 
 // Load components through registry (anti-scattering compliant)
 ComponentRegistry::load('ui-components');

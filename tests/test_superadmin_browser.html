@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SuperAdmin Login Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { border: 1px solid #ccc; padding: 15px; margin: 10px 0; }
+        .success { color: green; }
+        .error { color: red; }
+        iframe { width: 100%; height: 500px; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+    <h1>SuperAdmin Login & Dashboard Test</h1>
+    
+    <div class="test-section">
+        <h2>Test Results</h2>
+        <div id="results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>1. Login Page Test</h2>
+        <iframe src="/superadmin/login" id="loginFrame"></iframe>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. Dashboard Test (After Login)</h2>
+        <iframe src="/superadmin/dashboard" id="dashboardFrame"></iframe>
+    </div>
+    
+    <div class="test-section">
+        <h2>Manual Test Instructions</h2>
+        <ol>
+            <li>In the login iframe above, enter: <strong>superadmin@cornerstone.com</strong></li>
+            <li>Password: <strong>admin123</strong></li>
+            <li>Click "Sign in as Super Admin"</li>
+            <li>You should be redirected to the dashboard</li>
+            <li>The dashboard should show: Platform Overview, Total Admins, Total Properties, etc.</li>
+        </ol>
+        
+        <h3>Demo Credentials:</h3>
+        <ul>
+            <li><strong>Email:</strong> superadmin@cornerstone.com</li>
+            <li><strong>Password:</strong> admin123</li>
+        </ul>
+    </div>
+
+    <script>
+        // Test if pages load
+        function testPages() {
+            const results = document.getElementById('results');
+            
+            // Test login page
+            fetch('/superadmin/login')
+                .then(response => response.text())
+                .then(html => {
+                    if (html.includes('Super Admin Portal')) {
+                        results.innerHTML += '<div class="success">✅ Login page loads correctly</div>';
+                    } else {
+                        results.innerHTML += '<div class="error">❌ Login page failed to load</div>';
+                    }
+                })
+                .catch(error => {
+                    results.innerHTML += '<div class="error">❌ Login page error: ' + error.message + '</div>';
+                });
+            
+            // Test dashboard (should redirect to login if not authenticated)
+            fetch('/superadmin/dashboard')
+                .then(response => {
+                    if (response.redirected && response.url.includes('/login')) {
+                        results.innerHTML += '<div class="success">✅ Dashboard correctly redirects to login when not authenticated</div>';
+                    } else if (response.ok) {
+                        results.innerHTML += '<div class="success">✅ Dashboard accessible (already authenticated)</div>';
+                    } else {
+                        results.innerHTML += '<div class="error">❌ Dashboard access error</div>';
+                    }
+                })
+                .catch(error => {
+                    results.innerHTML += '<div class="error">❌ Dashboard error: ' + error.message + '</div>';
+                });
+        }
+        
+        // Run tests when page loads
+        window.onload = testPages;
+    </script>
+</body>
+</html>

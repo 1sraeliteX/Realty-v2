@@ -362,7 +362,11 @@ $isProfile = strpos($currentPath, '/admin/profile') === 0;
             <!-- Page Content -->
             <main class="flex-1 overflow-auto bg-cream-50 dark:bg-gray-900">
                 <div class="p-6 max-w-7xl mx-auto">
-                    <?php echo $content ?? '<div class="text-center py-8"><h1 class="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1><p class="text-gray-600 dark:text-gray-400 mt-2">Welcome to the admin dashboard</p></div>'; ?>
+                    <?php 
+                    // Get content from ViewManager (anti-scattering compliant)
+                    $content = ViewManager::get('content');
+                    echo $content ?? '<div class="text-center py-8"><h1 class="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1><p class="text-gray-600 dark:text-gray-400 mt-2">Welcome to the admin dashboard</p></div>'; 
+                    ?>
                 </div>
             </main>
         </div>

@@ -1,0 +1,28 @@
+-- Create documents table
+CREATE TABLE IF NOT EXISTS `documents` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `admin_id` int(11) NOT NULL,
+  `tenant_id` int(11) DEFAULT NULL,
+  `property_id` int(11) DEFAULT NULL,
+  `unit_id` int(11) DEFAULT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `file_name` varchar(255) NOT NULL,
+  `file_path` varchar(255) NOT NULL,
+  `file_size` int(11) NOT NULL DEFAULT 0,
+  `file_type` varchar(50) NOT NULL,
+  `category` varchar(50) DEFAULT 'general',
+  `uploaded_by` int(11) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_admin_id` (`admin_id`),
+  KEY `idx_tenant_id` (`tenant_id`),
+  KEY `idx_property_id` (`property_id`),
+  KEY `idx_unit_id` (`unit_id`),
+  KEY `idx_uploaded_by` (`uploaded_by`),
+  KEY `idx_deleted_at` (`deleted_at`),
+  KEY `idx_category` (`category`),
+  KEY `idx_file_type` (`file_type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

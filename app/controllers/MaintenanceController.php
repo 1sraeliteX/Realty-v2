@@ -17,74 +17,205 @@ class MaintenanceController extends BaseController {
         $priority = $_GET['priority'] ?? '';
         $propertyId = $_GET['property_id'] ?? '';
         
-        // Build query
-        $where = ["m.admin_id = ?", "m.deleted_at IS NULL"];
-        $params = [$admin['id']];
+        // Mock maintenance requests data
+        $mockRequests = [
+            [
+                'id' => 1,
+                'title' => 'Leaking Kitchen Faucet',
+                'description' => 'The kitchen faucet is leaking continuously and needs to be repaired or replaced.',
+                'priority' => 'high',
+                'status' => 'pending',
+                'property_id' => 1,
+                'property_name' => 'Sunset Apartments',
+                'tenant_id' => 1,
+                'tenant_name' => 'John Doe',
+                'tenant_email' => 'john.doe@email.com',
+                'tenant_phone' => '+1-555-0101',
+                'unit_number' => '101',
+                'category' => 'plumbing',
+                'assigned_to' => null,
+                'assigned_to_name' => null,
+                'cost_estimate' => 150.00,
+                'actual_cost' => null,
+                'scheduled_date' => '2024-01-15',
+                'completion_date' => null,
+                'created_at' => '2024-01-10 09:30:00',
+                'updated_at' => '2024-01-10 09:30:00',
+                'notes' => 'Tenant reports leak is getting worse',
+                'updates' => []
+            ],
+            [
+                'id' => 2,
+                'title' => 'HVAC System Not Cooling',
+                'description' => 'Air conditioning unit is not blowing cold air, needs immediate attention.',
+                'priority' => 'urgent',
+                'status' => 'in_progress',
+                'property_id' => 2,
+                'property_name' => 'Downtown Plaza',
+                'tenant_id' => 2,
+                'tenant_name' => 'Jane Smith',
+                'tenant_email' => 'jane.smith@email.com',
+                'tenant_phone' => '+1-555-0102',
+                'unit_number' => '201',
+                'category' => 'hvac',
+                'assigned_to' => 1,
+                'assigned_to_name' => 'ABC HVAC Services',
+                'cost_estimate' => 500.00,
+                'actual_cost' => null,
+                'scheduled_date' => '2024-01-12',
+                'completion_date' => null,
+                'created_at' => '2024-01-09 14:15:00',
+                'updated_at' => '2024-01-11 10:30:00',
+                'notes' => 'Technician scheduled for tomorrow',
+                'updates' => [
+                    [
+                        'id' => 1,
+                        'status' => 'assigned',
+                        'notes' => 'Assigned to ABC HVAC Services',
+                        'created_at' => '2024-01-11 10:30:00'
+                    ]
+                ]
+            ],
+            [
+                'id' => 3,
+                'title' => 'Broken Window in Living Room',
+                'description' => 'Living room window has a crack and needs to be replaced for safety.',
+                'priority' => 'medium',
+                'status' => 'completed',
+                'property_id' => 1,
+                'property_name' => 'Sunset Apartments',
+                'tenant_id' => 3,
+                'tenant_name' => 'Bob Johnson',
+                'tenant_email' => 'bob.johnson@email.com',
+                'tenant_phone' => '+1-555-0103',
+                'unit_number' => '205',
+                'category' => 'structural',
+                'assigned_to' => 2,
+                'assigned_to_name' => 'Glass Repair Pro',
+                'cost_estimate' => 300.00,
+                'actual_cost' => 280.00,
+                'scheduled_date' => '2024-01-08',
+                'completion_date' => '2024-01-09',
+                'created_at' => '2024-01-07 11:45:00',
+                'updated_at' => '2024-01-09 16:20:00',
+                'notes' => 'Window replaced successfully',
+                'updates' => [
+                    [
+                        'id' => 2,
+                        'status' => 'completed',
+                        'notes' => 'Window replaced, tenant satisfied',
+                        'created_at' => '2024-01-09 16:20:00'
+                    ]
+                ]
+            ],
+            [
+                'id' => 4,
+                'title' => 'Electrical Outlet Not Working',
+                'description' => 'Bedroom electrical outlet is not providing power, needs inspection.',
+                'priority' => 'low',
+                'status' => 'pending',
+                'property_id' => 3,
+                'property_name' => 'Garden View Homes',
+                'tenant_id' => 4,
+                'tenant_name' => 'Alice Brown',
+                'tenant_email' => 'alice.brown@email.com',
+                'tenant_phone' => '+1-555-0104',
+                'unit_number' => '305',
+                'category' => 'electrical',
+                'assigned_to' => null,
+                'assigned_to_name' => null,
+                'cost_estimate' => 75.00,
+                'actual_cost' => null,
+                'scheduled_date' => null,
+                'completion_date' => null,
+                'created_at' => '2024-01-11 16:00:00',
+                'updated_at' => '2024-01-11 16:00:00',
+                'notes' => null,
+                'updates' => []
+            ],
+            [
+                'id' => 5,
+                'title' => 'Garbage Disposal Jammed',
+                'description' => 'Kitchen garbage disposal is jammed and making grinding noises.',
+                'priority' => 'medium',
+                'status' => 'in_progress',
+                'property_id' => 2,
+                'property_name' => 'Downtown Plaza',
+                'tenant_id' => 5,
+                'tenant_name' => 'Charlie Wilson',
+                'tenant_email' => 'charlie.wilson@email.com',
+                'tenant_phone' => '+1-555-0105',
+                'unit_number' => '102',
+                'category' => 'appliance',
+                'assigned_to' => 3,
+                'assigned_to_name' => 'Quick Fix Appliances',
+                'cost_estimate' => 120.00,
+                'actual_cost' => null,
+                'scheduled_date' => '2024-01-13',
+                'completion_date' => null,
+                'created_at' => '2024-01-10 13:20:00',
+                'updated_at' => '2024-01-11 09:15:00',
+                'notes' => 'Technician will inspect tomorrow',
+                'updates' => [
+                    [
+                        'id' => 3,
+                        'status' => 'assigned',
+                        'notes' => 'Assigned to Quick Fix Appliances',
+                        'created_at' => '2024-01-11 09:15:00'
+                    ]
+                ]
+            ]
+        ];
         
+        // Apply filters (mock implementation)
+        $filteredRequests = $mockRequests;
         if (!empty($search)) {
-            $where[] = "(m.title LIKE ? OR m.description LIKE ?)";
-            $params[] = "%$search%";
-            $params[] = "%$search%";
+            $filteredRequests = array_filter($filteredRequests, function($req) use ($search) {
+                return stripos($req['title'], $search) !== false || 
+                       stripos($req['description'], $search) !== false;
+            });
         }
-        
         if (!empty($status)) {
-            $where[] = "m.status = ?";
-            $params[] = $status;
+            $filteredRequests = array_filter($filteredRequests, function($req) use ($status) {
+                return $req['status'] === $status;
+            });
         }
-        
         if (!empty($priority)) {
-            $where[] = "m.priority = ?";
-            $params[] = $priority;
+            $filteredRequests = array_filter($filteredRequests, function($req) use ($priority) {
+                return $req['priority'] === $priority;
+            });
         }
-        
         if (!empty($propertyId)) {
-            $where[] = "m.property_id = ?";
-            $params[] = $propertyId;
+            $filteredRequests = array_filter($filteredRequests, function($req) use ($propertyId) {
+                return $req['property_id'] == $propertyId;
+            });
         }
         
-        // Get maintenance requests with tenant and property info
-        $sql = "SELECT m.*, 
-                        t.name as tenant_name,
-                        t.email as tenant_email,
-                        pr.name as property_name,
-                        pr.address as property_address,
-                        u.unit_number
-                 FROM maintenance_requests m
-                 LEFT JOIN tenants t ON m.tenant_id = t.id
-                 LEFT JOIN properties pr ON m.property_id = pr.id
-                 LEFT JOIN units u ON m.unit_id = u.id
-                 WHERE " . implode(' AND ', $where) . "
-                 ORDER BY m.priority DESC, m.created_at DESC
-                 LIMIT ? OFFSET ?";
+        // Pagination
+        $total = count($filteredRequests);
+        $offset = ($page - 1) * $limit;
+        $requests = array_slice($filteredRequests, $offset, $limit);
         
-        $params[] = $limit;
-        $params[] = ($page - 1) * $limit;
+        // Calculate statistics
+        $stats = [
+            'total_requests' => count($mockRequests),
+            'urgent_count' => count(array_filter($mockRequests, fn($r) => $r['priority'] === 'urgent')),
+            'high_count' => count(array_filter($mockRequests, fn($r) => $r['priority'] === 'high')),
+            'medium_count' => count(array_filter($mockRequests, fn($r) => $r['priority'] === 'medium')),
+            'low_count' => count(array_filter($mockRequests, fn($r) => $r['priority'] === 'low')),
+            'pending_count' => count(array_filter($mockRequests, fn($r) => $r['status'] === 'pending')),
+            'in_progress_count' => count(array_filter($mockRequests, fn($r) => $r['status'] === 'in_progress')),
+            'completed_count' => count(array_filter($mockRequests, fn($r) => $r['status'] === 'completed')),
+            'avg_estimated_cost' => array_sum(array_column($mockRequests, 'cost_estimate')) / count($mockRequests),
+            'total_actual_cost' => array_sum(array_column($mockRequests, 'actual_cost'))
+        ];
         
-        $requests = $this->db->query($sql, $params)->fetchAll();
-        
-        // Get total count for pagination
-        $countSql = "SELECT COUNT(*) FROM maintenance_requests m WHERE " . implode(' AND ', $where);
-        $total = $this->db->query($countSql, $params)->fetchColumn();
-        
-        // Get statistics
-        $statsSql = "SELECT 
-                        COUNT(*) as total_requests,
-                        SUM(CASE WHEN priority = 'urgent' THEN 1 ELSE 0 END) as urgent_count,
-                        SUM(CASE WHEN priority = 'high' THEN 1 ELSE 0 END) as high_count,
-                        SUM(CASE WHEN priority = 'medium' THEN 1 ELSE 0 END) as medium_count,
-                        SUM(CASE WHEN priority = 'low' THEN 1 ELSE 0 END) as low_count,
-                        SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending_count,
-                        SUM(CASE WHEN status = 'in_progress' THEN 1 ELSE 0 END) as in_progress_count,
-                        SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed_count,
-                        AVG(estimated_cost) as avg_estimated_cost,
-                        SUM(actual_cost) as total_actual_cost
-                     FROM maintenance_requests m
-                     WHERE admin_id = ? AND m.deleted_at IS NULL";
-        $stats = $this->db->query($statsSql, [$admin['id']])->fetch();
-        
-        // Get properties for filters
-        $propertiesSql = "SELECT id, name FROM properties WHERE admin_id = ? AND deleted_at IS NULL ORDER BY name";
-        $properties = $this->db->query($propertiesSql, [$admin['id']])->fetchAll();
+        // Mock properties for filters
+        $properties = [
+            ['id' => 1, 'name' => 'Sunset Apartments'],
+            ['id' => 2, 'name' => 'Downtown Plaza'],
+            ['id' => 3, 'name' => 'Garden View Homes']
+        ];
         
         // Set data for view (anti-scattering compliant)
         \ViewManager::set('requests', $requests);
@@ -102,15 +233,28 @@ class MaintenanceController extends BaseController {
             'priority' => $priority,
             'property_id' => $propertyId
         ]);
+        
+        // Set content for view (anti-scattering compliant)
+        ob_start();
+        include __DIR__ . '/../../views/admin/maintenance/index.php';
+        $content = ob_get_clean();
+        
+        // Verify content was generated
+        if (empty($content)) {
+            $content = '<div class="text-center py-8"><h1 class="text-2xl font-bold text-gray-900 dark:text-white">Maintenance Requests</h1><p class="text-gray-600 dark:text-gray-400 mt-2">No content generated</p></div>';
+        }
+        
+        // Set data for layout (anti-scattering compliant)
+        \ViewManager::set('content', $content);
+        \ViewManager::set('title', 'Maintenance Requests');
         \ViewManager::set('user', [
             'name' => $admin['name'] ?? 'Admin User',
             'email' => $admin['email'] ?? 'admin@cornerstone.com',
             'avatar' => null
         ]);
-        \ViewManager::set('title', 'Maintenance Requests');
         
-        // Include the maintenance index view
-        include __DIR__ . '/../../views/admin/maintenance/index.php';
+        // Include the admin dashboard layout
+        include __DIR__ . '/../../views/admin/dashboard_layout.php';
     }
     
     public function create() {
@@ -119,23 +263,56 @@ class MaintenanceController extends BaseController {
         // Initialize framework (anti-scattering compliant)
         require_once __DIR__ . '/../../config/bootstrap.php';
         
-        // Get properties and tenants for assignment
-        $propertiesSql = "SELECT id, name FROM properties WHERE admin_id = ? AND deleted_at IS NULL ORDER BY name";
-        $properties = $this->db->query($propertiesSql, [$admin['id']])->fetchAll();
+        // Mock properties data
+        $properties = [
+            ['id' => 1, 'name' => 'Sunset Apartments'],
+            ['id' => 2, 'name' => 'Downtown Plaza'],
+            ['id' => 3, 'name' => 'Garden View Homes']
+        ];
         
-        $tenantsSql = "SELECT id, name, property_id, unit_id FROM tenants WHERE admin_id = ? AND deleted_at IS NULL ORDER BY name";
-        $tenants = $this->db->query($tenantsSql, [$admin['id']])->fetchAll();
+        // Mock tenants data
+        $tenants = [
+            ['id' => 1, 'first_name' => 'John', 'last_name' => 'Doe', 'property_id' => 1, 'unit_id' => 1],
+            ['id' => 2, 'first_name' => 'Jane', 'last_name' => 'Smith', 'property_id' => 2, 'unit_id' => 2],
+            ['id' => 3, 'first_name' => 'Bob', 'last_name' => 'Johnson', 'property_id' => 1, 'unit_id' => 3],
+            ['id' => 4, 'first_name' => 'Alice', 'last_name' => 'Brown', 'property_id' => 3, 'unit_id' => 4],
+            ['id' => 5, 'first_name' => 'Charlie', 'last_name' => 'Wilson', 'property_id' => 2, 'unit_id' => 5]
+        ];
         
-        // Get contractors/vendors
-        $contractorsSql = "SELECT id, name, specialty FROM vendors WHERE admin_id = ? AND deleted_at IS NULL ORDER BY name";
-        $contractors = $this->db->query($contractorsSql, [$admin['id']])->fetchAll();
+        // Mock contractors/vendors data
+        $contractors = [
+            ['id' => 1, 'name' => 'ABC HVAC Services', 'specialty' => 'HVAC'],
+            ['id' => 2, 'name' => 'Glass Repair Pro', 'specialty' => 'Glass/Windows'],
+            ['id' => 3, 'name' => 'Quick Fix Appliances', 'specialty' => 'Appliances'],
+            ['id' => 4, 'name' => 'Pro Plumbing Solutions', 'specialty' => 'Plumbing'],
+            ['id' => 5, 'name' => 'Electric Masters', 'specialty' => 'Electrical']
+        ];
         
         // Define categories and priorities
         $categories = [
-            'plumbing', 'electrical', 'hvac', 'appliance', 'structural', 'pest_control', 'landscaping', 'other'
+            ['value' => 'plumbing', 'label' => 'Plumbing'],
+            ['value' => 'electrical', 'label' => 'Electrical'],
+            ['value' => 'hvac', 'label' => 'HVAC'],
+            ['value' => 'appliance', 'label' => 'Appliance'],
+            ['value' => 'structural', 'label' => 'Structural'],
+            ['value' => 'pest_control', 'label' => 'Pest Control'],
+            ['value' => 'landscaping', 'label' => 'Landscaping'],
+            ['value' => 'other', 'label' => 'Other']
         ];
         
-        $priorities = ['low', 'medium', 'high', 'urgent'];
+        $priorities = [
+            ['value' => 'low', 'label' => 'Low'],
+            ['value' => 'medium', 'label' => 'Medium'],
+            ['value' => 'high', 'label' => 'High'],
+            ['value' => 'urgent', 'label' => 'Urgent']
+        ];
+        
+        $statuses = [
+            ['value' => 'pending', 'label' => 'Pending'],
+            ['value' => 'in_progress', 'label' => 'In Progress'],
+            ['value' => 'completed', 'label' => 'Completed'],
+            ['value' => 'cancelled', 'label' => 'Cancelled']
+        ];
         
         // Set data for view (anti-scattering compliant)
         \ViewManager::set('properties', $properties);
@@ -143,15 +320,24 @@ class MaintenanceController extends BaseController {
         \ViewManager::set('contractors', $contractors);
         \ViewManager::set('categories', $categories);
         \ViewManager::set('priorities', $priorities);
+        \ViewManager::set('statuses', $statuses);
+        
+        // Set content for view (anti-scattering compliant)
+        ob_start();
+        include __DIR__ . '/../../views/admin/maintenance/create.php';
+        $content = ob_get_clean();
+        
+        // Set data for layout (anti-scattering compliant)
+        \ViewManager::set('content', $content);
+        \ViewManager::set('title', 'Create Maintenance Request');
         \ViewManager::set('user', [
             'name' => $admin['name'] ?? 'Admin User',
             'email' => $admin['email'] ?? 'admin@cornerstone.com',
             'avatar' => null
         ]);
-        \ViewManager::set('title', 'Create Maintenance Request');
         
-        // Include the create view
-        include __DIR__ . '/../../views/admin/maintenance/create.php';
+        // Include the admin dashboard layout
+        include __DIR__ . '/../../views/admin/dashboard_layout.php';
     }
     
     public function store() {
@@ -233,20 +419,68 @@ class MaintenanceController extends BaseController {
         // Initialize framework (anti-scattering compliant)
         require_once __DIR__ . '/../../config/bootstrap.php';
         
-        $sql = "SELECT m.*, 
-                        t.name as tenant_name,
-                        t.email as tenant_email,
-                        t.phone as tenant_phone,
-                        pr.name as property_name,
-                        pr.address as property_address,
-                        u.unit_number
-                 FROM maintenance_requests m
-                 LEFT JOIN tenants t ON m.tenant_id = t.id
-                 LEFT JOIN properties pr ON m.property_id = pr.id
-                 LEFT JOIN units u ON m.unit_id = u.id
-                 WHERE m.id = ? AND m.admin_id = ? AND m.deleted_at IS NULL";
+        // Mock maintenance request data
+        $mockRequests = [
+            1 => [
+                'id' => 1,
+                'title' => 'Leaking Kitchen Faucet',
+                'description' => 'The kitchen faucet is leaking continuously and needs to be repaired or replaced. The leak has been ongoing for 3 days and is causing water damage to the cabinet below.',
+                'priority' => 'high',
+                'status' => 'pending',
+                'property_id' => 1,
+                'property_name' => 'Sunset Apartments',
+                'tenant_id' => 1,
+                'tenant_name' => 'John Doe',
+                'tenant_email' => 'john.doe@email.com',
+                'tenant_phone' => '+1-555-0101',
+                'unit_number' => '101',
+                'category' => 'plumbing',
+                'assigned_to' => null,
+                'assigned_to_name' => null,
+                'cost_estimate' => 150.00,
+                'actual_cost' => null,
+                'scheduled_date' => '2024-01-15',
+                'completion_date' => null,
+                'created_at' => '2024-01-10 09:30:00',
+                'updated_at' => '2024-01-10 09:30:00',
+                'notes' => 'Tenant reports leak is getting worse and has caused minor water damage to the cabinet. Immediate attention required.',
+                'updates' => []
+            ],
+            2 => [
+                'id' => 2,
+                'title' => 'HVAC System Not Cooling',
+                'description' => 'Air conditioning unit is not blowing cold air, needs immediate attention. The unit turns on but only blows warm air.',
+                'priority' => 'urgent',
+                'status' => 'in_progress',
+                'property_id' => 2,
+                'property_name' => 'Downtown Plaza',
+                'tenant_id' => 2,
+                'tenant_name' => 'Jane Smith',
+                'tenant_email' => 'jane.smith@email.com',
+                'tenant_phone' => '+1-555-0102',
+                'unit_number' => '201',
+                'category' => 'hvac',
+                'assigned_to' => 1,
+                'assigned_to_name' => 'ABC HVAC Services',
+                'cost_estimate' => 500.00,
+                'actual_cost' => null,
+                'scheduled_date' => '2024-01-12',
+                'completion_date' => null,
+                'created_at' => '2024-01-09 14:15:00',
+                'updated_at' => '2024-01-11 10:30:00',
+                'notes' => 'Technician scheduled for tomorrow. Tenant is elderly and needs AC working.',
+                'updates' => [
+                    [
+                        'id' => 1,
+                        'status' => 'assigned',
+                        'notes' => 'Assigned to ABC HVAC Services',
+                        'created_at' => '2024-01-11 10:30:00'
+                    ]
+                ]
+            ]
+        ];
         
-        $request = $this->db->query($sql, [$id, $admin['id']])->fetch();
+        $request = $mockRequests[$id] ?? null;
         
         if (!$request) {
             $_SESSION['error'] = 'Maintenance request not found';
@@ -254,26 +488,35 @@ class MaintenanceController extends BaseController {
             return;
         }
         
-        // Get maintenance history/updates
-        $historySql = "SELECT * FROM maintenance_updates WHERE request_id = ? ORDER BY created_at DESC";
-        $request['updates'] = $this->db->query($historySql, [$id])->fetchAll();
-        
-        // Get contractors for assignment
-        $contractorsSql = "SELECT id, name, specialty FROM vendors WHERE admin_id = ? AND deleted_at IS NULL ORDER BY name";
-        $contractors = $this->db->query($contractorsSql, [$admin['id']])->fetchAll();
+        // Mock contractors for assignment
+        $contractors = [
+            ['id' => 1, 'name' => 'ABC HVAC Services', 'specialty' => 'HVAC'],
+            ['id' => 2, 'name' => 'Glass Repair Pro', 'specialty' => 'Glass/Windows'],
+            ['id' => 3, 'name' => 'Quick Fix Appliances', 'specialty' => 'Appliances'],
+            ['id' => 4, 'name' => 'Pro Plumbing Solutions', 'specialty' => 'Plumbing'],
+            ['id' => 5, 'name' => 'Electric Masters', 'specialty' => 'Electrical']
+        ];
         
         // Set data for view (anti-scattering compliant)
         \ViewManager::set('request', $request);
         \ViewManager::set('contractors', $contractors);
+        
+        // Set content for view (anti-scattering compliant)
+        ob_start();
+        include __DIR__ . '/../../views/admin/maintenance/show.php';
+        $content = ob_get_clean();
+        
+        // Set data for layout (anti-scattering compliant)
+        \ViewManager::set('content', $content);
+        \ViewManager::set('title', 'Maintenance Request Details');
         \ViewManager::set('user', [
             'name' => $admin['name'] ?? 'Admin User',
             'email' => $admin['email'] ?? 'admin@cornerstone.com',
             'avatar' => null
         ]);
-        \ViewManager::set('title', 'Maintenance Request Details');
         
-        // Include the show view
-        include __DIR__ . '/../../views/admin/maintenance/show.php';
+        // Include the admin dashboard layout
+        include __DIR__ . '/../../views/admin/dashboard_layout.php';
     }
     
     public function edit($id) {
@@ -282,9 +525,35 @@ class MaintenanceController extends BaseController {
         // Initialize framework (anti-scattering compliant)
         require_once __DIR__ . '/../../config/bootstrap.php';
         
-        // Check if request exists and belongs to admin
-        $request = $this->db->query("SELECT * FROM maintenance_requests m WHERE id = ? AND admin_id = ? AND m.deleted_at IS NULL", 
-                                         [$id, $admin['id']])->fetch();
+        // Mock maintenance request data
+        $mockRequests = [
+            1 => [
+                'id' => 1,
+                'title' => 'Leaking Kitchen Faucet',
+                'description' => 'The kitchen faucet is leaking continuously and needs to be repaired or replaced. The leak has been ongoing for 3 days and is causing water damage to the cabinet below.',
+                'priority' => 'high',
+                'status' => 'pending',
+                'property_id' => 1,
+                'property_name' => 'Sunset Apartments',
+                'tenant_id' => 1,
+                'tenant_name' => 'John Doe',
+                'tenant_email' => 'john.doe@email.com',
+                'tenant_phone' => '+1-555-0101',
+                'unit_number' => '101',
+                'category' => 'plumbing',
+                'assigned_to' => null,
+                'assigned_to_name' => null,
+                'cost_estimate' => 150.00,
+                'actual_cost' => null,
+                'scheduled_date' => '2024-01-15',
+                'completion_date' => null,
+                'created_at' => '2024-01-10 09:30:00',
+                'updated_at' => '2024-01-10 09:30:00',
+                'notes' => 'Tenant reports leak is getting worse and has caused minor water damage to the cabinet. Immediate attention required.'
+            ]
+        ];
+        
+        $request = $mockRequests[$id] ?? null;
         
         if (!$request) {
             $_SESSION['error'] = 'Maintenance request not found';
@@ -292,16 +561,29 @@ class MaintenanceController extends BaseController {
             return;
         }
         
-        // Get properties and tenants for assignment
-        $propertiesSql = "SELECT id, name FROM properties WHERE admin_id = ? AND deleted_at IS NULL ORDER BY name";
-        $properties = $this->db->query($propertiesSql, [$admin['id']])->fetchAll();
+        // Mock properties and tenants for assignment
+        $properties = [
+            ['id' => 1, 'name' => 'Sunset Apartments'],
+            ['id' => 2, 'name' => 'Downtown Plaza'],
+            ['id' => 3, 'name' => 'Garden View Homes']
+        ];
         
-        $tenantsSql = "SELECT id, name FROM tenants WHERE admin_id = ? AND deleted_at IS NULL ORDER BY name";
-        $tenants = $this->db->query($tenantsSql, [$admin['id']])->fetchAll();
+        $tenants = [
+            ['id' => 1, 'first_name' => 'John', 'last_name' => 'Doe', 'property_id' => 1, 'unit_id' => 1],
+            ['id' => 2, 'first_name' => 'Jane', 'last_name' => 'Smith', 'property_id' => 2, 'unit_id' => 2],
+            ['id' => 3, 'first_name' => 'Bob', 'last_name' => 'Johnson', 'property_id' => 1, 'unit_id' => 3],
+            ['id' => 4, 'first_name' => 'Alice', 'last_name' => 'Brown', 'property_id' => 3, 'unit_id' => 4],
+            ['id' => 5, 'first_name' => 'Charlie', 'last_name' => 'Wilson', 'property_id' => 2, 'unit_id' => 5]
+        ];
         
-        // Get contractors for assignment
-        $contractorsSql = "SELECT id, name, specialty FROM vendors WHERE admin_id = ? AND deleted_at IS NULL ORDER BY name";
-        $contractors = $this->db->query($contractorsSql, [$admin['id']])->fetchAll();
+        // Mock contractors for assignment
+        $contractors = [
+            ['id' => 1, 'name' => 'ABC HVAC Services', 'specialty' => 'HVAC'],
+            ['id' => 2, 'name' => 'Glass Repair Pro', 'specialty' => 'Glass/Windows'],
+            ['id' => 3, 'name' => 'Quick Fix Appliances', 'specialty' => 'Appliances'],
+            ['id' => 4, 'name' => 'Pro Plumbing Solutions', 'specialty' => 'Plumbing'],
+            ['id' => 5, 'name' => 'Electric Masters', 'specialty' => 'Electrical']
+        ];
         
         // Define categories and priorities
         $categories = ['plumbing', 'electrical', 'hvac', 'appliance', 'structural', 'pest_control', 'landscaping', 'other'];
@@ -314,15 +596,23 @@ class MaintenanceController extends BaseController {
         \ViewManager::set('contractors', $contractors);
         \ViewManager::set('categories', $categories);
         \ViewManager::set('priorities', $priorities);
+        
+        // Set content for view (anti-scattering compliant)
+        ob_start();
+        include __DIR__ . '/../../views/admin/maintenance/edit.php';
+        $content = ob_get_clean();
+        
+        // Set data for layout (anti-scattering compliant)
+        \ViewManager::set('content', $content);
+        \ViewManager::set('title', 'Edit Maintenance Request');
         \ViewManager::set('user', [
             'name' => $admin['name'] ?? 'Admin User',
             'email' => $admin['email'] ?? 'admin@cornerstone.com',
             'avatar' => null
         ]);
-        \ViewManager::set('title', 'Edit Maintenance Request');
         
-        // Include the edit view
-        include __DIR__ . '/../../views/admin/maintenance/edit.php';
+        // Include the admin dashboard layout
+        include __DIR__ . '/../../views/admin/dashboard_layout.php';
     }
     
     public function update($id) {
@@ -346,7 +636,7 @@ class MaintenanceController extends BaseController {
             $updateFields = [];
             $params = [];
             
-            $allowedFields = ['title', 'description', 'priority', 'status', 'assigned_to', 'estimated_cost', 
+            $allowedFields = ['title', 'description', 'priority', 'status', 'assigned_to', 'cost_estimate', 
                               'actual_cost', 'completion_date', 'notes'];
             
             foreach ($allowedFields as $field) {

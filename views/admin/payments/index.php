@@ -504,6 +504,6 @@ $content = ob_get_clean();
 // Set content for layout (anti-scattering compliant)
 ViewManager::set('content', $content);
 
-// Include the layout directly (anti-scattering compliant)
-include __DIR__ . '/../dashboard_layout.php';
+// Include the minimal layout without sidebar and navbar (anti-scattering compliant)
+include __DIR__ . '/minimal_layout.php';
 ?>
