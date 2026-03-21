@@ -194,7 +194,7 @@ class ApiMaintenanceController extends BaseController {
         $data = json_decode(file_get_contents('php://input'), true);
         
         // Check if request exists and belongs to admin
-        $request = $this->db->query("SELECT id FROM maintenance_requests WHERE id = ? AND admin_id = ? AND deleted_at IS NULL", [$id, $admin['id']])->fetch();
+        $request = $this->db->query("SELECT id FROM maintenance_requests m WHERE id = ? AND admin_id = ? AND m.deleted_at IS NULL", [$id, $admin['id']])->fetch();
         if (!$request) {
             $this->json(['success' => false, 'message' => 'Maintenance request not found'], 404);
             return;
@@ -243,7 +243,7 @@ class ApiMaintenanceController extends BaseController {
         require_once __DIR__ . '/../../config/bootstrap.php';
         
         // Check if request exists and belongs to admin
-        $request = $this->db->query("SELECT id FROM maintenance_requests WHERE id = ? AND admin_id = ? AND deleted_at IS NULL", [$id, $admin['id']])->fetch();
+        $request = $this->db->query("SELECT id FROM maintenance_requests m WHERE id = ? AND admin_id = ? AND m.deleted_at IS NULL", [$id, $admin['id']])->fetch();
         if (!$request) {
             $this->json(['success' => false, 'message' => 'Maintenance request not found'], 404);
             return;
@@ -274,7 +274,7 @@ class ApiMaintenanceController extends BaseController {
         }
         
         // Check if request exists and belongs to admin
-        $request = $this->db->query("SELECT id FROM maintenance_requests WHERE id = ? AND admin_id = ? AND deleted_at IS NULL", [$id, $admin['id']])->fetch();
+        $request = $this->db->query("SELECT id FROM maintenance_requests m WHERE id = ? AND admin_id = ? AND m.deleted_at IS NULL", [$id, $admin['id']])->fetch();
         if (!$request) {
             $this->json(['success' => false, 'message' => 'Maintenance request not found'], 404);
             return;
@@ -310,7 +310,7 @@ class ApiMaintenanceController extends BaseController {
         $data = json_decode(file_get_contents('php://input'), true);
         
         // Check if request exists and belongs to admin
-        $request = $this->db->query("SELECT id FROM maintenance_requests WHERE id = ? AND admin_id = ? AND deleted_at IS NULL", [$id, $admin['id']])->fetch();
+        $request = $this->db->query("SELECT id FROM maintenance_requests m WHERE id = ? AND admin_id = ? AND m.deleted_at IS NULL", [$id, $admin['id']])->fetch();
         if (!$request) {
             $this->json(['success' => false, 'message' => 'Maintenance request not found'], 404);
             return;
@@ -380,8 +380,8 @@ class ApiMaintenanceController extends BaseController {
                     SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed_count,
                     AVG(estimated_cost) as avg_estimated_cost,
                     SUM(actual_cost) as total_actual_cost
-                 FROM maintenance_requests 
-                 WHERE admin_id = ? AND deleted_at IS NULL $dateFilter";
+                 FROM maintenance_requests m
+                 WHERE admin_id = ? AND m.deleted_at IS NULL $dateFilter";
         
         $stats = $this->db->query($sql, [$admin['id']])->fetch();
         

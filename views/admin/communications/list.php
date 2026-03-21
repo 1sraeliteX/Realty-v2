@@ -25,7 +25,7 @@ $content = ob_start();
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6">
             <div class="flex items-center">
                 <div class="flex-shrink-0 bg-blue-100 dark:bg-blue-900 rounded-lg p-3">
                     <i class="fas fa-envelope text-blue-600 dark:text-blue-400 text-xl"></i>
@@ -37,7 +37,7 @@ $content = ob_start();
             </div>
         </div>
         
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6">
             <div class="flex items-center">
                 <div class="flex-shrink-0 bg-green-100 dark:bg-green-900 rounded-lg p-3">
                     <i class="fas fa-paper-plane text-green-600 dark:text-green-400 text-xl"></i>
@@ -49,7 +49,7 @@ $content = ob_start();
             </div>
         </div>
         
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6">
             <div class="flex items-center">
                 <div class="flex-shrink-0 bg-purple-100 dark:bg-purple-900 rounded-lg p-3">
                     <i class="fas fa-reply text-purple-600 dark:text-purple-400 text-xl"></i>
@@ -61,7 +61,7 @@ $content = ob_start();
             </div>
         </div>
         
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6">
             <div class="flex items-center">
                 <div class="flex-shrink-0 bg-yellow-100 dark:bg-yellow-900 rounded-lg p-3">
                     <i class="fas fa-clock text-yellow-600 dark:text-yellow-400 text-xl"></i>
@@ -75,7 +75,7 @@ $content = ob_start();
     </div>
 
     <!-- Communications Table -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+    <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow overflow-hidden">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead class="bg-gray-50 dark:bg-gray-700">
@@ -88,7 +88,7 @@ $content = ob_start();
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                <tbody class="bg-cream-50 dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">2024-03-09</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Admin</td>

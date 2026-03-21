@@ -78,8 +78,8 @@ class MaintenanceController extends BaseController {
                         SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed_count,
                         AVG(estimated_cost) as avg_estimated_cost,
                         SUM(actual_cost) as total_actual_cost
-                     FROM maintenance_requests 
-                     WHERE admin_id = ? AND deleted_at IS NULL";
+                     FROM maintenance_requests m
+                     WHERE admin_id = ? AND m.deleted_at IS NULL";
         $stats = $this->db->query($statsSql, [$admin['id']])->fetch();
         
         // Get properties for filters
@@ -283,7 +283,7 @@ class MaintenanceController extends BaseController {
         require_once __DIR__ . '/../../config/bootstrap.php';
         
         // Check if request exists and belongs to admin
-        $request = $this->db->query("SELECT * FROM maintenance_requests WHERE id = ? AND admin_id = ? AND deleted_at IS NULL", 
+        $request = $this->db->query("SELECT * FROM maintenance_requests m WHERE id = ? AND admin_id = ? AND m.deleted_at IS NULL", 
                                          [$id, $admin['id']])->fetch();
         
         if (!$request) {
@@ -332,7 +332,7 @@ class MaintenanceController extends BaseController {
         require_once __DIR__ . '/../../config/bootstrap.php';
         
         // Check if request exists and belongs to admin
-        $request = $this->db->query("SELECT id FROM maintenance_requests WHERE id = ? AND admin_id = ? AND deleted_at IS NULL", 
+        $request = $this->db->query("SELECT id FROM maintenance_requests m WHERE id = ? AND admin_id = ? AND m.deleted_at IS NULL", 
                                          [$id, $admin['id']])->fetch();
         
         if (!$request) {
@@ -386,7 +386,7 @@ class MaintenanceController extends BaseController {
         require_once __DIR__ . '/../../config/bootstrap.php';
         
         // Check if request exists and belongs to admin
-        $request = $this->db->query("SELECT id FROM maintenance_requests WHERE id = ? AND admin_id = ? AND deleted_at IS NULL", 
+        $request = $this->db->query("SELECT id FROM maintenance_requests m WHERE id = ? AND admin_id = ? AND m.deleted_at IS NULL", 
                                          [$id, $admin['id']])->fetch();
         
         if (!$request) {
@@ -421,7 +421,7 @@ class MaintenanceController extends BaseController {
         }
         
         // Check if request exists and belongs to admin
-        $request = $this->db->query("SELECT id FROM maintenance_requests WHERE id = ? AND admin_id = ? AND deleted_at IS NULL", 
+        $request = $this->db->query("SELECT id FROM maintenance_requests m WHERE id = ? AND admin_id = ? AND m.deleted_at IS NULL", 
                                          [$id, $admin['id']])->fetch();
         
         if (!$request) {
@@ -460,7 +460,7 @@ class MaintenanceController extends BaseController {
         require_once __DIR__ . '/../../config/bootstrap.php';
         
         // Check if request exists and belongs to admin
-        $request = $this->db->query("SELECT id FROM maintenance_requests WHERE id = ? AND admin_id = ? AND deleted_at IS NULL", 
+        $request = $this->db->query("SELECT id FROM maintenance_requests m WHERE id = ? AND admin_id = ? AND m.deleted_at IS NULL", 
                                          [$id, $admin['id']])->fetch();
         
         if (!$request) {

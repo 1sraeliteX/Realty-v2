@@ -78,7 +78,7 @@ function calculateTrend($current, $previous) {
         echo UIComponents::card(
             '<div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white">Revenue Overview</h3>
-                <select id="revenue-period" class="text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                <select id="revenue-period" class="text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white">
                     <option value="12">Last 12 months</option>
                     <option value="6">Last 6 months</option>
                     <option value="3">Last 3 months</option>
@@ -89,7 +89,7 @@ function calculateTrend($current, $previous) {
             </div>',
             null,
             null,
-            'bg-white dark:bg-gray-800 rounded-lg shadow'
+            'bg-cream-50 dark:bg-gray-800 rounded-lg shadow'
         ); ?>
     </div>
 
@@ -124,7 +124,7 @@ function calculateTrend($current, $previous) {
         </div>',
         '<h3 class="text-lg font-medium text-gray-900 dark:text-white">Quick Actions</h3>',
         null,
-        'bg-white dark:bg-gray-800 rounded-lg shadow'
+        'bg-cream-50 dark:bg-gray-800 rounded-lg shadow'
     ); ?>
 </div>
 
@@ -168,7 +168,7 @@ function calculateTrend($current, $previous) {
         $propertiesContent,
         '<h3 class="text-lg font-medium text-gray-900 dark:text-white">Recent Properties</h3>',
         null,
-        'bg-white dark:bg-gray-800 rounded-lg shadow'
+        'bg-cream-50 dark:bg-gray-800 rounded-lg shadow'
     ); ?>
 
     <!-- Recent Activities -->
@@ -207,7 +207,7 @@ function calculateTrend($current, $previous) {
         $activitiesContent,
         '<h3 class="text-lg font-medium text-gray-900 dark:text-white">Recent Activities</h3>',
         null,
-        'bg-white dark:bg-gray-800 rounded-lg shadow'
+        'bg-cream-50 dark:bg-gray-800 rounded-lg shadow'
     ); ?>
 </div>
 
@@ -340,7 +340,7 @@ function calculateTrend($current, $previous) {
         </div>',
         '<h3 class="text-lg font-medium text-gray-900 dark:text-white">Upcoming Tasks</h3>',
         null,
-        'bg-white dark:bg-gray-800 rounded-lg shadow'
+        'bg-cream-50 dark:bg-gray-800 rounded-lg shadow'
     ); ?>
 </div>
 

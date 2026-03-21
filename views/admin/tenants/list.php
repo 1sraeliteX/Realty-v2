@@ -24,7 +24,7 @@ ob_start();
         <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Manage tenant information and lease agreements</p>
     </div>
     <div class="mt-4 sm:mt-0 flex space-x-3">
-        <button onclick="exportTenants()" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
+        <button onclick="exportTenants()" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-cream-50 dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
             <i class="fas fa-download mr-2"></i>
             Export
         </button>
@@ -36,7 +36,7 @@ ob_start();
 </div>
 
 <!-- Filters and Search -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
+<div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
         <!-- Search -->
         <div class="md:col-span-2">
@@ -102,7 +102,7 @@ ob_start();
 <!-- Tenants Grid -->
 <div id="tenantsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
     <?php foreach ($tenants as $tenant): ?>
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-200">
+        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-200">
             <!-- Tenant Header -->
             <div class="relative h-32 bg-gradient-to-r from-primary-500 to-primary-600 dark:from-primary-600 dark:to-primary-700">
                 <div class="absolute top-2 right-2">
@@ -359,7 +359,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const headerActions = document.querySelector('.flex.space-x-3');
     if (headerActions) {
         const quickActionsBtn = document.createElement('button');
-        quickActionsBtn.className = 'inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700';
+        quickActionsBtn.className = 'inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-cream-50 dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700';
         quickActionsBtn.innerHTML = '<i class="fas fa-bolt mr-2"></i>Quick Actions';
         quickActionsBtn.onclick = () => document.getElementById('quickActionsModal').classList.remove('hidden');
         headerActions.appendChild(quickActionsBtn);

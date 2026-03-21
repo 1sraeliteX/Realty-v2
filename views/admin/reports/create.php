@@ -9,7 +9,7 @@ require_once __DIR__ . '/../../../config/bootstrap.php';
             Generate a new report
         </p>
     </div>
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+    <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6">
         <p class="text-gray-500 dark:text-gray-400 text-center py-8">
             Report builder coming soon.
         </p>

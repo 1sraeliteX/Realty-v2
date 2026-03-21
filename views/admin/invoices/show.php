@@ -23,7 +23,7 @@ $invoice = ViewManager::get('invoice', []);
             <i class="fas fa-arrow-left mr-2"></i>Back
         </a>
     </div>
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+    <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6">
         <p class="text-gray-500 dark:text-gray-400 text-center py-8">
             Invoice details coming soon.
         </p>

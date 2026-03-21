@@ -7,7 +7,7 @@ $report = ViewManager::get('report', []);
         <h1 class="text-2xl font-bold text-gray-900
                     dark:text-white">Edit Report</h1>
     </div>
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+    <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6">
         <p class="text-gray-500 dark:text-gray-400 text-center py-8">
             Report editor coming soon.
         </p>

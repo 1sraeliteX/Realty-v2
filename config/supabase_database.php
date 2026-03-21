@@ -5,6 +5,9 @@ namespace Config;
 use PDO;
 use PDOException;
 
+// Include SupabaseClient
+require_once __DIR__ . '/supabase.php';
+
 class SupabaseDatabase {
     private static $instance = null;
     private $client;

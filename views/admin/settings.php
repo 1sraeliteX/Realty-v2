@@ -1,212 +1,23 @@
 <?php
-// Initialize anti-scattering system
-require_once __DIR__ . '/../../config/bootstrap.php';
+// Initialize framework (anti-scattering compliant)
+require_once __DIR__ . '/../../../config/init_framework.php';
 
-// Get centralized data from ViewManager (anti-scattering compliant)
+// Load components through registry (anti-scattering compliant)
+ComponentRegistry::load('ui-components');
+
+// Get data from ViewManager (anti-scattering compliant)
 $user = ViewManager::get('user');
-$title = ViewManager::get('title', 'Settings');
+$currency = ViewManager::get('currency');
+$currency_symbol = ViewManager::get('currency_symbol');
 
-// Get current page for navigation highlighting
-$currentPath = $_SERVER['REQUEST_URI'] ?? '';
-$isSettings = strpos($currentPath, '/admin/settings') === 0;
+// Set data through ViewManager (anti-scattering compliant)
+ViewManager::set('title', 'Settings');
+ViewManager::set('pageTitle', 'Settings');
+ViewManager::set('pageDescription', 'Manage your account settings and preferences');
+ViewManager::set('activeMenu', 'settings');
+
+ob_start();
 ?>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $title; ?></title>
-    
-    <!-- Blocking theme script - MUST be first to prevent FOIT -->
-    <script>
-        // Apply theme immediately before any CSS loads
-        (function() {
-            var theme = localStorage.getItem('theme');
-            // Default to dark if no preference saved (requirement #4)
-            if (theme === 'light') {
-                document.documentElement.classList.remove('dark');
-            } else {
-                document.documentElement.classList.add('dark');
-            }
-        })();
-    </script>
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            50: '#eff6ff',
-                            100: '#dbeafe',
-                            200: '#bfdbfe',
-                            300: '#93c5fd',
-                            400: '#60a5fa',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8',
-                            800: '#1e40af',
-                            900: '#1e3a8a',
-                        },
-                        dark: {
-                            50: '#0f172a',
-                            100: '#1e293b',
-                            200: '#334155',
-                            300: '#475569',
-                            400: '#64748b',
-                            500: '#6b7280',
-                            600: '#7c3aed',
-                            700: '#8b5cf6',
-                            800: '#94a3b8',
-                            900: '#a855f7',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="/assets/css/fontawesome.css">
-</head>
-<body class="bg-gray-50 dark:bg-gray-900">
-    <!-- Top Navigation -->
-    <nav class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <!-- Logo -->
-                    <div class="flex-shrink-0">
-                        <h1 class="text-xl font-bold text-gray-900 dark:text-white">Cornerstone Realty</h1>
-                    </div>
-                    
-                    <!-- Breadcrumb -->
-                    <nav class="ml-8 hidden md:flex space-x-4" aria-label="Breadcrumb">
-                        <a href="/admin/dashboard" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                            Dashboard
-                        </a>
-                        <span class="text-gray-400 dark:text-gray-600">/</span>
-                        <span class="text-gray-700 dark:text-gray-300 px-3 py-2 rounded-md text-sm font-medium">Settings</span>
-                    </nav>
-                </div>
-                
-                <div class="flex items-center space-x-4">
-                    <!-- Search -->
-                    <div class="relative">
-                        <input type="text" placeholder="Search settings..." class="w-64 pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="fas fa-search text-gray-400"></i>
-                        </div>
-                    </div>
-                    
-                    <!-- Notifications -->
-                    <button class="p-2 rounded-full text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-                        <i class="fas fa-bell"></i>
-                    </button>
-                    
-                    <!-- Dark Mode Toggle -->
-                    <button onclick="toggleTheme()" class="p-2 rounded-full text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-                        <i class="fas fa-moon dark:hidden"></i>
-                        <i class="fas fa-sun hidden dark:inline"></i>
-                    </button>
-                    
-                    <!-- Profile Dropdown -->
-                    <div class="relative">
-                        <button onclick="toggleProfile()" class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-                            <span class="sr-only">Open user menu</span>
-                            <div class="h-8 w-8 rounded-full bg-primary-600 flex items-center justify-center text-white font-medium">
-                                <?php echo strtoupper(substr($user['name'] ?? 'A', 0, 1)); ?>
-                            </div>
-                        </button>
-                        
-                        <!-- Dropdown Menu -->
-                        <div id="profileDropdown" class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
-                            <div class="py-1">
-                                <a href="/admin/profile" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Your Profile</a>
-                                <a href="/admin/settings" class="block px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700">Settings</a>
-                                <form action="/admin/logout" method="POST">
-                                    <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Sign out</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Main Content -->
-    <div class="flex h-screen bg-gray-50 dark:bg-gray-900">
-        <!-- Sidebar -->
-        <aside class="hidden md:flex md:flex-shrink-0">
-            <div class="flex flex-col w-64">
-                <!-- Sidebar Content -->
-                <div class="flex-1 flex flex-col min-h-0 bg-gray-800">
-                    <!-- Navigation -->
-                    <nav class="mt-5 flex-1 px-2 space-y-1">
-                        <a href="/admin/dashboard" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-300 hover:bg-gray-700 hover:text-white">
-                            <i class="fas fa-tachometer-alt mr-3"></i>
-                            Dashboard
-                        </a>
-                        <a href="/admin/properties" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-300 hover:bg-gray-700 hover:text-white">
-                            <i class="fas fa-home mr-3"></i>
-                            Properties
-                        </a>
-                        <a href="/admin/tenants" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-300 hover:bg-gray-700 hover:text-white">
-                            <i class="fas fa-users mr-3"></i>
-                            Tenants
-                        </a>
-                        <a href="/admin/payments" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-300 hover:bg-gray-700 hover:text-white">
-                            <i class="fas fa-credit-card mr-3"></i>
-                            Payments
-                        </a>
-                        <a href="/admin/invoices" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-300 hover:bg-gray-700 hover:text-white">
-                            <i class="fas fa-file-invoice mr-3"></i>
-                            Invoices
-                        </a>
-                        <a href="/admin/maintenance" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-300 hover:bg-gray-700 hover:text-white">
-                            <i class="fas fa-tools mr-3"></i>
-                            Maintenance
-                        </a>
-                        <a href="/admin/communications" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-300 hover:bg-gray-700 hover:text-white">
-                            <i class="fas fa-envelope mr-3"></i>
-                            Communications
-                        </a>
-                        <a href="/admin/documents" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-300 hover:bg-gray-700 hover:text-white">
-                            <i class="fas fa-folder mr-3"></i>
-                            Documents
-                        </a>
-                        <a href="/admin/dashboard/reports" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-300 hover:bg-gray-700 hover:text-white">
-                            <i class="fas fa-chart-bar mr-3"></i>
-                            Reports
-                        </a>
-                        <a href="/admin/settings" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-300 hover:bg-gray-700 hover:text-white <?php echo $isSettings ? 'bg-gray-900 text-white' : ''; ?>">
-                            <i class="fas fa-cog mr-3"></i>
-                            Settings
-                        </a>
-                    </nav>
-                    
-                    <!-- Logout Button -->
-                    <div class="border-t border-gray-700 p-4">
-                        <form action="/admin/logout" method="POST">
-                            <button type="submit" class="w-full flex items-center px-4 py-2 text-sm font-medium rounded-md text-red-600 hover:bg-red-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                                <i class="fas fa-right-from-bracket mr-3"></i>
-                                Logout
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </aside>
-
-        <!-- Main Content Area -->
-        <main class="flex-1">
-            <div class="py-6">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <!-- Page Header -->
                     <div class="mb-8">
                         <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Settings</h1>
@@ -216,7 +27,7 @@ $isSettings = strpos($currentPath, '/admin/settings') === 0;
                     <!-- Settings Sections -->
                     <div class="space-y-6">
                         <!-- Profile Settings -->
-                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+                        <div class="bg-cream-50 dark:bg-gray-800 overflow-hidden shadow rounded-lg">
                             <div class="p-6">
                                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Profile Settings</h2>
                                 
@@ -256,7 +67,7 @@ $isSettings = strpos($currentPath, '/admin/settings') === 0;
                         </div>
 
                         <!-- Currency & Regional Settings -->
-                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+                        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1 flex items-center">
                                 <i class="fas fa-coins mr-2 text-primary-600"></i>
                                 Currency & Regional
@@ -272,7 +83,7 @@ $isSettings = strpos($currentPath, '/admin/settings') === 0;
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                             Display Currency
                                         </label>
-                                        <select name="currency" id="currencySelect" onchange="previewCurrency(this.value)" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                                        <select name="currency" id="currencySelect" onchange="previewCurrency(this.value)" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
                                             <option value="NGN" <?php echo ($currency ?? 'NGN') === 'NGN' ? 'selected' : ''; ?>>
                                                 ₦ — Nigerian Naira (NGN)
                                             </option>
@@ -343,7 +154,7 @@ $isSettings = strpos($currentPath, '/admin/settings') === 0;
                         </div>
 
                         <!-- Notification Settings -->
-                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+                        <div class="bg-cream-50 dark:bg-gray-800 overflow-hidden shadow rounded-lg">
                             <div class="p-6">
                                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Notification Preferences</h2>
                                 
@@ -388,7 +199,7 @@ $isSettings = strpos($currentPath, '/admin/settings') === 0;
                         </div>
 
                         <!-- Appearance Settings -->
-                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+                        <div class="bg-cream-50 dark:bg-gray-800 overflow-hidden shadow rounded-lg">
                             <div class="p-6">
                                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Appearance</h2>
                                 
@@ -429,7 +240,7 @@ $isSettings = strpos($currentPath, '/admin/settings') === 0;
                         </div>
 
                         <!-- Security Settings -->
-                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+                        <div class="bg-cream-50 dark:bg-gray-800 overflow-hidden shadow rounded-lg">
                             <div class="p-6">
                                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Security</h2>
                                 
@@ -474,7 +285,7 @@ $isSettings = strpos($currentPath, '/admin/settings') === 0;
                         </div>
 
                         <!-- Data & Privacy -->
-                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+                        <div class="bg-cream-50 dark:bg-gray-800 overflow-hidden shadow rounded-lg">
                             <div class="p-6">
                                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Data & Privacy</h2>
                                 
@@ -484,13 +295,13 @@ $isSettings = strpos($currentPath, '/admin/settings') === 0;
                                         <h3 class="text-md font-medium text-gray-900 dark:text-white mb-2">Export Your Data</h3>
                                         <p class="text-sm text-gray-600 dark:text-gray-400">Download a copy of your data in various formats.</p>
                                         <div class="mt-3 space-x-3">
-                                            <button class="inline-flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                                            <button class="inline-flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-cream-50 dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
                                                 Export as JSON
                                             </button>
-                                            <button class="inline-flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                                            <button class="inline-flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-cream-50 dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
                                                 Export as CSV
                                             </button>
-                                            <button class="inline-flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                                            <button class="inline-flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-cream-50 dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
                                                 Export as PDF
                                             </button>
                                         </div>
@@ -510,61 +321,12 @@ $isSettings = strpos($currentPath, '/admin/settings') === 0;
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </main>
-    </div>
+<?php
+$content = ob_get_clean();
 
-    <!-- JavaScript -->
-    <script>
-        // Theme Toggle
-        function toggleTheme() {
-            const html = document.documentElement;
-            const currentTheme = localStorage.getItem('theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            
-            html.classList.toggle('dark');
-            localStorage.setItem('theme', newTheme);
-        }
+// Set content for layout (anti-scattering compliant)
+ViewManager::set('content', $content);
 
-        // Profile Dropdown
-        function toggleProfile() {
-            const dropdown = document.getElementById('profileDropdown');
-            dropdown.classList.toggle('hidden');
-        }
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(event) {
-            const dropdown = document.getElementById('profileDropdown');
-            if (dropdown && !dropdown.contains(event.target) && !event.target.closest('button')) {
-                dropdown.classList.add('hidden');
-            }
-        });
-
-        // Initialize toggle switches
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set initial toggle states based on current settings
-            const toggles = document.querySelectorAll('button[type="button"][class*="translate-x-0"]');
-            toggles.forEach(function(toggle) {
-                // Add toggle functionality
-                toggle.addEventListener('click', function() {
-                    const span = toggle.querySelector('span');
-                    if (span.classList.contains('translate-x-0')) {
-                        span.classList.remove('translate-x-0');
-                        span.classList.add('translate-x-5');
-                        span.classList.add('bg-primary-600');
-                        span.classList.remove('bg-gray-200');
-                        span.classList.remove('dark:bg-gray-700');
-                    } else {
-                        span.classList.add('translate-x-0');
-                        span.classList.remove('translate-x-5');
-                        span.classList.remove('bg-primary-600');
-                        span.classList.add('bg-gray-200');
-                        span.classList.add('dark:bg-gray-700');
-                    }
-                });
-            });
-        });
-    </script>
-</body>
-</html>
+// Include layout directly (anti-scattering compliant)
+include __DIR__ . '/../../views/admin/dashboard_layout.php';
+?>

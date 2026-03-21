@@ -17,7 +17,7 @@ $content = ob_start();
                 <p class="text-gray-600 dark:text-gray-400 mt-1">View and manage invoice information</p>
             </div>
             <div class="flex space-x-3">
-                <a href="/admin/invoices" class="inline-flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600">
+                <a href="/admin/invoices" class="inline-flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 bg-cream-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600">
                     <i class="fas fa-arrow-left mr-2"></i>
                     Back to Invoices
                 </a>
@@ -34,7 +34,7 @@ $content = ob_start();
         <!-- Main Content -->
         <div class="lg:col-span-2 space-y-6">
             <!-- Invoice Header -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6">
                 <div class="flex justify-between items-start mb-6">
                     <div>
                         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Invoice #INV-001</h2>
@@ -77,7 +77,7 @@ $content = ob_start();
             </div>
 
             <!-- Line Items -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Line Items</h3>
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -89,7 +89,7 @@ $content = ob_start();
                                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        <tbody class="bg-cream-50 dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                             <tr>
                                 <td class="px-4 py-3 text-sm text-gray-900 dark:text-white">Monthly Rent</td>
                                 <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">1</td>
@@ -108,7 +108,7 @@ $content = ob_start();
             </div>
 
             <!-- Notes -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Notes</h3>
                 <p class="text-gray-600 dark:text-gray-400">Monthly rent payment for March 2024. Payment is due by the 15th of the month. Late fees will apply after the due date.</p>
             </div>
@@ -117,7 +117,7 @@ $content = ob_start();
         <!-- Sidebar -->
         <div class="space-y-6">
             <!-- Actions -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Actions</h3>
                 <div class="space-y-3">
                     <a href="#" class="block w-full text-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
@@ -136,7 +136,7 @@ $content = ob_start();
             </div>
 
             <!-- Payment History -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Payment History</h3>
                 <div class="space-y-3">
                     <div class="flex justify-between items-center">

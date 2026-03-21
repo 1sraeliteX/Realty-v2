@@ -19,7 +19,7 @@ ob_start();
 
 
 <!-- Occupant Header -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-6">
+<div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-6">
     <div class="bg-gradient-to-r from-teal-600 to-teal-700 p-6">
         <div class="flex items-center justify-between">
             <div class="flex items-center space-x-4">
@@ -48,7 +48,7 @@ ob_start();
 </div>
 
 <!-- Tabs Navigation -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg mb-6">
+<div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg mb-6">
     <div class="border-b border-gray-200 dark:border-gray-700">
         <nav class="flex space-x-8 px-6" aria-label="Tabs">
             <button class="tab-button py-4 px-1 border-b-2 border-primary-500 font-medium text-sm text-primary-600 dark:text-primary-400" data-tab="overview">

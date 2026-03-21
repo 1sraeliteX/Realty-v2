@@ -52,10 +52,8 @@ class InvoiceController extends BaseController {
                  ORDER BY i.created_at DESC
                  LIMIT ? OFFSET ?";
         
-        $params[] = $limit;
-        $params[] = ($page - 1) * $limit;
-        
-        $invoices = $this->db->query($sql, $params)->fetchAll();
+        // Get invoices with tenant and property info
+        $invoices = $this->db->query($sql, array_merge($params, [$limit, ($page - 1) * $limit]))->fetchAll();
         
         // Get total count for pagination
         $countSql = "SELECT COUNT(*) FROM invoices i WHERE " . implode(' AND ', $where);

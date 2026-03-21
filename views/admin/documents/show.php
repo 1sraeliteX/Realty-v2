@@ -19,7 +19,7 @@ ob_start();
 
 
 <!-- Document Header -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-6">
+<div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-6">
     <div class="bg-gradient-to-r from-indigo-600 to-indigo-700 p-6">
         <div class="flex items-center justify-between">
             <div>
@@ -51,7 +51,7 @@ ob_start();
     <!-- Main Content -->
     <div class="lg:col-span-2 space-y-6">
         <!-- Document Information -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg p-6">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Document Information</h3>
             
             <div class="space-y-4">
@@ -122,7 +122,7 @@ ob_start();
         </div>
 
         <!-- Document Preview -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg p-6">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Document Preview</h3>
             
             <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-8 text-center">
@@ -134,7 +134,7 @@ ob_start();
         </div>
 
         <!-- Activity Log -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg p-6">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Activity Log</h3>
             
             <div class="space-y-4">
@@ -161,7 +161,7 @@ ob_start();
     <!-- Sidebar -->
     <div class="space-y-6">
         <!-- Tenant Information -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg p-6">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Associated Tenant</h3>
             <div class="text-center mb-4">
                 <?php echo UIComponents::avatar($document['tenant_name'], null, 'large'); ?>
@@ -193,7 +193,7 @@ ob_start();
         </div>
 
         <!-- Document Settings -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg p-6">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Document Settings</h3>
             <div class="space-y-3">
                 <div>
@@ -214,7 +214,7 @@ ob_start();
         </div>
 
         <!-- Shared With -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg p-6">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Shared With</h3>
             <div class="space-y-3">
                 <?php foreach ($document['shared_with'] as $share): ?>
@@ -233,7 +233,7 @@ ob_start();
         </div>
 
         <!-- Quick Actions -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg p-6">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
             <div class="space-y-3">
                 <?php echo UIComponents::button('Upload New Version', 'success', 'full', '#', 'upload'); ?>

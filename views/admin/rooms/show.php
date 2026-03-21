@@ -19,7 +19,7 @@ ob_start();
 
 
 <!-- Room Header -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-6">
+<div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-6">
     <div class="bg-gradient-to-r from-indigo-600 to-indigo-700 p-6">
         <div class="flex items-center justify-between">
             <div>
@@ -44,7 +44,7 @@ ob_start();
 </div>
 
 <!-- Tabs Navigation -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg mb-6">
+<div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg mb-6">
     <div class="border-b border-gray-200 dark:border-gray-700">
         <nav class="flex space-x-8 px-6" aria-label="Tabs">
             <button class="tab-button py-4 px-1 border-b-2 border-primary-500 font-medium text-sm text-primary-600 dark:text-primary-400" data-tab="overview">
@@ -174,7 +174,7 @@ ob_start();
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody class="bg-cream-50 dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                         <?php foreach ($maintenanceHistory as $maintenance): ?>
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white"><?php echo date('M j, Y', strtotime($maintenance['date'])); ?></td>
@@ -204,10 +204,10 @@ ob_start();
                         <img src="<?php echo htmlspecialchars($image); ?>" alt="Room photo <?php echo $index + 1; ?>" class="w-full h-64 object-cover rounded-lg">
                         <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 rounded-lg flex items-center justify-center">
                             <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex space-x-2">
-                                <button class="p-2 bg-white rounded-full text-gray-800 hover:bg-gray-100">
+                                <button class="p-2 bg-cream-50 rounded-full text-gray-800 hover:bg-gray-100">
                                     <i class="fas fa-expand"></i>
                                 </button>
-                                <button class="p-2 bg-white rounded-full text-red-600 hover:bg-gray-100">
+                                <button class="p-2 bg-cream-50 rounded-full text-red-600 hover:bg-gray-100">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>

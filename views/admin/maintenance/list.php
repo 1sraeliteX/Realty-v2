@@ -39,7 +39,7 @@ ob_start();
 
 <!-- Maintenance Overview Stats -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
+    <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
         <div class="flex items-center">
             <div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
                 <i class="fas fa-wrench text-blue-600 dark:text-blue-400 text-xl"></i>
@@ -51,7 +51,7 @@ ob_start();
         </div>
     </div>
     
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
+    <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
         <div class="flex items-center">
             <div class="p-3 bg-yellow-100 dark:bg-yellow-900 rounded-lg">
                 <i class="fas fa-clock text-yellow-600 dark:text-yellow-400 text-xl"></i>
@@ -63,7 +63,7 @@ ob_start();
         </div>
     </div>
     
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
+    <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
         <div class="flex items-center">
             <div class="p-3 bg-orange-100 dark:bg-orange-900 rounded-lg">
                 <i class="fas fa-spinner text-orange-600 dark:text-orange-400 text-xl"></i>
@@ -75,7 +75,7 @@ ob_start();
         </div>
     </div>
     
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
+    <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
         <div class="flex items-center">
             <div class="p-3 bg-green-100 dark:bg-green-900 rounded-lg">
                 <i class="fas fa-check-circle text-green-600 dark:text-green-400 text-xl"></i>
@@ -89,7 +89,7 @@ ob_start();
 </div>
 
 <!-- Maintenance Requests Table -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+<div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow">
     <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
         <div class="flex items-center justify-between">
             <h3 class="text-lg font-medium text-gray-900 dark:text-white">Maintenance Requests</h3>
@@ -113,7 +113,7 @@ ob_start();
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
-            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody class="bg-cream-50 dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 <?php if (empty($maintenanceRequests)): ?>
                 <tr>
                     <td colspan="8" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
@@ -190,7 +190,7 @@ ob_start();
 
 <!-- Delete Confirmation Modal -->
 <div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-lg bg-white dark:bg-gray-800">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-lg bg-cream-50 dark:bg-gray-800">
         <div class="mt-3">
             <div class="flex items-center justify-center w-12 h-12 mx-auto bg-red-100 dark:bg-red-900 rounded-full">
                 <i class="fas fa-exclamation-triangle text-red-600 dark:text-red-400"></i>

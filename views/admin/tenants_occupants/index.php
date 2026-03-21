@@ -43,7 +43,7 @@ ob_start();
 <!-- Page Actions -->
 <div class="flex justify-end mb-6">
     <div class="flex space-x-3">
-        <button onclick="refreshData()" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
+        <button onclick="refreshData()" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-cream-50 dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
             <i class="fas fa-sync-alt mr-2"></i>
             Refresh
         </button>
@@ -57,7 +57,7 @@ ob_start();
 <!-- Modern Tabbed Navigation -->
 <div class="mb-8">
     <div class="bg-gray-100 dark:bg-gray-800 rounded-lg p-1 inline-flex">
-        <button onclick="switchTab('tenants')" id="tenantsTab" class="px-6 py-3 rounded-md text-sm font-medium transition-all duration-200 bg-white dark:bg-primary-600 text-primary-600 dark:text-white shadow-sm">
+        <button onclick="switchTab('tenants')" id="tenantsTab" class="px-6 py-3 rounded-md text-sm font-medium transition-all duration-200 bg-cream-50 dark:bg-primary-600 text-primary-600 dark:text-white shadow-sm">
             <i class="fas fa-users mr-2"></i>
             Tenants 
             <span class="ml-2 px-2 py-1 text-xs rounded-full bg-primary-100 dark:bg-primary-700 text-primary-600 dark:text-primary-200">
@@ -92,7 +92,7 @@ ob_start();
     </div>
 
     <!-- Filters and Search -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8 mt-8">
+    <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6 mb-8 mt-8">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <!-- Search -->
             <div class="md:col-span-2">
@@ -135,7 +135,7 @@ ob_start();
 
     <!-- Tenants Table -->
     <?php if (empty($tenants)): ?>
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-12 text-center">
+        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-12 text-center">
             <div class="mx-auto w-24 h-24 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-6">
                 <i class="fas fa-home text-3xl text-gray-400 dark:text-gray-500"></i>
             </div>
@@ -147,7 +147,7 @@ ob_start();
             </button>
         </div>
     <?php else: ?>
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden mb-8">
+        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow overflow-hidden mb-8">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead class="bg-gray-50 dark:bg-gray-900">
@@ -160,7 +160,7 @@ ob_start();
                             <th class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody class="bg-cream-50 dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                         <?php foreach ($tenants as $tenant): ?>
                             <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                                 <td class="px-6 py-4 whitespace-nowrap">
@@ -238,7 +238,7 @@ ob_start();
     </div>
 
     <!-- Filters and Search -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8 mt-8">
+    <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6 mb-8 mt-8">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <!-- Search -->
             <div class="md:col-span-2">
@@ -281,7 +281,7 @@ ob_start();
 
     <!-- Occupants Content -->
     <?php if (empty($occupants)): ?>
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-12 text-center">
+        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-12 text-center">
             <div class="mx-auto w-24 h-24 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-6">
                 <i class="fas fa-home text-3xl text-gray-400 dark:text-gray-500"></i>
             </div>
@@ -293,7 +293,7 @@ ob_start();
             </button>
         </div>
     <?php else: ?>
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden mb-8">
+        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow overflow-hidden mb-8">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead class="bg-gray-50 dark:bg-gray-900">
@@ -306,7 +306,7 @@ ob_start();
                             <th class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody class="bg-cream-50 dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                         <?php foreach ($occupants as $occupant): ?>
                             <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                                 <td class="px-6 py-4 whitespace-nowrap">
@@ -378,12 +378,12 @@ function switchTab(tab) {
     
     if (tab === 'tenants') {
         // Show tenants tab - active styling
-        tenantsTab.classList.add('bg-white', 'dark:bg-primary-600', 'text-primary-600', 'dark:text-white', 'shadow-sm');
+        tenantsTab.classList.add('bg-cream-50', 'dark:bg-primary-600', 'text-primary-600', 'dark:text-white', 'shadow-sm');
         tenantsTab.classList.remove('text-gray-600', 'dark:text-gray-400', 'hover:text-gray-800', 'dark:hover:text-gray-200');
         
         // Hide occupants tab - inactive styling
         occupantsTab.classList.add('text-gray-600', 'dark:text-gray-400', 'hover:text-gray-800', 'dark:hover:text-gray-200');
-        occupantsTab.classList.remove('bg-white', 'dark:bg-primary-600', 'text-primary-600', 'dark:text-white', 'shadow-sm');
+        occupantsTab.classList.remove('bg-cream-50', 'dark:bg-primary-600', 'text-primary-600', 'dark:text-white', 'shadow-sm');
         
         // Update count badges
         const tenantsBadge = tenantsTab.querySelector('span');
@@ -397,12 +397,12 @@ function switchTab(tab) {
         occupantsContent.classList.add('hidden');
     } else {
         // Show occupants tab - active styling
-        occupantsTab.classList.add('bg-white', 'dark:bg-primary-600', 'text-primary-600', 'dark:text-white', 'shadow-sm');
+        occupantsTab.classList.add('bg-cream-50', 'dark:bg-primary-600', 'text-primary-600', 'dark:text-white', 'shadow-sm');
         occupantsTab.classList.remove('text-gray-600', 'dark:text-gray-400', 'hover:text-gray-800', 'dark:hover:text-gray-200');
         
         // Hide tenants tab - inactive styling
         tenantsTab.classList.add('text-gray-600', 'dark:text-gray-400', 'hover:text-gray-800', 'dark:hover:text-gray-200');
-        tenantsTab.classList.remove('bg-white', 'dark:bg-primary-600', 'text-primary-600', 'dark:text-white', 'shadow-sm');
+        tenantsTab.classList.remove('bg-cream-50', 'dark:bg-primary-600', 'text-primary-600', 'dark:text-white', 'shadow-sm');
         
         // Update count badges
         const tenantsBadge = tenantsTab.querySelector('span');

@@ -45,7 +45,7 @@ ob_start();
     </div>
     <div class="flex space-x-3">
         <a href="/admin/properties" class="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">Cancel</a>
-        <button onclick="window.print()" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
+        <button onclick="window.print()" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-cream-50 dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
             <i class="fas fa-print mr-2"></i>
             Print
         </button>
@@ -58,7 +58,7 @@ ob_start();
 
 <!-- Property Images Gallery -->
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+<div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
     <div class="p-6">
         <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Property Images</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -67,7 +67,7 @@ ob_start();
                 <div class="relative h-64 md:h-80 rounded-lg overflow-hidden">
                     <img src="<?php echo $property['image']; ?>" alt="<?php echo htmlspecialchars($property['name']); ?>" class="w-full h-full object-cover">
                     <div class="absolute top-2 right-2">
-                        <button class="bg-white/90 dark:bg-gray-800/90 p-2 rounded-full shadow-lg hover:bg-white dark:hover:bg-gray-800">
+                        <button class="bg-cream-50/90 dark:bg-gray-800/90 p-2 rounded-full shadow-lg hover:bg-cream-50 dark:hover:bg-gray-800">
                             <i class="fas fa-expand text-gray-700 dark:text-gray-300"></i>
                         </button>
                     </div>
@@ -97,7 +97,7 @@ ob_start();
 </div>
 
 <!-- Property Header with Image -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-8">
+<div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-8">
     <div class="relative h-64 md:h-96">
         <img src="<?php echo $property['image']; ?>" alt="<?php echo htmlspecialchars($property['name']); ?>" class="w-full h-full object-cover">
         <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
@@ -112,7 +112,7 @@ ob_start();
 </div>
 
 <!-- Property Information Tabs -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-8">
+<div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-8">
     <div class="border-b border-gray-200 dark:border-gray-700">
         <nav class="flex space-x-8 px-6" aria-label="Tabs">
             <button onclick="switchTab('overview')" class="tab-btn py-4 px-1 border-b-2 font-medium text-sm border-primary-500 text-primary-600" data-tab="overview">
@@ -282,7 +282,7 @@ ob_start();
                             <th class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody class="bg-cream-50 dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                         <?php foreach ($units as $unit): ?>
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">

@@ -34,7 +34,7 @@ ob_start();
 </div>
 
 <!-- Actions Bar -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 mb-6">
+<div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg p-4 mb-6">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div class="flex items-center space-x-3 mb-3 sm:mb-0">
             <?php echo UIComponents::button('Add Occupant', 'primary', 'medium', '/admin/occupants/create', 'user-plus'); ?>
@@ -48,7 +48,7 @@ ob_start();
                     type="text" 
                     id="searchOccupants"
                     placeholder="Search occupants..." 
-                    class="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                    class="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
                     onkeyup="searchOccupants(this.value)"
                 >
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -56,14 +56,14 @@ ob_start();
                 </div>
             </div>
             
-            <select id="typeFilter" onchange="filterOccupants()" class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+            <select id="typeFilter" onchange="filterOccupants()" class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
                 <option value="">All Types</option>
                 <option value="tenant">Tenants</option>
                 <option value="family_member">Family Members</option>
                 <option value="guest">Guests</option>
             </select>
             
-            <select id="statusFilter" onchange="filterOccupants()" class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+            <select id="statusFilter" onchange="filterOccupants()" class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
                 <option value="">All Statuses</option>
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
@@ -74,7 +74,7 @@ ob_start();
 </div>
 
 <!-- Occupants Table -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+<div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead class="bg-gray-50 dark:bg-gray-700">
@@ -88,7 +88,7 @@ ob_start();
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
-            <tbody id="occupantsTableBody" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody id="occupantsTableBody" class="bg-cream-50 dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 <?php foreach ($occupants as $occupant): ?>
                     <tr data-type="<?php echo $occupant['type']; ?>" data-status="<?php echo $occupant['status']; ?>">
                         <td class="px-6 py-4 whitespace-nowrap">
@@ -145,13 +145,13 @@ ob_start();
     </div>
     
     <!-- Pagination -->
-    <div class="bg-white dark:bg-gray-800 px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+    <div class="bg-cream-50 dark:bg-gray-800 px-4 py-3 border-t border-gray-200 dark:border-gray-700">
         <div class="flex items-center justify-between">
             <div class="flex-1 flex justify-between sm:hidden">
-                <button onclick="goToPage('prev')" class="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
+                <button onclick="goToPage('prev')" class="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-cream-50 dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
                     Previous
                 </button>
-                <button onclick="goToPage('next')" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
+                <button onclick="goToPage('next')" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-cream-50 dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
                     Next
                 </button>
             </div>
@@ -164,13 +164,13 @@ ob_start();
                 </div>
                 <div>
                     <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                        <button onclick="goToPage('prev')" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <button onclick="goToPage('prev')" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-gray-600 bg-cream-50 dark:bg-gray-800 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700">
                             <i class="fas fa-chevron-left"></i>
                         </button>
                         <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 bg-primary-50 dark:bg-primary-900 text-sm font-medium text-primary-600 dark:text-primary-400">
                             1
                         </button>
-                        <button onclick="goToPage('next')" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <button onclick="goToPage('next')" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-gray-600 bg-cream-50 dark:bg-gray-800 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700">
                             <i class="fas fa-chevron-right"></i>
                         </button>
                     </nav>
@@ -275,10 +275,10 @@ function goToPage(direction) {
 
 // Add quick actions button to header
 document.addEventListener('DOMContentLoaded', function() {
-    const headerActions = document.querySelector('.bg-white.dark\\:bg-gray-800.rounded-lg.shadow-lg.p-4.mb-6 .flex.flex-col.sm\\:flex-row.sm\\:items-center.sm\\:justify-between .flex.items-center.space-x-3.mb-3.sm\\:mb-0');
+    const headerActions = document.querySelector('.bg-cream-50.dark\\:bg-gray-800.rounded-lg.shadow-lg.p-4.mb-6 .flex.flex-col.sm\\:flex-row.sm\\:items-center.sm\\:justify-between .flex.items-center.space-x-3.mb-3.sm\\:mb-0');
     if (headerActions) {
         const quickActionsBtn = document.createElement('button');
-        quickActionsBtn.className = 'inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700';
+        quickActionsBtn.className = 'inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-cream-50 dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700';
         quickActionsBtn.innerHTML = '<i class="fas fa-bolt mr-2"></i>Quick Actions';
         quickActionsBtn.onclick = () => document.getElementById('quickActionsModal').classList.remove('hidden');
         headerActions.appendChild(quickActionsBtn);

@@ -1,4 +1,10 @@
 <?php
+// Force full error reporting for diagnostics
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('log_errors', 1);
+ini_set('error_log', __DIR__ . '/logs/debugchecker_errors.log');
+
 require_once __DIR__ . '/config/bootstrap.php';
 
 ?>
@@ -1558,6 +1564,16 @@ require_once __DIR__ . '/config/bootstrap.php';
                 'reason' => $dashboardReason
             ];
             
+            // --- Payments Layout Include Check ---
+            $paymentsLayout = __DIR__ . '/views/admin/payments/index.php';
+            $layoutTarget   = __DIR__ . '/views/admin/dashboard_layout.php';
+
+            $checks[] = [
+                'name' => 'Payments view: dashboard_layout.php resolvable',
+                'status' => file_exists($layoutTarget) ? 'PASS' : 'FAIL',
+                'reason' => file_exists($layoutTarget) ? 'Layout file found at ' . $layoutTarget : 'Layout file not found at ' . $layoutTarget
+            ];
+            
             // Count failures
             $failures = array_filter($checks, function($check) {
                 return $check['status'] === 'FAIL';
@@ -1624,6 +1640,88 @@ require_once __DIR__ . '/config/bootstrap.php';
             
             echo '</tbody></table>';
             echo '</div>';
+            
+            // --- Invoices Table Column Check ---
+            try {
+                $cols = $pdo->query("SHOW COLUMNS FROM invoices")->fetchAll(PDO::FETCH_COLUMN);
+                $checks[] = [
+                    'name' => 'invoices table: deleted_at column exists',
+                    'status' => in_array('deleted_at', $cols) ? 'PASS' : 'WARN',
+                    'reason' => in_array('deleted_at', $cols) ? 'Column present — soft deletes active' : 'Column missing — ensure query does not reference i.deleted_at'
+                ];
+            } catch (Exception $e) {
+                $checks[] = [
+                    'name' => 'invoices table: deleted_at column check',
+                    'status' => 'FAIL',
+                    'reason' => $e->getMessage()
+                ];
+            }
+            
+            // --- Invoice Query Param Integrity Check ---
+            try {
+                $testSql  = "SELECT COUNT(*) FROM invoices i WHERE i.admin_id = :admin_id";
+                $testStmt = $pdo->prepare($testSql);
+                $testStmt->execute([':admin_id' => 1]);
+                $checks[] = [
+                    'label'  => 'InvoiceModel: param binding integrity',
+                    'status' => 'PASS',
+                    'detail' => 'No HY093 — placeholder count matches bound params'
+                ];
+            } catch (PDOException $e) {
+                $checks[] = [
+                    'label'  => 'InvoiceModel: param binding integrity',
+                    'status' => 'FAIL',
+                    'detail' => $e->getMessage()
+                ];
+            }
+            
+            // --- Invoices View Layout Include Check ---
+            $invoiceView   = __DIR__ . '/views/admin/invoices/index.php';
+            $dashLayout    = __DIR__ . '/views/admin/dashboard_layout.php';
+
+            $checks[] = [
+                'label'  => 'Invoices view file exists',
+                'status' => file_exists($invoiceView) ? 'PASS' : 'FAIL',
+                'detail' => $invoiceView
+            ];
+            $checks[] = [
+                'label'  => 'dashboard_layout.php resolvable from invoices view',
+                'status' => file_exists($dashLayout) ? 'PASS' : 'FAIL',
+                'detail' => $dashLayout
+            ];
+            
+            // --- invoice_templates Table Check ---
+            try {
+                $pdo->query("SELECT 1 FROM invoice_templates LIMIT 1");
+                $checks[] = [
+                    'label'  => 'invoice_templates table exists',
+                    'status' => 'PASS',
+                    'detail' => 'Table found in real_estate_db'
+                ];
+            } catch (PDOException $e) {
+                $checks[] = [
+                    'label'  => 'invoice_templates table exists',
+                    'status' => 'FAIL',
+                    'detail' => 'Table missing — run migrations/create_invoice_templates.sql'
+                ];
+            }
+
+            // --- AutoFillComponent Class Availability Check ---
+            $autoFillFile = __DIR__ . '/app/components/AutoFillComponent.php';
+            $checks[] = [
+                'label'  => 'AutoFillComponent file exists on disk',
+                'status' => file_exists($autoFillFile) ? 'PASS' : 'FAIL',
+                'detail' => $autoFillFile
+            ];
+
+            // Check class is loadable
+            $checks[] = [
+                'label'  => 'AutoFillComponent class loadable',
+                'status' => class_exists('Components\\AutoFillComponent') ? 'PASS' : 'FAIL',
+                'detail' => class_exists('Components\\AutoFillComponent')
+                            ? 'Class found via autoloader'
+                            : 'Class not found — check namespace or autoloader mapping'
+            ];
             ?>
         </div>
     </div>

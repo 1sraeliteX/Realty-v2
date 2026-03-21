@@ -15,7 +15,7 @@ try {
     echo "<h2>Testing Route Dispatch</h2>";
     
     // Load the router
-    require_once __DIR__ . '/../public/app.php';
+    require_once __DIR__ . '/app.php';
     
 } catch (Exception $e) {
     echo "<h2>Error Caught</h2>";

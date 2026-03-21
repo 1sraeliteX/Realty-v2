@@ -59,7 +59,7 @@ ob_start();
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Payment Details</h1>
             <p class="text-gray-600 dark:text-gray-400 mt-1">View payment information and uploaded receipts</p>
         </div>
-        <a href="/admin/finances" class="inline-flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">
+        <a href="/admin/finances" class="inline-flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 bg-cream-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">
             <i class="fas fa-arrow-left mr-2"></i>
             Back to Finances
         </a>
@@ -67,7 +67,7 @@ ob_start();
 </div>
 
 <!-- Payment Information -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+<div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
     <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Payment Information</h2>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div>
@@ -112,7 +112,7 @@ ob_start();
 </div>
 
 <!-- Receipts Section -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+<div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6">
     <div class="flex items-center justify-between mb-4">
         <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Payment Receipts</h2>
         <span class="text-sm text-gray-500 dark:text-gray-400">

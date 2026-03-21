@@ -68,6 +68,18 @@ $isProfile = strpos($currentPath, '/admin/profile') === 0;
                             700: '#1d4ed8',
                             800: '#1e40af',
                             900: '#1e3a8a',
+                        },
+                        cream: {
+                            50: '#F0EAD6',
+                            100: '#E8DFC4',
+                            200: '#D4C8A8',
+                            300: '#C0B18C',
+                            400: '#AC9970',
+                            500: '#998154',
+                            600: '#856A38',
+                            700: '#71531C',
+                            800: '#5D3C00',
+                            900: '#492500',
                         }
                     }
                 }
@@ -78,15 +90,15 @@ $isProfile = strpos($currentPath, '/admin/profile') === 0;
     <link rel="stylesheet" href="/assets/css/fontawesome.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-gray-50 dark:bg-gray-900">
+<body class="bg-cream-50 dark:bg-gray-900">
     <div id="toast-container" class="fixed top-4 right-4 z-50"></div>
 
-    <div class="flex h-screen bg-gray-50 dark:bg-gray-900">
+    <div class="flex h-screen bg-cream-50 dark:bg-gray-900">
         <!-- Sidebar -->
-        <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 transform -translate-x-full transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0">
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-cream-50 dark:bg-gray-800 transform -translate-x-full transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0">
             <div class="flex flex-col h-full">
                 <!-- Sidebar Header -->
-                <div class="flex items-center justify-between h-16 px-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-center justify-between h-16 px-4 bg-cream-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                     <div class="flex items-center">
                         <i class="fas fa-building text-primary-600 dark:text-primary-400 text-xl mr-3"></i>
                         <span class="text-xl font-semibold text-gray-900 dark:text-white">Cornerstone</span>
@@ -97,7 +109,7 @@ $isProfile = strpos($currentPath, '/admin/profile') === 0;
                 </div>
 
                 <!-- Sidebar Navigation -->
-                <div class="flex-1 flex flex-col overflow-y-auto bg-white dark:bg-gray-800">
+                <div class="flex-1 flex flex-col overflow-y-auto bg-cream-50 dark:bg-gray-800">
                     <nav class="flex-1 px-2 py-4 space-y-1">
                         <!-- Dashboard -->
                         <a href="/admin/dashboard" class="<?php echo $isDashboard ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
@@ -205,7 +217,7 @@ $isProfile = strpos($currentPath, '/admin/profile') === 0;
         <!-- Main Content -->
         <div class="flex flex-col w-0 flex-1 overflow-hidden">
             <!-- Top Header -->
-            <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+            <header class="bg-cream-50 dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
                 <div class="flex items-center justify-between h-16 px-4 sm:px-6">
                     <!-- Left side -->
                     <div class="flex items-center">
@@ -220,11 +232,11 @@ $isProfile = strpos($currentPath, '/admin/profile') === 0;
                         <!-- Search -->
                         <div class="hidden md:block">
                             <div class="relative">
-                                <input type="text" id="global-search-input" placeholder="Search..." class="w-64 pl-10 pr-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                                <input type="text" id="global-search-input" placeholder="Search..." class="w-64 pl-10 pr-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
                                 <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                                 
                                 <!-- Search Results Dropdown -->
-                                <div id="search-results-dropdown" class="hidden absolute left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 max-h-96 overflow-y-auto">
+                                <div id="search-results-dropdown" class="hidden absolute left-0 right-0 mt-2 bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 max-h-96 overflow-y-auto">
                                     <div id="search-results-content" class="p-2">
                                         <!-- Search results will be populated here -->
                                     </div>
@@ -255,7 +267,7 @@ $isProfile = strpos($currentPath, '/admin/profile') === 0;
                             </button>
 
                             <!-- Currency dropdown -->
-                            <div id="currencySwitcherDropdown" class="hidden absolute right-0 mt-2 w-52 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden">
+                            <div id="currencySwitcherDropdown" class="hidden absolute right-0 mt-2 w-52 bg-cream-50 dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden">
                                 <div class="px-3 py-2 border-b border-gray-100 dark:border-gray-700">
                                     <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Select Currency</p>
                                 </div>
@@ -293,7 +305,7 @@ $isProfile = strpos($currentPath, '/admin/profile') === 0;
                             </button>
                             
                             <!-- Notifications Dropdown -->
-                            <div id="notifications-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                            <div id="notifications-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
                                 <div class="p-4 border-b border-gray-200 dark:border-gray-700">
                                     <div class="flex items-center justify-between">
                                         <h3 class="text-sm font-medium text-gray-900 dark:text-white">Notifications</h3>
@@ -323,7 +335,7 @@ $isProfile = strpos($currentPath, '/admin/profile') === 0;
                             </button>
                             
                             <!-- User Dropdown Menu -->
-                            <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                            <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
                                 <div class="p-3 border-b border-gray-200 dark:border-gray-700">
                                     <p class="text-sm font-medium text-gray-900 dark:text-white"><?php echo htmlspecialchars($user['name'] ?? 'Admin'); ?></p>
                                     <p class="text-xs text-gray-500 dark:text-gray-400"><?php echo htmlspecialchars($user['email'] ?? ''); ?></p>
@@ -348,7 +360,7 @@ $isProfile = strpos($currentPath, '/admin/profile') === 0;
             </header>
 
             <!-- Page Content -->
-            <main class="flex-1 overflow-auto bg-gray-50 dark:bg-gray-900">
+            <main class="flex-1 overflow-auto bg-cream-50 dark:bg-gray-900">
                 <div class="p-6 max-w-7xl mx-auto">
                     <?php echo $content ?? '<div class="text-center py-8"><h1 class="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1><p class="text-gray-600 dark:text-gray-400 mt-2">Welcome to the admin dashboard</p></div>'; ?>
                 </div>

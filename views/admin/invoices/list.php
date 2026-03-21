@@ -59,7 +59,7 @@ if (empty($invoices)) {
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">';
+                <tbody class="bg-cream-50 dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">';
     
     foreach ($invoices as $invoice) {
         $statusColor = $invoice['status'] === 'paid' ? 'success' : 
@@ -111,7 +111,7 @@ echo UIComponents::card(
         </div>
     </div>',
     null,
-    'bg-white dark:bg-gray-800 rounded-lg shadow'
+    'bg-cream-50 dark:bg-gray-800 rounded-lg shadow'
 ); ?>
 
 <!-- Invoice Management JavaScript -->

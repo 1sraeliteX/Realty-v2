@@ -54,7 +54,7 @@ ob_start();
         <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Track rent collections and payment history</p>
     </div>
     <div class="mt-4 sm:mt-0 flex space-x-3">
-        <button onclick="exportPayments()" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
+        <button onclick="exportPayments()" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-cream-50 dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
             <i class="fas fa-download mr-2"></i>
             Export
         </button>
@@ -101,11 +101,11 @@ ob_start();
 </div>
 
     <!-- Filters and Search -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
+<div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
     <form method="GET" action="/admin/payments" class="space-y-4">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
             <!-- Search -->
-            <div class="md:col-span-2">
+            <div class="lg:col-span-2">
                 <?php echo UIComponents::searchBar('Search tenant name or reference...', $filters['search'] ?? '', null); ?>
             </div>
             
@@ -115,7 +115,7 @@ ob_start();
                 'status',
                 'Status',
                 [
-                    '' => 'All',
+                    '' => 'All Status',
                     'paid' => 'Paid',
                     'pending' => 'Pending',
                     'overdue' => 'Overdue',
@@ -127,13 +127,14 @@ ob_start();
             ); ?>
             
             <!-- Date Range -->
-            <div class="col-span-1">
+            <div class="col-span-1 flex-shrink-0">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date Range</label>
-                <div class="flex space-x-2">
+                <div class="flex items-center gap-2">
                     <input type="date" name="date_from" value="<?php echo htmlspecialchars($filters['date_from'] ?? ''); ?>" 
-                           class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                           class="min-w-[145px] flex-shrink-0 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                    <span class="text-gray-400 text-sm flex-shrink-0">to</span>
                     <input type="date" name="date_to" value="<?php echo htmlspecialchars($filters['date_to'] ?? ''); ?>" 
-                           class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                           class="min-w-[145px] flex-shrink-0 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                 </div>
             </div>
         </div>
@@ -158,7 +159,7 @@ ob_start();
 </div>
 
     <!-- Payments Table -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+<div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow overflow-hidden">
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead class="bg-gray-50 dark:bg-gray-900">
@@ -189,7 +190,7 @@ ob_start();
                     </th>
                 </tr>
             </thead>
-            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody class="bg-cream-50 dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 <?php if (empty($payments)): ?>
                     <tr>
                         <td colspan="8" class="px-6 py-12 text-center">
@@ -319,7 +320,7 @@ echo UIComponents::modal(
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tenant *</label>
-                <select name="tenant_id" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                <select name="tenant_id" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                     <option value="">Select Tenant</option>
                     <!-- Tenants will be populated via JavaScript -->
                 </select>
@@ -327,7 +328,7 @@ echo UIComponents::modal(
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Amount (₦) *</label>
                 <input type="number" name="amount" step="0.01" min="0" required 
-                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
             </div>
         </div>
         
@@ -335,19 +336,19 @@ echo UIComponents::modal(
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Due Date *</label>
                 <input type="date" name="due_date" required 
-                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Payment Date</label>
                 <input type="date" name="payment_date" 
-                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
             </div>
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status *</label>
-                <select name="status" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                <select name="status" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                     <option value="pending">Pending</option>
                     <option value="paid">Paid</option>
                     <option value="overdue">Overdue</option>
@@ -356,7 +357,7 @@ echo UIComponents::modal(
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Payment Method</label>
-                <select name="payment_method" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                <select name="payment_method" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                     <option value="">Select Method</option>
                     <option value="bank_transfer">Bank Transfer</option>
                     <option value="cash">Cash</option>
@@ -370,7 +371,7 @@ echo UIComponents::modal(
         <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Paystack Reference</label>
             <input type="text" name="paystack_reference" placeholder="Optional - for Paystack payments"
-                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
         </div>
     </form>
     ',
@@ -504,5 +505,5 @@ $content = ob_get_clean();
 ViewManager::set('content', $content);
 
 // Include the layout directly (anti-scattering compliant)
-include __DIR__ . '/../../views/admin/dashboard_layout.php';
+include __DIR__ . '/../dashboard_layout.php';
 ?>

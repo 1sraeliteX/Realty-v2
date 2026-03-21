@@ -45,7 +45,7 @@ $admin = ViewManager::get('admin') ?? [];
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Record Payment</h1>
             <p class="text-gray-600 dark:text-gray-400 mt-1">Add a new payment record to the system</p>
         </div>
-        <a href="/admin/finances" class="inline-flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">
+        <a href="/admin/finances" class="inline-flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 bg-cream-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">
             <i class="fas fa-arrow-left mr-2"></i>
             Back to Finances
         </a>
@@ -55,7 +55,7 @@ $admin = ViewManager::get('admin') ?? [];
     <!-- Form -->
     <form method="POST" action="/admin/payments" enctype="multipart/form-data" class="space-y-6">
         <!-- Payment Information -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6">
             <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Payment Information</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -114,7 +114,7 @@ $admin = ViewManager::get('admin') ?? [];
         </div>
 
         <!-- Receipt Upload Section -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6">
             <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Payment Receipt</h2>
             <div class="space-y-4">
                 <!-- File Upload Area -->
@@ -165,7 +165,7 @@ $admin = ViewManager::get('admin') ?? [];
 
         <!-- Form Actions -->
         <div class="flex justify-end space-x-4">
-            <a href="/admin/finances" class="px-6 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600">
+            <a href="/admin/finances" class="px-6 py-2 text-gray-700 dark:text-gray-300 bg-cream-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600">
                 Cancel
             </a>
             <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">

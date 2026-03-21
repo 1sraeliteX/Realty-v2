@@ -27,7 +27,7 @@ if (file_exists($dashFile)) {
         $stats = ViewManager::get('stats', []);
         foreach ($cards as $c):
         ?>
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6">
             <div class="flex items-center">
                 <div class="flex-shrink-0 bg-<?php echo $c['color']; ?>-100 dark:bg-<?php echo $c['color']; ?>-900 rounded-lg p-3">
                     <i class="fas <?php echo $c['icon']; ?> text-<?php echo $c['color']; ?>-600 dark:text-<?php echo $c['color']; ?>-400 text-xl"></i>

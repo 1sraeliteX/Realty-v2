@@ -20,7 +20,7 @@ ob_start();
 ?>
 
 <!-- Unit Header -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-6">
+<div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-6">
     <div class="bg-gradient-to-r from-purple-600 to-purple-700 p-6">
         <div class="flex items-center justify-between">
             <div>
@@ -46,7 +46,7 @@ ob_start();
 </div>
 
 <!-- Tabs Navigation -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg mb-6">
+<div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg mb-6">
     <div class="border-b border-gray-200 dark:border-gray-700">
         <nav class="flex space-x-8 px-6" aria-label="Tabs">
             <button class="tab-button py-4 px-1 border-b-2 border-primary-500 font-medium text-sm text-primary-600 dark:text-primary-400" data-tab="overview">
@@ -158,11 +158,11 @@ ob_start();
                     </div>
                     
                     <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-white dark:bg-gray-800 rounded-lg p-4">
+                        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg p-4">
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Lease Period</p>
                             <p class="text-sm text-gray-900 dark:text-white"><?php echo date('M j, Y', strtotime($tenant['lease_start'])); ?> - <?php echo date('M j, Y', strtotime($tenant['lease_end'])); ?></p>
                         </div>
-                        <div class="bg-white dark:bg-gray-800 rounded-lg p-4">
+                        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg p-4">
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Monthly Rent</p>
                             <p class="text-sm font-bold text-gray-900 dark:text-white">$<?php echo number_format($tenant['monthly_rent']); ?></p>
                         </div>
@@ -219,7 +219,7 @@ ob_start();
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody class="bg-cream-50 dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                         <?php foreach ($maintenanceHistory as $maintenance): ?>
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white"><?php echo date('M j, Y', strtotime($maintenance['date'])); ?></td>

@@ -53,7 +53,7 @@ ob_start();
             </div>',
             null,
             null,
-            'bg-white dark:bg-gray-800 rounded-lg shadow'
+            'bg-cream-50 dark:bg-gray-800 rounded-lg shadow'
         ); ?>
     </div>
 
@@ -92,7 +92,7 @@ ob_start();
         </div>',
         '<h3 class="text-lg font-medium text-gray-900 dark:text-white">Quick Actions</h3>',
         null,
-        'bg-white dark:bg-gray-800 rounded-lg shadow'
+        'bg-cream-50 dark:bg-gray-800 rounded-lg shadow'
     ); ?>
 </div>
 
@@ -141,7 +141,7 @@ ob_start();
         $transactionsContent,
         '<h3 class="text-lg font-medium text-gray-900 dark:text-white">Recent Transactions</h3>',
         null,
-        'bg-white dark:bg-gray-800 rounded-lg shadow'
+        'bg-cream-50 dark:bg-gray-800 rounded-lg shadow'
     ); ?>
 
     <!-- Upcoming Payments -->
@@ -179,7 +179,7 @@ ob_start();
         $paymentsContent,
         '<h3 class="text-lg font-medium text-gray-900 dark:text-white">Upcoming Payments</h3>',
         null,
-        'bg-white dark:bg-gray-800 rounded-lg shadow'
+        'bg-cream-50 dark:bg-gray-800 rounded-lg shadow'
     ); ?>
 </div>
 

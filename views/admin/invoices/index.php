@@ -1,7 +1,38 @@
 <?php
-require_once __DIR__ . '/../../../config/bootstrap.php';
+// Initialize framework (anti-scattering compliant)
+require_once __DIR__ . '/../../../config/init_framework.php';
+
+// Load components through registry (anti-scattering compliant)
+ComponentRegistry::load('ui-components');
+
+// Get data from ViewManager (anti-scattering compliant)
 $invoices   = ViewManager::get('invoices', []);
 $pagination = ViewManager::get('pagination', []);
+$stats      = ViewManager::get('stats', []);
+$filters    = ViewManager::get('filters', []);
+$admin      = ViewManager::get('user', []);
+
+// Set data through ViewManager (anti-scattering compliant)
+ViewManager::set('title', 'Invoices');
+ViewManager::set('pageTitle', 'Invoices');
+ViewManager::set('pageDescription', 'Manage all invoices and billing');
+ViewManager::set('activeMenu', 'invoices');
+
+// Helper function for amount formatting
+function formatAmount($amount) {
+    if ($amount >= 1000000000) {
+        return '₦' . number_format($amount / 1000000000, 1) . 'B';
+    } elseif ($amount >= 1000000) {
+        return '₦' . number_format($amount / 1000000, 1) . 'M';
+    } elseif ($amount >= 1000) {
+        return '₦' . number_format($amount / 1000, 1) . 'K';
+    } else {
+        return '₦' . number_format($amount, 0);
+    }
+}
+
+// Start output buffering for content (anti-scattering compliant)
+ob_start();
 ?>
 <div class="space-y-6">
     <div class="flex flex-col sm:flex-row sm:items-center
@@ -21,7 +52,7 @@ $pagination = ViewManager::get('pagination', []);
         </a>
     </div>
 
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow
+    <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow
                 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200
@@ -54,7 +85,7 @@ $pagination = ViewManager::get('pagination', []);
                                    tracking-wider">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white dark:bg-gray-800
+                <tbody class="bg-cream-50 dark:bg-gray-800
                               divide-y divide-gray-200
                               dark:divide-gray-700">
                     <?php if (empty($invoices)): ?>
@@ -139,3 +170,13 @@ $pagination = ViewManager::get('pagination', []);
         </div>
     </div>
 </div>
+
+<?php
+$content = ob_get_clean();
+
+// Set content for layout (anti-scattering compliant)
+ViewManager::set('content', $content);
+
+// Include the layout directly (anti-scattering compliant)
+include __DIR__ . '/../dashboard_layout.php';
+?>

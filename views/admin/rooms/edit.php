@@ -42,7 +42,7 @@ ob_start();
 </div>
 
 <!-- Edit Form -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+<div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg p-6">
     <form id="roomEditForm" onsubmit="submitEditForm(event)">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Left Column - Basic Information -->
@@ -52,12 +52,12 @@ ob_start();
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Room Name *</label>
-                        <input type="text" name="name" value="<?php echo htmlspecialchars($room['name']); ?>" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        <input type="text" name="name" value="<?php echo htmlspecialchars($room['name']); ?>" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                     </div>
                     
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Room Type *</label>
-                        <select name="type" required onchange="updateRoomTypeFields()" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        <select name="type" required onchange="updateRoomTypeFields()" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                             <option value="bedroom" <?php echo $room['type'] === 'bedroom' ? 'selected' : ''; ?>>Bedroom</option>
                             <option value="living" <?php echo $room['type'] === 'living' ? 'selected' : ''; ?>>Living Room</option>
                             <option value="kitchen" <?php echo $room['type'] === 'kitchen' ? 'selected' : ''; ?>>Kitchen</option>
@@ -71,7 +71,7 @@ ob_start();
                     
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Property *</label>
-                        <select name="property_id" required onchange="updateUnits()" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        <select name="property_id" required onchange="updateUnits()" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                             <?php foreach ($properties as $property): ?>
                                 <option value="<?php echo $property['id']; ?>" <?php echo $property['id'] == $room['property_id'] ? 'selected' : ''; ?>>
                                     <?php echo htmlspecialchars($property['name']); ?>
@@ -82,7 +82,7 @@ ob_start();
                     
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Unit *</label>
-                        <select name="unit_id" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        <select name="unit_id" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                             <?php foreach ($units as $unit): ?>
                                 <?php if ($unit['property_id'] == $room['property_id']): ?>
                                     <option value="<?php echo $unit['id']; ?>" <?php echo $unit['id'] == $room['unit_id'] ? 'selected' : ''; ?>>
@@ -95,12 +95,12 @@ ob_start();
                     
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Size (sq ft) *</label>
-                        <input type="number" name="size_sqft" value="<?php echo $room['size_sqft']; ?>" required min="1" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        <input type="number" name="size_sqft" value="<?php echo $room['size_sqft']; ?>" required min="1" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                     </div>
                     
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status *</label>
-                        <select name="status" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        <select name="status" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                             <option value="occupied" <?php echo $room['status'] === 'occupied' ? 'selected' : ''; ?>>Occupied</option>
                             <option value="vacant" <?php echo $room['status'] === 'vacant' ? 'selected' : ''; ?>>Vacant</option>
                             <option value="maintenance" <?php echo $room['status'] === 'maintenance' ? 'selected' : ''; ?>>Under Maintenance</option>
@@ -119,29 +119,29 @@ ob_start();
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Number of Beds</label>
-                                <input type="number" name="beds" value="<?php echo $room['beds']; ?>" min="0" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                                <input type="number" name="beds" value="<?php echo $room['beds']; ?>" min="0" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Number of Baths</label>
-                                <input type="number" name="baths" value="<?php echo $room['baths']; ?>" min="0" step="0.5" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                                <input type="number" name="baths" value="<?php echo $room['baths']; ?>" min="0" step="0.5" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                             </div>
                         </div>
                     </div>
                     
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Rent Portion ($)</label>
-                        <input type="number" name="rent_portion" value="<?php echo $room['rent_portion']; ?>" min="0" step="0.01" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        <input type="number" name="rent_portion" value="<?php echo $room['rent_portion']; ?>" min="0" step="0.01" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                         <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Portion of total rent attributed to this room</p>
                     </div>
                     
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Current Occupant</label>
-                        <input type="text" name="occupant" value="<?php echo htmlspecialchars($room['occupant']); ?>" placeholder="e.g., John Smith or Shared" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        <input type="text" name="occupant" value="<?php echo htmlspecialchars($room['occupant']); ?>" placeholder="e.g., John Smith or Shared" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                     </div>
                     
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description</label>
-                        <textarea name="description" rows="3" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder="Describe the room features, layout, etc."><?php echo htmlspecialchars($room['description']); ?></textarea>
+                        <textarea name="description" rows="3" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder="Describe the room features, layout, etc."><?php echo htmlspecialchars($room['description']); ?></textarea>
                     </div>
                 </div>
             </div>

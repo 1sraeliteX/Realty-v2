@@ -131,7 +131,7 @@ $isDashboardReports = strpos($currentPath, '/admin/dashboard/reports') === 0;
         echo UIComponents::card(
             '<div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white">Revenue Overview</h3>
-                <select id="revenue-period" class="text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                <select id="revenue-period" class="text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white">
                     <option value="12">Last 12 months</option>
                     <option value="6">Last 6 months</option>
                     <option value="3">Last 3 months</option>
@@ -142,7 +142,7 @@ $isDashboardReports = strpos($currentPath, '/admin/dashboard/reports') === 0;
             </div>',
             null,
             null,
-            'bg-white dark:bg-gray-800 rounded-lg shadow'
+            'bg-cream-50 dark:bg-gray-800 rounded-lg shadow'
         ); ?>
     </div>
 
@@ -170,7 +170,7 @@ $isDashboardReports = strpos($currentPath, '/admin/dashboard/reports') === 0;
         </div>',
         '<h3 class="text-lg font-medium text-gray-900 dark:text-white">Occupancy Analytics</h3>',
         null,
-        'bg-white dark:bg-gray-800 rounded-lg shadow'
+        'bg-cream-50 dark:bg-gray-800 rounded-lg shadow'
     ); ?>
 </div>
 
@@ -210,7 +210,7 @@ $isDashboardReports = strpos($currentPath, '/admin/dashboard/reports') === 0;
         $propertiesContent,
         '<h3 class="text-lg font-medium text-gray-900 dark:text-white">Property Performance</h3>',
         null,
-        'bg-white dark:bg-gray-800 rounded-lg shadow'
+        'bg-cream-50 dark:bg-gray-800 rounded-lg shadow'
     ); ?>
 
     <!-- Maintenance Summary -->
@@ -250,7 +250,7 @@ $isDashboardReports = strpos($currentPath, '/admin/dashboard/reports') === 0;
         $maintenanceContent,
         '<h3 class="text-lg font-medium text-gray-900 dark:text-white">Maintenance Summary</h3>',
         '<span class="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 text-xs font-medium px-2.5 py-0.5 rounded-full">' . $stats['pending_maintenance'] . ' pending</span>',
-        'bg-white dark:bg-gray-800 rounded-lg shadow'
+        'bg-cream-50 dark:bg-gray-800 rounded-lg shadow'
     ); ?>
 
     <!-- Application Pipeline -->
@@ -294,7 +294,7 @@ $isDashboardReports = strpos($currentPath, '/admin/dashboard/reports') === 0;
         $applicationContent,
         '<h3 class="text-lg font-medium text-gray-900 dark:text-white">Application Pipeline</h3>',
         '<span class="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 text-xs font-medium px-2.5 py-0.5 rounded-full">' . $stats['new_applications'] . ' pending</span>',
-        'bg-white dark:bg-gray-800 rounded-lg shadow'
+        'bg-cream-50 dark:bg-gray-800 rounded-lg shadow'
     ); ?>
 </div>
 
@@ -326,23 +326,23 @@ $isDashboardReports = strpos($currentPath, '/admin/dashboard/reports') === 0;
         $activitiesContent,
         '<h3 class="text-lg font-medium text-gray-900 dark:text-white">Recent Activities</h3>',
         null,
-        'bg-white dark:bg-gray-800 rounded-lg shadow'
+        'bg-cream-50 dark:bg-gray-800 rounded-lg shadow'
     ); ?>
 </div>
 
 <!-- Export Options -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+<div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6">
     <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Export Reports</h3>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <button onclick="exportReport('pdf')" class="flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+        <button onclick="exportReport('pdf')" class="flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-cream-50 dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
             <i class="fas fa-file-pdf mr-2"></i>
             Export as PDF
         </button>
-        <button onclick="exportReport('excel')" class="flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+        <button onclick="exportReport('excel')" class="flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-cream-50 dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
             <i class="fas fa-file-excel mr-2"></i>
             Export as Excel
         </button>
-        <button onclick="exportReport('csv')" class="flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+        <button onclick="exportReport('csv')" class="flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-cream-50 dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
             <i class="fas fa-file-csv mr-2"></i>
             Export as CSV
         </button>

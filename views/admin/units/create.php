@@ -51,7 +51,7 @@ $preselectedPropertyId = $_GET['property_id'] ?? ViewManager::get('property_id',
                 <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Create New Unit</h1>
                 <p class="text-gray-600 dark:text-gray-400 mt-1">Add a new unit to your property portfolio</p>
             </div>
-            <a href="/admin/units" class="inline-flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
+            <a href="/admin/units" class="inline-flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 bg-cream-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
                 <i class="fas fa-arrow-left mr-2"></i>
                 Back to Units
             </a>
@@ -59,7 +59,7 @@ $preselectedPropertyId = $_GET['property_id'] ?? ViewManager::get('property_id',
     </div>
 
     <!-- Create Unit Form -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+    <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow">
         <form id="unit-form" class="p-6 space-y-6">
             <!-- Property Selection -->
             <div>
@@ -70,7 +70,7 @@ $preselectedPropertyId = $_GET['property_id'] ?? ViewManager::get('property_id',
                     id="property_id" 
                     name="property_id" 
                     required
-                    class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 >
                     <option value="">Select Property</option>
                     <?php foreach ($properties as $prop): ?>
@@ -94,7 +94,7 @@ $preselectedPropertyId = $_GET['property_id'] ?? ViewManager::get('property_id',
                     name="unit_number" 
                     required
                     placeholder="e.g., A-101, B-205"
-                    class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 >
             </div>
 
@@ -107,7 +107,7 @@ $preselectedPropertyId = $_GET['property_id'] ?? ViewManager::get('property_id',
                     id="unit_type" 
                     name="unit_type" 
                     required
-                    class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 >
                     <option value="">Select unit type</option>
                     <?php foreach ($unitTypes as $typeKey => $typeName): ?>
@@ -129,7 +129,7 @@ $preselectedPropertyId = $_GET['property_id'] ?? ViewManager::get('property_id',
                         name="bedrooms" 
                         min="0"
                         placeholder="e.g., 1, 2, 3"
-                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     >
                 </div>
 
@@ -145,7 +145,7 @@ $preselectedPropertyId = $_GET['property_id'] ?? ViewManager::get('property_id',
                         min="0"
                         step="0.5"
                         placeholder="e.g., 1, 1.5, 2"
-                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     >
                 </div>
             </div>
@@ -164,7 +164,7 @@ $preselectedPropertyId = $_GET['property_id'] ?? ViewManager::get('property_id',
                         min="0"
                         step="0.01"
                         placeholder="0.00"
-                        class="w-full pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        class="w-full pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     >
                 </div>
             </div>
@@ -177,7 +177,7 @@ $preselectedPropertyId = $_GET['property_id'] ?? ViewManager::get('property_id',
                 <select 
                     id="status" 
                     name="status" 
-                    class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 >
                     <option value="available">Available</option>
                     <option value="occupied">Occupied</option>
@@ -190,7 +190,7 @@ $preselectedPropertyId = $_GET['property_id'] ?? ViewManager::get('property_id',
             <div class="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200 dark:border-gray-700">
                 <a 
                     href="/admin/units" 
-                    class="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                    class="px-4 py-2 text-gray-700 dark:text-gray-300 bg-cream-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
                 >
                     Cancel
                 </a>

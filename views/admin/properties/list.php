@@ -37,7 +37,7 @@ if (empty($properties)) {
         <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Manage your property portfolio</p>
     </div>
     <div class="mt-4 sm:mt-0 flex space-x-3">
-        <button onclick="exportProperties()" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
+        <button onclick="exportProperties()" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-cream-50 dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
             <i class="fas fa-download mr-2"></i>
             Export
         </button>
@@ -49,7 +49,7 @@ if (empty($properties)) {
 </div>
 
 <!-- Filters and Search -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
+<div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
     <div class="flex flex-col sm:flex-row sm:items-center gap-3">
 
         <!-- Search input -->
@@ -66,7 +66,7 @@ if (empty($properties)) {
                     oninput="searchProperties(this.value)"
                     class="w-full pl-9 pr-4 py-2 text-sm border
                            border-gray-300 dark:border-gray-600 rounded-lg
-                           bg-white dark:bg-gray-700 text-gray-900
+                           bg-cream-50 dark:bg-gray-700 text-gray-900
                            dark:text-white placeholder-gray-400
                            focus:outline-none focus:ring-2
                            focus:ring-primary-500 focus:border-transparent"
@@ -83,7 +83,7 @@ if (empty($properties)) {
                 id="type_filter"
                 onchange="filterProperties()"
                 class="w-40 px-3 py-2 text-sm border border-gray-300
-                       dark:border-gray-600 rounded-lg bg-white
+                       dark:border-gray-600 rounded-lg bg-cream-50
                        dark:bg-gray-700 text-gray-900 dark:text-white
                        focus:outline-none focus:ring-2
                        focus:ring-primary-500 focus:border-transparent
@@ -104,7 +104,7 @@ if (empty($properties)) {
                 id="status_filter"
                 onchange="filterProperties()"
                 class="w-36 px-3 py-2 text-sm border border-gray-300
-                       dark:border-gray-600 rounded-lg bg-white
+                       dark:border-gray-600 rounded-lg bg-cream-50
                        dark:bg-gray-700 text-gray-900 dark:text-white
                        focus:outline-none focus:ring-2
                        focus:ring-primary-500 focus:border-transparent
@@ -240,7 +240,7 @@ if (empty($properties)) {
 <div class="px-4 md:px-0">
     <div id="properties-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 place-items-center md:place-items-stretch">
         <?php foreach ($properties as $property): ?>
-            <div class="property-card w-full max-w-sm md:max-w-none bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-200 cursor-pointer" onclick="previewProperty(<?php echo $property['id']; ?>)" data-view-mode="grid">
+            <div class="property-card w-full max-w-sm md:max-w-none bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-200 cursor-pointer" onclick="previewProperty(<?php echo $property['id']; ?>)" data-view-mode="grid">
             <!-- Property Image -->
             <div class="property-image-container relative h-48 w-full bg-gray-200 dark:bg-gray-700 overflow-hidden flex-shrink-0">
                 <?php 

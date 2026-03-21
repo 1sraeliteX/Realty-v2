@@ -1,0 +1,113 @@
+[19-Mar-2026 13:05:37 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 820
+[19-Mar-2026 13:05:37 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 820
+[19-Mar-2026 13:05:37 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 821
+[19-Mar-2026 13:05:37 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 821
+[19-Mar-2026 13:05:37 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 822
+[19-Mar-2026 13:05:37 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 822
+[19-Mar-2026 13:05:37 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 826
+[19-Mar-2026 13:05:37 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 826
+[19-Mar-2026 13:05:37 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 827
+[19-Mar-2026 13:05:37 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 827
+[19-Mar-2026 13:05:37 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to undefined method ComponentRegistry::isRegistered() in C:\xampp\htdocs\Realty-v2\debugchecker.php:960
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 960
+[19-Mar-2026 13:11:22 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 820
+[19-Mar-2026 13:11:22 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 820
+[19-Mar-2026 13:11:22 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 821
+[19-Mar-2026 13:11:22 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 821
+[19-Mar-2026 13:11:22 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 822
+[19-Mar-2026 13:11:22 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 822
+[19-Mar-2026 13:11:22 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 826
+[19-Mar-2026 13:11:22 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 826
+[19-Mar-2026 13:11:22 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 827
+[19-Mar-2026 13:11:22 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 827
+[19-Mar-2026 13:11:22 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to undefined method ComponentRegistry::isRegistered() in C:\xampp\htdocs\Realty-v2\debugchecker.php:960
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 960
+[19-Mar-2026 13:19:47 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 820
+[19-Mar-2026 13:19:47 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 820
+[19-Mar-2026 13:19:47 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 821
+[19-Mar-2026 13:19:47 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 821
+[19-Mar-2026 13:19:47 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 822
+[19-Mar-2026 13:19:47 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 822
+[19-Mar-2026 13:19:47 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 826
+[19-Mar-2026 13:19:47 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 826
+[19-Mar-2026 13:19:47 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 827
+[19-Mar-2026 13:19:47 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 827
+[19-Mar-2026 13:19:47 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to undefined method ComponentRegistry::isRegistered() in C:\xampp\htdocs\Realty-v2\debugchecker.php:960
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 960
+[19-Mar-2026 14:22:04 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 820
+[19-Mar-2026 14:22:04 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 820
+[19-Mar-2026 14:22:04 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 821
+[19-Mar-2026 14:22:04 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 821
+[19-Mar-2026 14:22:04 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 822
+[19-Mar-2026 14:22:04 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 822
+[19-Mar-2026 14:22:04 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 826
+[19-Mar-2026 14:22:04 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 826
+[19-Mar-2026 14:22:04 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 827
+[19-Mar-2026 14:22:04 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 827
+[19-Mar-2026 14:22:04 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to undefined method ComponentRegistry::isRegistered() in C:\xampp\htdocs\Realty-v2\debugchecker.php:960
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 960
+[19-Mar-2026 14:22:37 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 820
+[19-Mar-2026 14:22:37 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 820
+[19-Mar-2026 14:22:37 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 821
+[19-Mar-2026 14:22:37 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 821
+[19-Mar-2026 14:22:37 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 822
+[19-Mar-2026 14:22:37 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 822
+[19-Mar-2026 14:22:37 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 826
+[19-Mar-2026 14:22:37 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 826
+[19-Mar-2026 14:22:37 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 827
+[19-Mar-2026 14:22:37 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 827
+[19-Mar-2026 14:22:37 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to undefined method ComponentRegistry::isRegistered() in C:\xampp\htdocs\Realty-v2\debugchecker.php:960
+Stack trace:
+#0 Command line code(1): require_once()
+#1 {main}
+  thrown in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 960
+[19-Mar-2026 22:27:45 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 820
+[19-Mar-2026 22:27:45 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 820
+[19-Mar-2026 22:27:45 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 821
+[19-Mar-2026 22:27:45 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 821
+[19-Mar-2026 22:27:45 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 822
+[19-Mar-2026 22:27:45 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 822
+[19-Mar-2026 22:27:45 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 826
+[19-Mar-2026 22:27:45 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 826
+[19-Mar-2026 22:27:45 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 827
+[19-Mar-2026 22:27:45 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 827
+[19-Mar-2026 22:27:45 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to undefined method ComponentRegistry::isRegistered() in C:\xampp\htdocs\Realty-v2\debugchecker.php:960
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 960
+[19-Mar-2026 22:42:44 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 820
+[19-Mar-2026 22:42:44 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 820
+[19-Mar-2026 22:42:44 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 821
+[19-Mar-2026 22:42:44 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 821
+[19-Mar-2026 22:42:44 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 822
+[19-Mar-2026 22:42:44 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 822
+[19-Mar-2026 22:42:44 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 826
+[19-Mar-2026 22:42:44 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 826
+[19-Mar-2026 22:42:44 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 827
+[19-Mar-2026 22:42:44 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 827
+[19-Mar-2026 22:42:44 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to undefined method ComponentRegistry::isRegistered() in C:\xampp\htdocs\Realty-v2\debugchecker.php:960
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 960
+[19-Mar-2026 22:46:54 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 820
+[19-Mar-2026 22:46:54 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 820
+[19-Mar-2026 22:46:54 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 821
+[19-Mar-2026 22:46:54 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 821
+[19-Mar-2026 22:46:54 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 822
+[19-Mar-2026 22:46:54 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 822
+[19-Mar-2026 22:46:54 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 826
+[19-Mar-2026 22:46:54 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 826
+[19-Mar-2026 22:46:54 Europe/Berlin] PHP Warning:  Undefined variable $debugInfo in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 827
+[19-Mar-2026 22:46:54 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 827
+[19-Mar-2026 22:46:54 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to undefined method ComponentRegistry::isRegistered() in C:\xampp\htdocs\Realty-v2\debugchecker.php:960
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Realty-v2\debugchecker.php on line 960

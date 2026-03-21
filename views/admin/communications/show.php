@@ -19,7 +19,7 @@ ob_start();
 
 
 <!-- Communication Header -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-6">
+<div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-6">
     <div class="bg-gradient-to-r from-blue-600 to-blue-700 p-6">
         <div class="flex items-center justify-between">
             <div>
@@ -53,7 +53,7 @@ ob_start();
     <!-- Main Content -->
     <div class="lg:col-span-2 space-y-6">
         <!-- Message Content -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg p-6">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Message Content</h3>
             
             <div class="space-y-4">
@@ -120,7 +120,7 @@ ob_start();
         </div>
 
         <!-- Conversation Thread -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg p-6">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Conversation Thread</h3>
             
             <div class="space-y-4">
@@ -152,7 +152,7 @@ ob_start();
     <!-- Sidebar -->
     <div class="space-y-6">
         <!-- Recipient Information -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg p-6">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Recipient Information</h3>
             <div class="text-center mb-4">
                 <?php echo UIComponents::avatar($communication['recipient_name'], null, 'large'); ?>
@@ -178,7 +178,7 @@ ob_start();
         </div>
 
         <!-- Communication Details -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg p-6">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Communication Details</h3>
             <div class="space-y-3">
                 <div>
@@ -205,7 +205,7 @@ ob_start();
         </div>
 
         <!-- Quick Actions -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg p-6">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
             <div class="space-y-3">
                 <?php echo UIComponents::button('Send Follow-up', 'primary', 'full', '#', 'paper-plane'); ?>

@@ -26,7 +26,7 @@ ob_start();
                 <p class="text-gray-600 dark:text-gray-400 mt-1">View and manage tenant information</p>
             </div>
             <div class="flex space-x-3">
-                <a href="/admin/tenants" class="inline-flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600">
+                <a href="/admin/tenants" class="inline-flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 bg-cream-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600">
                     <i class="fas fa-arrow-left mr-2"></i>
                     Back to Tenants
                 </a>
@@ -43,7 +43,7 @@ ob_start();
         <!-- Main Information -->
         <div class="lg:col-span-2 space-y-6">
             <!-- Personal Details -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6">
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Personal Information</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -70,7 +70,7 @@ ob_start();
             </div>
 
             <!-- Address -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6">
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Address</h2>
                 <div class="space-y-2">
                     <?php if (isset($tenant['address'])): ?>
@@ -85,7 +85,7 @@ ob_start();
             </div>
 
             <!-- Lease Information -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6">
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Lease Information</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
@@ -151,7 +151,7 @@ ob_start();
             </div>
 
             <!-- Payment History -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6">
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Payment History</h2>
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -163,7 +163,7 @@ ob_start();
                                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        <tbody class="bg-cream-50 dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                             <?php foreach ($payment_history as $payment): ?>
                                 <tr>
                                     <td class="px-4 py-3 text-sm text-gray-900 dark:text-white">
@@ -189,7 +189,7 @@ ob_start();
             </div>
 
             <!-- Maintenance Requests -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6">
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Maintenance Requests</h2>
                 <div class="space-y-3">
                     <?php foreach ($maintenanceRequests as $request): ?>
@@ -213,7 +213,7 @@ ob_start();
         <!-- Sidebar -->
         <div class="space-y-6">
             <!-- Quick Actions -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
                 <div class="space-y-3">
                     <a href="/admin/payments/create?tenant_id=<?php echo $tenant['id']; ?>" class="block w-full text-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
@@ -232,7 +232,7 @@ ob_start();
             </div>
 
             <!-- Emergency Contact -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Emergency Contact</h3>
                 <div class="space-y-2">
                     <p class="text-gray-900 dark:text-white"><?php echo htmlspecialchars($tenant['emergency_contact_name'] ?? 'Not provided'); ?></p>
@@ -241,7 +241,7 @@ ob_start();
             </div>
 
             <!-- Next of Kin -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Next of Kin</h3>
                 <div class="space-y-3">
                     <div>
@@ -264,7 +264,7 @@ ob_start();
             </div>
 
             <!-- Profile Picture -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Profile Picture</h3>
                 <div class="space-y-4">
                     <div class="flex items-center space-x-4">
@@ -286,7 +286,7 @@ ob_start();
             </div>
 
             <!-- ID Documents -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Proof of ID</h3>
                 <div class="space-y-4">
                     <?php if (!empty($tenant['id_document'])): ?>

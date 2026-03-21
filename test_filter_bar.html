@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filter Bar Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-7xl mx-auto">
+        <h1 class="text-2xl font-bold mb-6">Filter Bar Overflow Test</h1>
+        
+        <!-- Test the exact filter bar structure -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
+            <form method="GET" action="/admin/payments" class="space-y-4">
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                    <!-- Search -->
+                    <div class="lg:col-span-2">
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-search text-gray-400"></i>
+                            </div>
+                            <input type="text" value="" placeholder="Search tenant name or reference..."
+                                class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        </div>
+                    </div>
+                    
+                    <!-- Status Filter -->
+                    <div class="col-span-1">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+                        <select name="status" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                            <option value="">All Status</option>
+                            <option value="paid">Paid</option>
+                            <option value="pending">Pending</option>
+                            <option value="overdue">Overdue</option>
+                            <option value="failed">Failed</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Date Range -->
+                    <div class="col-span-1 flex-shrink-0">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date Range</label>
+                        <div class="flex items-center gap-2">
+                            <input type="date" name="date_from" value="" 
+                                   class="min-w-[145px] flex-shrink-0 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                            <span class="text-gray-400 text-sm flex-shrink-0">to</span>
+                            <input type="date" name="date_to" value="" 
+                                   class="min-w-[145px] flex-shrink-0 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Filter Actions -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <button type="submit" class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
+                            <i class="fas fa-filter mr-2"></i>
+                            Apply Filters
+                        </button>
+                        <a href="/admin/payments" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
+                            <i class="fas fa-times mr-2"></i>
+                            Clear
+                        </a>
+                    </div>
+                    <span class="text-sm text-gray-500 dark:text-gray-400">
+                        Showing 0 payments
+                    </span>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Viewport size indicators -->
+        <div class="bg-white rounded-lg shadow p-4">
+            <h2 class="font-semibold mb-2">Resize browser to test:</h2>
+            <ul class="space-y-1 text-sm">
+                <li>• <strong>768px and below:</strong> Should stack vertically (1 column)</li>
+                <li>• <strong>769px - 1023px:</strong> Should show 2-2-1 layout (search spans 2 cols)</li>
+                <li>• <strong>1024px and above:</strong> Should show 2-1-1 layout (optimal 4-column grid)</li>
+            </ul>
+            <p class="mt-2 text-green-600 font-semibold">✅ Both date inputs should remain fully visible at all viewport sizes</p>
+        </div>
+    </div>
+</body>
+</html>

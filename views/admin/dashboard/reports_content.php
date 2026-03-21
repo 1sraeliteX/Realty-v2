@@ -66,7 +66,7 @@ function calculateTrend($current, $previous) {
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Comprehensive analytics and insights for your property management business</p>
         </div>
         <div class="mt-4 sm:mt-0 flex space-x-3">
-            <button onclick="exportReports()" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
+            <button onclick="exportReports()" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-cream-50 dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
                 <i class="fas fa-download mr-2"></i>
                 Export
             </button>
@@ -92,7 +92,7 @@ function calculateTrend($current, $previous) {
     ?>
     
     <!-- Properties Report Card -->
-    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+    <div class="bg-cream-50 dark:bg-gray-800 overflow-hidden shadow rounded-lg">
         <div class="p-5">
             <div class="flex items-center">
                 <div class="flex-shrink-0">
@@ -116,7 +116,7 @@ function calculateTrend($current, $previous) {
     </div>
 
     <!-- Units Report Card -->
-    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+    <div class="bg-cream-50 dark:bg-gray-800 overflow-hidden shadow rounded-lg">
         <div class="p-5">
             <div class="flex items-center">
                 <div class="flex-shrink-0">
@@ -140,7 +140,7 @@ function calculateTrend($current, $previous) {
     </div>
 
     <!-- Tenants Report Card -->
-    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+    <div class="bg-cream-50 dark:bg-gray-800 overflow-hidden shadow rounded-lg">
         <div class="p-5">
             <div class="flex items-center">
                 <div class="flex-shrink-0">
@@ -164,7 +164,7 @@ function calculateTrend($current, $previous) {
     </div>
 
     <!-- Revenue Report Card -->
-    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+    <div class="bg-cream-50 dark:bg-gray-800 overflow-hidden shadow rounded-lg">
         <div class="p-5">
             <div class="flex items-center">
                 <div class="flex-shrink-0">
@@ -189,7 +189,7 @@ function calculateTrend($current, $previous) {
 </div>
 
 <!-- Revenue Chart Section -->
-<div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg mb-8">
+<div class="bg-cream-50 dark:bg-gray-800 overflow-hidden shadow rounded-lg mb-8">
     <div class="px-4 py-5 sm:p-6">
         <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">Revenue Trend</h3>
         <div class="mt-5">
@@ -201,7 +201,7 @@ function calculateTrend($current, $previous) {
 <!-- Detailed Reports Grid -->
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
     <!-- Properties Performance -->
-    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+    <div class="bg-cream-50 dark:bg-gray-800 overflow-hidden shadow rounded-lg">
         <div class="px-4 py-5 sm:p-6">
             <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">Properties Performance</h3>
             <div class="space-y-4">
@@ -236,7 +236,7 @@ function calculateTrend($current, $previous) {
     </div>
 
     <!-- Recent Activities -->
-    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+    <div class="bg-cream-50 dark:bg-gray-800 overflow-hidden shadow rounded-lg">
         <div class="px-4 py-5 sm:p-6">
             <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">Recent Activities</h3>
             <div class="space-y-4">
@@ -268,7 +268,7 @@ function calculateTrend($current, $previous) {
 <!-- Maintenance & Applications Overview -->
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
     <!-- Maintenance Requests -->
-    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+    <div class="bg-cream-50 dark:bg-gray-800 overflow-hidden shadow rounded-lg">
         <div class="px-4 py-5 sm:p-6">
             <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">Maintenance Requests</h3>
             <div class="space-y-4">
@@ -295,7 +295,7 @@ function calculateTrend($current, $previous) {
     </div>
 
     <!-- New Applications -->
-    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+    <div class="bg-cream-50 dark:bg-gray-800 overflow-hidden shadow rounded-lg">
         <div class="px-4 py-5 sm:p-6">
             <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">New Applications</h3>
             <div class="space-y-4">

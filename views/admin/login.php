@@ -25,7 +25,7 @@ ViewManager::set('title', 'Admin Login - Cornerstone Realty');
         </div>
 
         <!-- Login Form -->
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-8">
+        <div class="bg-cream-50 dark:bg-gray-800 rounded-xl shadow-xl p-8">
             <form id="loginForm" class="space-y-6">
                 <!-- Email Field -->
                 <div>

@@ -46,7 +46,7 @@ ob_start();
         <div class="flex flex-col sm:flex-row gap-4 mb-6">
             <div class="flex-1">
                 <div class="relative">
-                    <input type="text" placeholder="Search documents..." class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                    <input type="text" placeholder="Search documents..." class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                     <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                 </div>
             </div>
@@ -93,7 +93,7 @@ ob_start();
                         </th>
                     </tr>
                 </thead>
-                <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                <tbody class="bg-cream-50 dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
     ';
 
     if (!empty($documents)) {
@@ -170,12 +170,12 @@ ob_start();
         </div>
 
         <!-- Pagination -->
-        <div class="flex items-center justify-between px-4 py-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 sm:px-6">
+        <div class="flex items-center justify-between px-4 py-3 bg-cream-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 sm:px-6">
             <div class="flex justify-between sm:hidden">
-                <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">
+                <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-cream-50 hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">
                     Previous
                 </a>
-                <a href="#" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">
+                <a href="#" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-cream-50 hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">
                     Next
                 </a>
             </div>
@@ -187,13 +187,13 @@ ob_start();
                 </div>
                 <div>
                     <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                        <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">
+                        <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-cream-50 text-sm font-medium text-gray-500 hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">
                             <i class="fas fa-chevron-left"></i>
                         </a>
                         <a href="#" aria-current="page" class="relative inline-flex items-center px-4 py-2 border border-primary-500 bg-primary-50 text-sm font-medium text-primary-600 dark:bg-primary-900 dark:border-primary-400 dark:text-primary-300">
                             1
                         </a>
-                        <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">
+                        <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-cream-50 text-sm font-medium text-gray-500 hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">
                             <i class="fas fa-chevron-right"></i>
                         </a>
                     </nav>
@@ -206,7 +206,7 @@ ob_start();
         $documentsContent,
         null,
         null,
-        'bg-white dark:bg-gray-800 rounded-lg shadow'
+        'bg-cream-50 dark:bg-gray-800 rounded-lg shadow'
     );
     ?>
 </div>
@@ -252,7 +252,7 @@ ob_start();
         </div>',
         '<h3 class="text-lg font-medium text-gray-900 dark:text-white">Quick Actions</h3>',
         null,
-        'bg-white dark:bg-gray-800 rounded-lg shadow'
+        'bg-cream-50 dark:bg-gray-800 rounded-lg shadow'
     );
     ?>
 
@@ -283,7 +283,7 @@ ob_start();
         </div>',
         '<h3 class="text-lg font-medium text-gray-900 dark:text-white">Storage Overview</h3>',
         null,
-        'bg-white dark:bg-gray-800 rounded-lg shadow'
+        'bg-cream-50 dark:bg-gray-800 rounded-lg shadow'
     );
     ?>
 
@@ -320,7 +320,7 @@ ob_start();
         </div>',
         '<h3 class="text-lg font-medium text-gray-900 dark:text-white">System Status</h3>',
         null,
-        'bg-white dark:bg-gray-800 rounded-lg shadow'
+        'bg-cream-50 dark:bg-gray-800 rounded-lg shadow'
     );
     ?>
 </div>

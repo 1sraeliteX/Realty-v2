@@ -90,7 +90,7 @@ if (!$admin) {
     }
     ?>
     <!-- Step 1: Basic Information -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-8">
+    <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-8">
         <div class="p-6">
             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-6 flex items-center">
                 <i class="fas fa-info-circle mr-2 text-primary-600"></i>
@@ -162,7 +162,7 @@ if (!$admin) {
     </div>
 
     <!-- Step 2: Property Details -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-8">
+    <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-8">
         <div class="p-6">
             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-6 flex items-center">
                 <i class="fas fa-building mr-2 text-primary-600"></i>
@@ -204,7 +204,7 @@ if (!$admin) {
                     id="description" 
                     name="description" 
                     rows="4"
-                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="Describe the property, features, location benefits, etc."
                 ></textarea>
             </div>
@@ -217,51 +217,51 @@ if (!$admin) {
                 </label>
                 <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
                     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        <label class="flex items-center p-3 bg-white dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
+                        <label class="flex items-center p-3 bg-cream-50 dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
                             <input type="checkbox" name="amenities[]" value="Swimming Pool" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
                             <span class="ml-3 text-sm text-gray-700 dark:text-gray-300 font-medium">Swimming Pool</span>
                         </label>
-                        <label class="flex items-center p-3 bg-white dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
+                        <label class="flex items-center p-3 bg-cream-50 dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
                             <input type="checkbox" name="amenities[]" value="Fitness Center" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
                             <span class="ml-3 text-sm text-gray-700 dark:text-gray-300 font-medium">Fitness Center</span>
                         </label>
-                        <label class="flex items-center p-3 bg-white dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
+                        <label class="flex items-center p-3 bg-cream-50 dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
                             <input type="checkbox" name="amenities[]" value="Secured Parking" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
                             <span class="ml-3 text-sm text-gray-700 dark:text-gray-300 font-medium">Secured Parking</span>
                         </label>
-                        <label class="flex items-center p-3 bg-white dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
+                        <label class="flex items-center p-3 bg-cream-50 dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
                             <input type="checkbox" name="amenities[]" value="Elevator" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
                             <span class="ml-3 text-sm text-gray-700 dark:text-gray-300 font-medium">Elevator</span>
                         </label>
-                        <label class="flex items-center p-3 bg-white dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
+                        <label class="flex items-center p-3 bg-cream-50 dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
                             <input type="checkbox" name="amenities[]" value="Laundry Room" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
                             <span class="ml-3 text-sm text-gray-700 dark:text-gray-300 font-medium">Laundry Room</span>
                         </label>
-                        <label class="flex items-center p-3 bg-white dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
+                        <label class="flex items-center p-3 bg-cream-50 dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
                             <input type="checkbox" name="amenities[]" value="Pet Friendly" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
                             <span class="ml-3 text-sm text-gray-700 dark:text-gray-300 font-medium">Pet Friendly</span>
                         </label>
-                        <label class="flex items-center p-3 bg-white dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
+                        <label class="flex items-center p-3 bg-cream-50 dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
                             <input type="checkbox" name="amenities[]" value="Air Conditioning" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
                             <span class="ml-3 text-sm text-gray-700 dark:text-gray-300 font-medium">Air Conditioning</span>
                         </label>
-                        <label class="flex items-center p-3 bg-white dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
+                        <label class="flex items-center p-3 bg-cream-50 dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
                             <input type="checkbox" name="amenities[]" value="Heating" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
                             <span class="ml-3 text-sm text-gray-700 dark:text-gray-300 font-medium">Heating</span>
                         </label>
-                        <label class="flex items-center p-3 bg-white dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
+                        <label class="flex items-center p-3 bg-cream-50 dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
                             <input type="checkbox" name="amenities[]" value="Balcony" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
                             <span class="ml-3 text-sm text-gray-700 dark:text-gray-300 font-medium">Balcony</span>
                         </label>
-                        <label class="flex items-center p-3 bg-white dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
+                        <label class="flex items-center p-3 bg-cream-50 dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
                             <input type="checkbox" name="amenities[]" value="Storage" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
                             <span class="ml-3 text-sm text-gray-700 dark:text-gray-300 font-medium">Storage</span>
                         </label>
-                        <label class="flex items-center p-3 bg-white dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
+                        <label class="flex items-center p-3 bg-cream-50 dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
                             <input type="checkbox" name="amenities[]" value="Garden" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
                             <span class="ml-3 text-sm text-gray-700 dark:text-gray-300 font-medium">Garden</span>
                         </label>
-                        <label class="flex items-center p-3 bg-white dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
+                        <label class="flex items-center p-3 bg-cream-50 dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500 hover:border-primary-500 dark:hover:border-primary-400 transition-colors cursor-pointer">
                             <input type="checkbox" name="amenities[]" value="Security System" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
                             <span class="ml-3 text-sm text-gray-700 dark:text-gray-300 font-medium">Security System</span>
                         </label>
@@ -273,7 +273,7 @@ if (!$admin) {
     </div>
 
     <!-- Step 3: Revenue and Expenses (Optional) -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-8">
+    <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-8">
         <div class="p-6">
             <div class="flex items-center justify-between mb-6">
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white flex items-center">
@@ -311,7 +311,7 @@ if (!$admin) {
     </div>
 
     <!-- Rent Record Information Section -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-8">
+    <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-8">
         <div class="p-6">
             <div class="flex items-center justify-between mb-6">
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white flex items-center">
@@ -346,7 +346,7 @@ if (!$admin) {
                                 min="0"
                                 step="0.01"
                                 placeholder="0.00"
-                                class="w-full pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                class="w-full pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                             >
                         </div>
                     </div>
@@ -359,7 +359,7 @@ if (!$admin) {
                         <select 
                             id="rent_frequency" 
                             name="rent_frequency" 
-                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         >
                         <option value="monthly">Monthly</option>
                         <option value="quarterly">Quarterly</option>
@@ -383,7 +383,7 @@ if (!$admin) {
                             min="0"
                             step="0.01"
                             placeholder="0.00"
-                            class="w-full pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            class="w-full pl-8 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         >
                     </div>
                 </div>
@@ -392,7 +392,7 @@ if (!$admin) {
     </div>
 
     <!-- Step 4: Images -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-8">
+    <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-8">
         <div class="p-6">
             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-6 flex items-center">
                 <i class="fas fa-images mr-2 text-primary-600"></i>
@@ -421,7 +421,7 @@ if (!$admin) {
 
     <!-- Form Actions -->
     <div class="flex items-center justify-end space-x-4 mx-4 md:mx-6 my-6">
-        <a href="/admin/dashboard/properties" class="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
+        <a href="/admin/dashboard/properties" class="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 bg-cream-50 dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
             Cancel
         </a>
         <button type="submit" id="saveBtn" class="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">

@@ -83,7 +83,7 @@ $isDashboardReports = strpos($currentPath, '/admin/dashboard/reports') === 0;
 </head>
 <body class="bg-gray-50 dark:bg-gray-900">
     <!-- Top Navigation -->
-    <nav class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+    <nav class="bg-cream-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
@@ -132,7 +132,7 @@ $isDashboardReports = strpos($currentPath, '/admin/dashboard/reports') === 0;
                         </button>
                         
                         <!-- Dropdown Menu -->
-                        <div id="profileDropdown" class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
+                        <div id="profileDropdown" class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-cream-50 dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
                             <div class="py-1">
                                 <a href="/admin/profile" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Your Profile</a>
                                 <a href="/admin/settings" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Settings</a>
@@ -224,7 +224,7 @@ $isDashboardReports = strpos($currentPath, '/admin/dashboard/reports') === 0;
                     <!-- Report Stats Cards -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                         <!-- Total Properties Card -->
-                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+                        <div class="bg-cream-50 dark:bg-gray-800 overflow-hidden shadow rounded-lg">
                             <div class="p-5">
                                 <div class="flex items-center">
                                     <div class="flex-shrink-0 bg-primary-500 rounded-md p-3">
@@ -250,7 +250,7 @@ $isDashboardReports = strpos($currentPath, '/admin/dashboard/reports') === 0;
                         </div>
 
                         <!-- Total Units Card -->
-                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+                        <div class="bg-cream-50 dark:bg-gray-800 overflow-hidden shadow rounded-lg">
                             <div class="p-5">
                                 <div class="flex items-center">
                                     <div class="flex-shrink-0 bg-blue-500 rounded-md p-3">
@@ -276,7 +276,7 @@ $isDashboardReports = strpos($currentPath, '/admin/dashboard/reports') === 0;
                         </div>
 
                         <!-- Active Tenants Card -->
-                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+                        <div class="bg-cream-50 dark:bg-gray-800 overflow-hidden shadow rounded-lg">
                             <div class="p-5">
                                 <div class="flex items-center">
                                     <div class="flex-shrink-0 bg-green-500 rounded-md p-3">
@@ -302,7 +302,7 @@ $isDashboardReports = strpos($currentPath, '/admin/dashboard/reports') === 0;
                         </div>
 
                         <!-- Occupancy Rate Card -->
-                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+                        <div class="bg-cream-50 dark:bg-gray-800 overflow-hidden shadow rounded-lg">
                             <div class="p-5">
                                 <div class="flex items-center">
                                     <div class="flex-shrink-0 bg-yellow-500 rounded-md p-3">
@@ -329,7 +329,7 @@ $isDashboardReports = strpos($currentPath, '/admin/dashboard/reports') === 0;
                     </div>
 
                     <!-- Revenue Chart -->
-                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg mb-8">
+                    <div class="bg-cream-50 dark:bg-gray-800 overflow-hidden shadow rounded-lg mb-8">
                         <div class="p-6">
                             <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Revenue Overview</h2>
                             <div class="h-64">
@@ -339,7 +339,7 @@ $isDashboardReports = strpos($currentPath, '/admin/dashboard/reports') === 0;
                     </div>
 
                     <!-- Recent Activities -->
-                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg mb-8">
+                    <div class="bg-cream-50 dark:bg-gray-800 overflow-hidden shadow rounded-lg mb-8">
                         <div class="p-6">
                             <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Recent Activities</h2>
                             <div class="space-y-4">
@@ -365,7 +365,7 @@ $isDashboardReports = strpos($currentPath, '/admin/dashboard/reports') === 0;
                     </div>
 
                     <!-- Maintenance Requests -->
-                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg mb-8">
+                    <div class="bg-cream-50 dark:bg-gray-800 overflow-hidden shadow rounded-lg mb-8">
                         <div class="p-6">
                             <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Maintenance Requests</h2>
                             <div class="space-y-4">
@@ -392,7 +392,7 @@ $isDashboardReports = strpos($currentPath, '/admin/dashboard/reports') === 0;
                     </div>
 
                     <!-- New Applications -->
-                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg mb-8">
+                    <div class="bg-cream-50 dark:bg-gray-800 overflow-hidden shadow rounded-lg mb-8">
                         <div class="p-6">
                             <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">New Applications</h2>
                             <div class="space-y-4">
@@ -417,7 +417,7 @@ $isDashboardReports = strpos($currentPath, '/admin/dashboard/reports') === 0;
                     </div>
 
                     <!-- Upcoming Tasks -->
-                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+                    <div class="bg-cream-50 dark:bg-gray-800 overflow-hidden shadow rounded-lg">
                         <div class="p-6">
                             <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Upcoming Tasks</h2>
                             <div class="space-y-4">

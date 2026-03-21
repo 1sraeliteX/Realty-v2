@@ -34,7 +34,7 @@ ob_start();
 </div>
 
 <!-- Actions Bar -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 mb-6">
+<div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg p-4 mb-6">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div class="flex items-center space-x-3 mb-3 sm:mb-0">
             <?php echo UIComponents::button('Add Room', 'primary', 'medium', '/admin/rooms/create', 'plus'); ?>
@@ -48,7 +48,7 @@ ob_start();
                     type="text" 
                     id="searchRooms"
                     placeholder="Search rooms..." 
-                    class="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                    class="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
                     onkeyup="searchRooms(this.value)"
                 >
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -56,7 +56,7 @@ ob_start();
                 </div>
             </div>
             
-            <select id="typeFilter" onchange="filterRooms()" class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+            <select id="typeFilter" onchange="filterRooms()" class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
                 <option value="">All Types</option>
                 <option value="bedroom">Bedroom</option>
                 <option value="living">Living Room</option>
@@ -65,7 +65,7 @@ ob_start();
                 <option value="dining">Dining Room</option>
             </select>
             
-            <select id="statusFilter" onchange="filterRooms()" class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+            <select id="statusFilter" onchange="filterRooms()" class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
                 <option value="">All Statuses</option>
                 <option value="occupied">Occupied</option>
                 <option value="vacant">Vacant</option>
@@ -78,7 +78,7 @@ ob_start();
 <!-- Rooms Grid -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="roomsGrid">
     <?php foreach ($rooms as $room): ?>
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow" data-type="<?php echo $room['type']; ?>" data-status="<?php echo $room['status']; ?>">
+        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow" data-type="<?php echo $room['type']; ?>" data-status="<?php echo $room['status']; ?>">
             <!-- Room Header -->
             <div class="bg-gradient-to-r from-indigo-500 to-indigo-600 p-4">
                 <div class="flex items-center justify-between">
@@ -273,10 +273,10 @@ function exportRooms() {
 
 // Add quick actions button to header
 document.addEventListener('DOMContentLoaded', function() {
-    const headerActions = document.querySelector('.bg-white.dark\\:bg-gray-800.rounded-lg.shadow-lg.p-4.mb-6 .flex.flex-col.sm\\:flex-row.sm\\:items-center.sm\\:justify-between .flex.items-center.space-x-3.mb-3.sm\\:mb-0');
+    const headerActions = document.querySelector('.bg-cream-50.dark\\:bg-gray-800.rounded-lg.shadow-lg.p-4.mb-6 .flex.flex-col.sm\\:flex-row.sm\\:items-center.sm\\:justify-between .flex.items-center.space-x-3.mb-3.sm\\:mb-0');
     if (headerActions) {
         const quickActionsBtn = document.createElement('button');
-        quickActionsBtn.className = 'inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700';
+        quickActionsBtn.className = 'inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-cream-50 dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700';
         quickActionsBtn.innerHTML = '<i class="fas fa-bolt mr-2"></i>Quick Actions';
         quickActionsBtn.onclick = () => document.getElementById('quickActionsModal').classList.remove('hidden');
         headerActions.appendChild(quickActionsBtn);

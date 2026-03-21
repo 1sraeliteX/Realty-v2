@@ -95,7 +95,7 @@ $settings = ViewManager::get('settings', [
 <div class="space-y-6">
     <!-- General Settings -->
     <div id="general-panel" class="tab-panel">
-        <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+        <div class="bg-cream-50 dark:bg-gray-800 shadow rounded-lg">
             <div class="px-4 py-5 sm:p-6">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-6">General Settings</h3>
                 
@@ -154,7 +154,7 @@ $settings = ViewManager::get('settings', [
 
     <!-- Email Settings -->
     <div id="email-panel" class="tab-panel hidden">
-        <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+        <div class="bg-cream-50 dark:bg-gray-800 shadow rounded-lg">
             <div class="px-4 py-5 sm:p-6">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-6">Email Configuration</h3>
                 
@@ -213,7 +213,7 @@ $settings = ViewManager::get('settings', [
 
     <!-- Appearance Settings -->
     <div id="appearance-panel" class="tab-panel hidden">
-        <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+        <div class="bg-cream-50 dark:bg-gray-800 shadow rounded-lg">
             <div class="px-4 py-5 sm:p-6">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-6">Appearance</h3>
                 
@@ -239,7 +239,7 @@ $settings = ViewManager::get('settings', [
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Company Logo</label>
                             <div class="flex items-center space-x-3">
                                 <img src="<?php echo htmlspecialchars($settings['appearance']['company_logo']); ?>" alt="Company Logo" class="h-12 w-12 rounded-lg border border-gray-300 dark:border-gray-600">
-                                <button type="button" class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                <button type="button" class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-cream-50 dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                                     Change Logo
                                 </button>
                             </div>
@@ -249,7 +249,7 @@ $settings = ViewManager::get('settings', [
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Favicon</label>
                             <div class="flex items-center space-x-3">
                                 <img src="<?php echo htmlspecialchars($settings['appearance']['favicon']); ?>" alt="Favicon" class="h-8 w-8 rounded border border-gray-300 dark:border-gray-600">
-                                <button type="button" class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                <button type="button" class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-cream-50 dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                                     Change Favicon
                                 </button>
                             </div>
@@ -262,7 +262,7 @@ $settings = ViewManager::get('settings', [
 
     <!-- Security Settings -->
     <div id="security-panel" class="tab-panel hidden">
-        <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+        <div class="bg-cream-50 dark:bg-gray-800 shadow rounded-lg">
             <div class="px-4 py-5 sm:p-6">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-6">Security Settings</h3>
                 

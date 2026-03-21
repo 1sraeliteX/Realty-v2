@@ -30,7 +30,7 @@ $stats      = ViewManager::get('stats', []);
             ['label'=>'This Month','key'=>'this_month','icon'=>'fa-calendar','color'=>'blue','prefix'=>'₦'],
         ];
         foreach ($statCards as $sc): ?>
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-5">
+        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-5">
             <div class="flex items-center gap-3">
                 <div class="p-2 bg-<?php echo $sc['color']; ?>-100 dark:bg-<?php echo $sc['color']; ?>-900 rounded-lg">
                     <i class="fas <?php echo $sc['icon']; ?> text-<?php echo $sc['color']; ?>-600 dark:text-<?php echo $sc['color']; ?>-400"></i>
@@ -49,17 +49,17 @@ $stats      = ViewManager::get('stats', []);
     </div>
 
     <!-- Payments Table -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+    <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow overflow-hidden">
         <!-- Filter bar -->
         <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row gap-3">
             <div class="flex-1 relative">
                 <i class="fas fa-search absolute left-3 top-2.5 text-gray-400 text-sm"></i>
                 <input type="text" id="paymentSearch" placeholder="Search payments..."
                        oninput="filterPayments(this.value)"
-                       class="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                       class="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
             </div>
             <select id="statusFilter" onchange="filterPayments()"
-                    class="w-36 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                    class="w-36 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-cream-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
                 <option value="">All Status</option>
                 <option value="paid">Paid</option>
                 <option value="pending">Pending</option>
@@ -81,7 +81,7 @@ $stats      = ViewManager::get('stats', []);
                         <?php endforeach; ?>
                     </tr>
                 </thead>
-                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700" id="paymentsTableBody">
+                <tbody class="bg-cream-50 dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700" id="paymentsTableBody">
                     <?php if (empty($payments)): ?>
                     <tr>
                         <td colspan="8" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">

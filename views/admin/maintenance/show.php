@@ -19,7 +19,7 @@ ob_start();
 
 
 <!-- Maintenance Header -->
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-6">
+<div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-6">
     <div class="bg-gradient-to-r from-orange-600 to-orange-700 p-6">
         <div class="flex items-center justify-between">
             <div>
@@ -53,7 +53,7 @@ ob_start();
     <!-- Main Content -->
     <div class="lg:col-span-2 space-y-6">
         <!-- Request Details -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg p-6">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Request Details</h3>
             
             <div class="space-y-4">
@@ -98,7 +98,7 @@ ob_start();
         </div>
 
         <!-- Materials Needed -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg p-6">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Materials Needed</h3>
             
             <div class="overflow-x-auto">
@@ -111,7 +111,7 @@ ob_start();
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody class="bg-cream-50 dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                         <?php foreach ($materials as $material): ?>
                             <tr>
                                 <td class="px-4 py-3 text-sm text-gray-900 dark:text-white"><?php echo htmlspecialchars($material['name']); ?></td>
@@ -132,7 +132,7 @@ ob_start();
         </div>
 
         <!-- Updates Timeline -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg p-6">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Updates Timeline</h3>
             
             <div class="space-y-4">
@@ -159,7 +159,7 @@ ob_start();
     <!-- Sidebar -->
     <div class="space-y-6">
         <!-- Tenant Information -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg p-6">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Tenant Information</h3>
             <div class="text-center mb-4">
                 <?php echo UIComponents::avatar($maintenance['tenant_name'], null, 'large'); ?>
@@ -190,7 +190,7 @@ ob_start();
         </div>
 
         <!-- Assignment Information -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg p-6">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Assignment Information</h3>
             <div class="space-y-3">
                 <div>
@@ -211,7 +211,7 @@ ob_start();
         </div>
 
         <!-- Quick Actions -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow-lg p-6">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
             <div class="space-y-3">
                 <?php echo UIComponents::button('Schedule Visit', 'info', 'full', '#', 'calendar'); ?>

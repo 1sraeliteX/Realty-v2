@@ -25,7 +25,7 @@ $reports = ViewManager::get('reports', []);
             ['title'=>'Maintenance Report','desc'=>'Outstanding and completed maintenance','icon'=>'fa-tools','color'=>'yellow','url'=>'/admin/reports/create?type=maintenance'],
         ];
         foreach ($quickReports as $r): ?>
-        <a href="<?php echo $r['url']; ?>" class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 hover:shadow-md transition-shadow border border-gray-200 dark:border-gray-700 block">
+        <a href="<?php echo $r['url']; ?>" class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6 hover:shadow-md transition-shadow border border-gray-200 dark:border-gray-700 block">
             <div class="flex items-start gap-4">
                 <div class="p-3 bg-<?php echo $r['color']; ?>-100 dark:bg-<?php echo $r['color']; ?>-900 rounded-lg flex-shrink-0">
                     <i class="fas <?php echo $r['icon']; ?> text-<?php echo $r['color']; ?>-600 text-xl"></i>
@@ -44,7 +44,7 @@ $reports = ViewManager::get('reports', []);
     </div>
 
     <!-- Past reports -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+    <div class="bg-cream-50 dark:bg-gray-800 rounded-lg shadow p-6">
         <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Recent Reports</h2>
         <?php if (empty($reports)): ?>
         <div class="text-center py-8 text-gray-400 dark:text-gray-500">
