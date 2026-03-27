@@ -1,182 +1,174 @@
 <?php
-// Initialize framework (anti-scattering compliant)
+// Initialize anti-scattering system
 require_once __DIR__ . '/../../../config/bootstrap.php';
+
+// Set page data for layout
+ViewManager::set('title', 'Calculator');
+ViewManager::set('user', [
+    'name' => 'Admin User',
+    'email' => 'admin@example.com'
+]);
+
+// Set the main content
+ob_start();
 ?>
 
-<div class="min-h-screen flex flex-col">
-    <!-- Top Navigation -->
-    <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <!-- Logo and Title -->
-                <div class="flex items-center">
-                    <button onclick="history.back()" class="mr-4 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                        <i class="fas fa-arrow-left text-gray-600 dark:text-gray-400"></i>
-                    </button>
-                    <h1 class="text-xl font-semibold text-gray-900 dark:text-white">
-                        <i class="fas fa-calculator mr-2 text-primary-600"></i>
-                        Calculator
-                    </h1>
-                </div>
-
-                <!-- Right Actions -->
-                <div class="flex items-center space-x-4">
-                    <button onclick="openCalculator()" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                        <i class="fas fa-calculator mr-2"></i>
-                        Basic Calculator
-                    </button>
-                    <a href="/admin/dashboard" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
-                        <i class="fas fa-home"></i>
-                    </a>
-                </div>
-            </div>
+<!-- Calculator Suite Header -->
+<div class="mb-8">
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
+                <i class="fas fa-calculator mr-3 text-primary-600"></i>
+                Property Management Calculator Suite
+            </h1>
+            <p class="text-gray-600 dark:text-gray-400 mt-2">
+                Comprehensive calculators for property-related calculations, mortgage planning, and investment analysis.
+            </p>
         </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="flex-1">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <!-- Page Header -->
-            <div class="mb-8">
-                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                    Property Management Calculator Suite
-                </h2>
-                <p class="text-gray-600 dark:text-gray-400 mb-4">
-                    Comprehensive calculators for property-related calculations, mortgage planning, and investment analysis.
-                </p>
-                
-                </div>
-
-            <!-- Calculator Features Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                <!-- Basic Calculator Card -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                    <div class="flex items-center mb-4">
-                        <div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                            <i class="fas fa-calculator text-blue-600 dark:text-blue-400 text-xl"></i>
-                        </div>
-                        <h3 class="ml-3 text-lg font-semibold text-gray-900 dark:text-white">Basic Calculator</h3>
-                    </div>
-                    <p class="text-gray-600 dark:text-gray-400 mb-4">
-                        Standard arithmetic operations with memory functions and percentage calculations.
-                    </p>
-                    <button onclick="openCalculator()" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                        <i class="fas fa-external-link-alt mr-2"></i>
-                        Open Calculator
-                    </button>
-                </div>
-
-                <!-- Mortgage Calculator Card -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                    <div class="flex items-center mb-4">
-                        <div class="p-3 bg-green-100 dark:bg-green-900 rounded-lg">
-                            <i class="fas fa-home text-green-600 dark:text-green-400 text-xl"></i>
-                        </div>
-                        <h3 class="ml-3 text-lg font-semibold text-gray-900 dark:text-white">Mortgage Calculator</h3>
-                    </div>
-                    <p class="text-gray-600 dark:text-gray-400 mb-4">
-                        Calculate monthly mortgage payments, interest, and amortization schedules.
-                    </p>
-                    <button onclick="openMortgageCalculator()" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                        <i class="fas fa-external-link-alt mr-2"></i>
-                        Open Calculator
-                    </button>
-                </div>
-
-                <!-- ROI Calculator Card -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                    <div class="flex items-center mb-4">
-                        <div class="p-3 bg-purple-100 dark:bg-purple-900 rounded-lg">
-                            <i class="fas fa-chart-line text-purple-600 dark:text-purple-400 text-xl"></i>
-                        </div>
-                        <h3 class="ml-3 text-lg font-semibold text-gray-900 dark:text-white">ROI Calculator</h3>
-                    </div>
-                    <p class="text-gray-600 dark:text-gray-400 mb-4">
-                        Calculate return on investment for rental properties and portfolio analysis.
-                    </p>
-                    <button onclick="openROICalculator()" class="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                        <i class="fas fa-external-link-alt mr-2"></i>
-                        Open Calculator
-                    </button>
-                </div>
-            </div>
-
-            <!-- Quick Tips Section -->
-            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
-                <h3 class="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-4">
-                    <i class="fas fa-lightbulb mr-2"></i>
-                    Calculator Features
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="space-y-2">
-                        <h4 class="font-medium text-blue-800 dark:text-blue-200">Basic Calculator</h4>
-                        <ul class="text-sm text-blue-700 dark:text-blue-300 space-y-1">
-                            <li><i class="fas fa-check mr-2"></i>Standard arithmetic operations</li>
-                            <li><i class="fas fa-check mr-2"></i>Memory functions (M+, M-, MR, MC)</li>
-                            <li><i class="fas fa-check mr-2"></i>Percentage calculations</li>
-                            <li><i class="fas fa-check mr-2"></i>Keyboard support (0-9, +, -, *, /)</li>
-                        </ul>
-                    </div>
-                    <div class="space-y-2">
-                        <h4 class="font-medium text-blue-800 dark:text-blue-200">Mortgage Calculator</h4>
-                        <ul class="text-sm text-blue-700 dark:text-blue-300 space-y-1">
-                            <li><i class="fas fa-check mr-2"></i>Monthly payment calculations</li>
-                            <li><i class="fas fa-check mr-2"></i>Interest and total cost analysis</li>
-                            <li><i class="fas fa-check mr-2"></i>Amortization schedule</li>
-                            <li><i class="fas fa-check mr-2"></i>Down payment percentage calculator</li>
-                        </ul>
-                    </div>
-                    <div class="space-y-2">
-                        <h4 class="font-medium text-blue-800 dark:text-blue-200">ROI Calculator</h4>
-                        <ul class="text-sm text-blue-700 dark:text-blue-300 space-y-1">
-                            <li><i class="fas fa-check mr-2"></i>Return on investment analysis</li>
-                            <li><i class="fas fa-check mr-2"></i>Cash flow calculations</li>
-                            <li><i class="fas fa-check mr-2"></i>Cap rate and cash-on-cash return</li>
-                            <li><i class="fas fa-check mr-2"></i>Income and expense breakdown</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Instructions Section -->
-            <div class="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                    <i class="fas fa-keyboard mr-2"></i>
-                    How to Use
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="text-center">
-                        <div class="bg-blue-100 dark:bg-blue-900 rounded-lg p-4 mb-3">
-                            <i class="fas fa-calculator text-3xl text-blue-600 dark:text-blue-400"></i>
-                        </div>
-                        <h4 class="font-medium text-gray-900 dark:text-white mb-2">Basic Calculator</h4>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">
-                            Click "Open Calculator" or use keyboard for quick calculations. Perfect for everyday math operations.
-                        </p>
-                    </div>
-                    <div class="text-center">
-                        <div class="bg-green-100 dark:bg-green-900 rounded-lg p-4 mb-3">
-                            <i class="fas fa-home text-3xl text-green-600 dark:text-green-400"></i>
-                        </div>
-                        <h4 class="font-medium text-gray-900 dark:text-white mb-2">Mortgage Calculator</h4>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">
-                            Enter property details, loan terms, and interest rates to calculate monthly payments and total costs.
-                        </p>
-                    </div>
-                    <div class="text-center">
-                        <div class="bg-purple-100 dark:bg-purple-900 rounded-lg p-4 mb-3">
-                            <i class="fas fa-chart-line text-3xl text-purple-600 dark:text-purple-400"></i>
-                        </div>
-                        <h4 class="font-medium text-gray-900 dark:text-white mb-2">ROI Calculator</h4>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">
-                            Input property costs, rental income, and expenses to analyze investment returns and profitability.
-                        </p>
-                    </div>
-                </div>
-            </div>
+        <div class="flex items-center space-x-3">
+            <button onclick="openCalculator()" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center">
+                <i class="fas fa-calculator mr-2"></i>
+                Quick Calculator
+            </button>
         </div>
-    </main>
+    </div>
 </div>
+
+<!-- Calculator Features Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+    <!-- Basic Calculator Card -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow">
+        <div class="flex items-center mb-4">
+            <div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                <i class="fas fa-calculator text-blue-600 dark:text-blue-400 text-xl"></i>
+            </div>
+            <h3 class="ml-3 text-lg font-semibold text-gray-900 dark:text-white">Basic Calculator</h3>
+        </div>
+        <p class="text-gray-600 dark:text-gray-400 mb-4">
+            Standard arithmetic operations with memory functions and percentage calculations.
+        </p>
+        <button onclick="openCalculator()" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+            <i class="fas fa-external-link-alt mr-2"></i>
+            Open Calculator
+        </button>
+    </div>
+
+    <!-- Mortgage Calculator Card -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow">
+        <div class="flex items-center mb-4">
+            <div class="p-3 bg-green-100 dark:bg-green-900 rounded-lg">
+                <i class="fas fa-home text-green-600 dark:text-green-400 text-xl"></i>
+            </div>
+            <h3 class="ml-3 text-lg font-semibold text-gray-900 dark:text-white">Mortgage Calculator</h3>
+        </div>
+        <p class="text-gray-600 dark:text-gray-400 mb-4">
+            Calculate monthly mortgage payments, interest, and amortization schedules.
+        </p>
+        <button onclick="openMortgageCalculator()" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+            <i class="fas fa-external-link-alt mr-2"></i>
+            Open Calculator
+        </button>
+    </div>
+
+    <!-- ROI Calculator Card -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow">
+        <div class="flex items-center mb-4">
+            <div class="p-3 bg-purple-100 dark:bg-purple-900 rounded-lg">
+                <i class="fas fa-chart-line text-purple-600 dark:text-purple-400 text-xl"></i>
+            </div>
+            <h3 class="ml-3 text-lg font-semibold text-gray-900 dark:text-white">ROI Calculator</h3>
+        </div>
+        <p class="text-gray-600 dark:text-gray-400 mb-4">
+            Calculate return on investment for rental properties and portfolio analysis.
+        </p>
+        <button onclick="openROICalculator()" class="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+            <i class="fas fa-external-link-alt mr-2"></i>
+            Open Calculator
+        </button>
+    </div>
+</div>
+
+<!-- Quick Tips Section -->
+<div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6 mb-8">
+    <h3 class="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-4 flex items-center">
+        <i class="fas fa-lightbulb mr-2"></i>
+        Calculator Features
+    </h3>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="space-y-2">
+            <h4 class="font-medium text-blue-800 dark:text-blue-200">Basic Calculator</h4>
+            <ul class="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+                <li><i class="fas fa-check mr-2"></i>Standard arithmetic operations</li>
+                <li><i class="fas fa-check mr-2"></i>Memory functions (M+, M-, MR, MC)</li>
+                <li><i class="fas fa-check mr-2"></i>Percentage calculations</li>
+                <li><i class="fas fa-check mr-2"></i>Keyboard support (0-9, +, -, *, /)</li>
+            </ul>
+        </div>
+        <div class="space-y-2">
+            <h4 class="font-medium text-blue-800 dark:text-blue-200">Mortgage Calculator</h4>
+            <ul class="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+                <li><i class="fas fa-check mr-2"></i>Monthly payment calculations</li>
+                <li><i class="fas fa-check mr-2"></i>Interest and total cost analysis</li>
+                <li><i class="fas fa-check mr-2"></i>Amortization schedule</li>
+                <li><i class="fas fa-check mr-2"></i>Down payment percentage calculator</li>
+            </ul>
+        </div>
+        <div class="space-y-2">
+            <h4 class="font-medium text-blue-800 dark:text-blue-200">ROI Calculator</h4>
+            <ul class="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+                <li><i class="fas fa-check mr-2"></i>Return on investment analysis</li>
+                <li><i class="fas fa-check mr-2"></i>Cash flow calculations</li>
+                <li><i class="fas fa-check mr-2"></i>Cap rate and cash-on-cash return</li>
+                <li><i class="fas fa-check mr-2"></i>Income and expense breakdown</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Instructions Section -->
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+        <i class="fas fa-keyboard mr-2"></i>
+        How to Use
+    </h3>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="text-center">
+            <div class="bg-blue-100 dark:bg-blue-900 rounded-lg p-4 mb-3">
+                <i class="fas fa-calculator text-3xl text-blue-600 dark:text-blue-400"></i>
+            </div>
+            <h4 class="font-medium text-gray-900 dark:text-white mb-2">Basic Calculator</h4>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+                Click "Open Calculator" or use keyboard for quick calculations. Perfect for everyday math operations.
+            </p>
+        </div>
+        <div class="text-center">
+            <div class="bg-green-100 dark:bg-green-900 rounded-lg p-4 mb-3">
+                <i class="fas fa-home text-3xl text-green-600 dark:text-green-400"></i>
+            </div>
+            <h4 class="font-medium text-gray-900 dark:text-white mb-2">Mortgage Calculator</h4>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+                Enter property details, loan terms, and interest rates to calculate monthly payments and total costs.
+            </p>
+        </div>
+        <div class="text-center">
+            <div class="bg-purple-100 dark:bg-purple-900 rounded-lg p-4 mb-3">
+                <i class="fas fa-chart-line text-3xl text-purple-600 dark:text-purple-400"></i>
+            </div>
+            <h4 class="font-medium text-gray-900 dark:text-white mb-2">ROI Calculator</h4>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+                Input property costs, rental income, and expenses to analyze investment returns and profitability.
+            </p>
+        </div>
+    </div>
+</div>
+
+<?php
+$content = ob_get_clean();
+ViewManager::set('content', $content);
+
+// Include the admin layout (anti-scattering compliant)
+include __DIR__ . '/../dashboard_layout.php';
+?>
 
 <script>
 // Don't auto-open calculator - let users click buttons to test
@@ -219,17 +211,18 @@ console.log('Available calculators: Basic, Mortgage, ROI');
     <h2 class="text-lg font-bold mb-4 text-gray-800 dark:text-white">Basic Calculator</h2>
     <div id="calcDisplay" class="bg-gray-100 dark:bg-gray-800 rounded-lg p-3 text-right text-2xl font-mono text-gray-800 dark:text-white mb-3 min-h-[48px] break-all">0</div>
     <div class="grid grid-cols-4 gap-2">
-      <button onclick="clearCalc()" class="col-span-2 bg-red-100 hover:bg-red-200 text-red-700 font-bold py-3 rounded-lg">C</button>
+      <button onclick="clearCalc()" class="col-span-1 bg-red-100 hover:bg-red-200 text-red-700 font-bold py-3 rounded-lg">C</button>
+      <button onclick="backspace()" class="bg-orange-100 hover:bg-orange-200 text-orange-700 font-bold py-3 rounded-lg">⌫</button>
       <button onclick="appendOperator('%')" class="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:text-white font-bold py-3 rounded-lg">%</button>
-      <button onclick="appendOperator('/')" class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-3 rounded-lg">÷</button>
+      <button onclick="appendOperator('÷')" class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-3 rounded-lg">÷</button>
       <button onclick="appendNumber('7')" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-white font-semibold py-3 rounded-lg">7</button>
       <button onclick="appendNumber('8')" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-white font-semibold py-3 rounded-lg">8</button>
       <button onclick="appendNumber('9')" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-white font-semibold py-3 rounded-lg">9</button>
-      <button onclick="appendOperator('*')" class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-3 rounded-lg">×</button>
+      <button onclick="appendOperator('×')" class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-3 rounded-lg">×</button>
       <button onclick="appendNumber('4')" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-white font-semibold py-3 rounded-lg">4</button>
       <button onclick="appendNumber('5')" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-white font-semibold py-3 rounded-lg">5</button>
       <button onclick="appendNumber('6')" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-white font-semibold py-3 rounded-lg">6</button>
-      <button onclick="appendOperator('-')" class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-3 rounded-lg">−</button>
+      <button onclick="appendOperator('−')" class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-3 rounded-lg">−</button>
       <button onclick="appendNumber('1')" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-white font-semibold py-3 rounded-lg">1</button>
       <button onclick="appendNumber('2')" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-white font-semibold py-3 rounded-lg">2</button>
       <button onclick="appendNumber('3')" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-white font-semibold py-3 rounded-lg">3</button>
@@ -293,19 +286,120 @@ console.log('Available calculators: Basic, Mortgage, ROI');
 <script>
 (function() {
   // ---- Basic Calculator ----
-  var calcExpression = '';
-  var calcDisplay = null;
+  var displayValue = '0';
+  var expression = '';
+  var isErrorState = false;
 
   function getDisplay() {
     return document.getElementById('calcDisplay');
   }
 
+  function safeEval(expression) {
+    // Handle empty expression
+    if (!expression || expression.trim() === '') return '0';
+    
+    // Remove any whitespace and validate characters
+    expression = expression.trim();
+    if (!/^[0-9+\-*/.() ]+$/.test(expression)) return 'Error';
+    
+    // Prevent division by zero
+    if (/\/\s*0(?!\d)/.test(expression)) return 'Error';
+    
+    try {
+      // Replace symbols with JavaScript operators
+      expression = expression
+        .replace(/×/g, '*')
+        .replace(/÷/g, '/')
+        .replace(/−/g, '-');
+      
+      // Use completely safe step-by-step evaluation
+      return evaluateExpression(expression);
+    } catch(e) {
+      console.error('Calculation error:', e.message, 'Expression:', expression);
+      return 'Error';
+    }
+  }
+
+  function evaluateExpression(expr) {
+    // Remove all spaces
+    expr = expr.replace(/\s/g, '');
+    
+    // Handle parentheses
+    while (expr.includes('(')) {
+      let start = expr.lastIndexOf('(');
+      let end = expr.indexOf(')', start);
+      if (end === -1) return 'Error';
+      
+      let inner = expr.substring(start + 1, end);
+      let result = evaluateSimple(inner);
+      if (result === 'Error') return 'Error';
+      
+      expr = expr.substring(0, start) + result + expr.substring(end + 1);
+    }
+    
+    return evaluateSimple(expr);
+  }
+
+  function evaluateSimple(expr) {
+    // Handle multiplication and division first (higher precedence)
+    let terms = expr.split(/[+-]/);
+    let factors = [];
+    
+    for (let term of terms) {
+      if (term.includes('*') || term.includes('/')) {
+        let factorParts = term.split(/[*\/]/);
+        let result = parseFloat(factorParts[0]) || 0;
+        
+        for (let i = 1; i < factorParts.length; i++) {
+          let operatorIdx = term.indexOf(factorParts[i]);
+          let operator = operatorIdx > -1 ? term.charAt(operatorIdx - 1) : '+';
+          let operand = parseFloat(factorParts[i]) || 0;
+          
+          if (operator === '*') {
+            result *= operand;
+          } else if (operator === '/') {
+            if (operand === 0) return 'Error';
+            result /= operand;
+          }
+        }
+        factors.push(result);
+      } else {
+        factors.push(parseFloat(term) || 0);
+      }
+    }
+    
+    // Handle addition and subtraction
+    let result = factors[0] || 0;
+    let exprIndex = 0;
+    
+    for (let i = 1; i < factors.length; i++) {
+      // Find the operator between factors[i-1] and factors[i]
+      let factorStr = factors[i].toString();
+      let prevFactorStr = factors[i-1].toString();
+      let operatorIdx = expr.indexOf(prevFactorStr + factorStr, exprIndex);
+      let operator = operatorIdx > -1 ? expr.charAt(operatorIdx - 1) : '+';
+      
+      if (operator === '+') {
+        result += factors[i];
+      } else if (operator === '-') {
+        result -= factors[i];
+      }
+      
+      exprIndex = operatorIdx + factorStr.length;
+    }
+    
+    if (!isFinite(result) || isNaN(result)) return 'Error';
+    return Math.round(result * 100000000) / 100000000; // Prevent floating point errors
+  }
+
   window.openCalculator = function() {
-    calcExpression = '';
+    displayValue = '0';
+    expression = '';
+    isErrorState = false;
     var d = document.getElementById('calculatorModal');
     d.classList.remove('hidden');
     d.classList.add('flex');
-    getDisplay().textContent = '0';
+    getDisplay().textContent = displayValue;
   };
   window.closeCalculator = function() {
     var d = document.getElementById('calculatorModal');
@@ -313,36 +407,119 @@ console.log('Available calculators: Basic, Mortgage, ROI');
     d.classList.remove('flex');
   };
   window.appendNumber = function(num) {
-    if (calcExpression === '0' && num !== '.') calcExpression = '';
-    calcExpression += num;
-    getDisplay().textContent = calcExpression;
+    if (isErrorState) {
+      displayValue = '0';
+      expression = '';
+      isErrorState = false;
+      getDisplay().textContent = displayValue;
+      return;
+    }
+    
+    if (num === '.') {
+      // Allow decimal only if no decimal in current number
+      var parts = expression.split(/[\+\-\*\/]/);
+      var currentNumber = parts[parts.length - 1];
+      if (currentNumber.includes('.')) return;
+    }
+    
+    if (displayValue === '0' && num !== '.') {
+      displayValue = '';
+      expression = '';
+    }
+    displayValue += num;
+    expression += num;
+    getDisplay().textContent = displayValue;
   };
   window.appendOperator = function(op) {
-    if (op === '%') {
-      try { calcExpression = String(parseFloat(calcExpression) / 100); }
-      catch(e) { calcExpression = '0'; }
-    } else {
-      var last = calcExpression.slice(-1);
-      if (['+','-','*','/'].includes(last)) calcExpression = calcExpression.slice(0,-1);
-      calcExpression += op;
+    if (isErrorState) {
+      displayValue = '0';
+      expression = '';
+      isErrorState = false;
+      getDisplay().textContent = displayValue;
+      return;
     }
-    getDisplay().textContent = calcExpression;
+    
+    if (op === '%') {
+      try { 
+        var result = parseFloat(expression) / 100;
+        displayValue = String(result);
+        expression = String(result);
+        getDisplay().textContent = displayValue;
+      }
+      catch(e) { 
+        displayValue = '0';
+        expression = '';
+        getDisplay().textContent = '0';
+      }
+    } else {
+      // Map display symbols to actual operators
+      var operatorMap = {
+        '÷': '/',
+        '×': '*',
+        '−': '-',
+        '+': '+'
+      };
+      
+      var actualOperator = operatorMap[op] || op;
+      var last = expression.slice(-1);
+      if (['+','-','*','/'].includes(last)) {
+        expression = expression.slice(0,-1);
+        displayValue = displayValue.slice(0,-1);
+      }
+      expression += actualOperator;
+      displayValue += op; // Show the symbol in display
+      getDisplay().textContent = displayValue;
+    }
   };
   window.calculate = function() {
-    try {
-      if (calcExpression === '' || calcExpression === undefined) return;
-      var result = Function('"use strict"; return (' + calcExpression + ')')();
-      if (!isFinite(result)) { getDisplay().textContent = 'Error'; calcExpression = ''; return; }
-      calcExpression = String(parseFloat(result.toFixed(10)));
-      getDisplay().textContent = calcExpression;
-    } catch(e) {
+    if (isErrorState) return;
+    
+    console.log('Calculating expression:', expression);
+    console.log('Current display value:', displayValue);
+    
+    if (expression === '' || expression === undefined) {
+      console.log('Empty expression, returning');
+      return;
+    }
+    
+    var result = safeEval(expression);
+    console.log('Calculation result:', result);
+    
+    if (result === 'Error') {
       getDisplay().textContent = 'Error';
-      calcExpression = '';
+      displayValue = 'Error';
+      expression = '';
+      isErrorState = true;
+    } else {
+      displayValue = String(result);
+      expression = String(result);
+      getDisplay().textContent = displayValue;
     }
   };
   window.clearCalc = function() {
-    calcExpression = '';
-    getDisplay().textContent = '0';
+    displayValue = '0';
+    expression = '';
+    isErrorState = false;
+    getDisplay().textContent = displayValue;
+  };
+  window.backspace = function() {
+    if (isErrorState) {
+      displayValue = '0';
+      expression = '';
+      isErrorState = false;
+      getDisplay().textContent = displayValue;
+      return;
+    }
+    
+    if (displayValue.length > 0) {
+      displayValue = displayValue.slice(0, -1);
+      expression = expression.slice(0, -1);
+      if (displayValue === '') {
+        displayValue = '0';
+        expression = '';
+      }
+      getDisplay().textContent = displayValue;
+    }
   };
 
   // ---- Mortgage Calculator ----
