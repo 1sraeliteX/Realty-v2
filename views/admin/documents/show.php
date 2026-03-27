@@ -41,9 +41,9 @@ ob_start();
 <!-- Document Stats -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
     <?php echo UIComponents::statCard('Type', ucfirst($document['type']), 'file', 'blue', '', ucfirst($document['category'])); ?>
-    <?php echo UIComponents::statCard('Uploaded', date('M j, Y', strtotime($document['upload_date'])), 'calendar', 'green', '', 'By ' . $document['uploaded_by']); ?>
-    <?php echo UIComponents::statCard('Downloads', $document['download_count'], 'download', 'purple', '', 'Total views'); ?>
-    <?php echo UIComponents::statCard('Expires', date('M j, Y', strtotime($document['expiry_date'])), 'clock', 'orange', '', 'In ' . max(0, (strtotime($document['expiry_date']) - time()) / 86400) . ' days'); ?>
+    <?php echo UIComponents::statCard('Uploaded', date('M j, Y', strtotime($document['created_at'])), 'calendar', 'green', '', 'By ' . htmlspecialchars($document['uploaded_by_name'] ?? 'Admin')); ?>
+    <?php echo UIComponents::statCard('Downloads', $document['download_count'] ?? 0, 'download', 'purple', '', 'Total views'); ?>
+    <?php echo UIComponents::statCard('Expires', date('M j, Y', strtotime($document['created_at'] ?? 'now')), 'clock', 'orange', '', 'Uploaded ' . max(0, (time() - strtotime($document['created_at'])) / 86400) . ' days ago'); ?>
 </div>
 
 <!-- Document Details -->
@@ -85,15 +85,15 @@ ob_start();
                         <dl class="space-y-2">
                             <div class="flex justify-between">
                                 <dt class="text-xs text-gray-500 dark:text-gray-400">Upload Date</dt>
-                                <dd class="text-xs text-gray-900 dark:text-white"><?php echo date('M j, Y H:i', strtotime($document['upload_date'])); ?></dd>
+                                <dd class="text-xs text-gray-900 dark:text-white"><?php echo date('M j, Y H:i', strtotime($document['created_at'])); ?></dd>
                             </div>
                             <div class="flex justify-between">
                                 <dt class="text-xs text-gray-500 dark:text-gray-400">Last Modified</dt>
-                                <dd class="text-xs text-gray-900 dark:text-white"><?php echo date('M j, Y H:i', strtotime($document['last_modified'])); ?></dd>
+                                <dd class="text-xs text-gray-900 dark:text-white"><?php echo date('M j, Y H:i', strtotime($document['updated_at'])); ?></dd>
                             </div>
                             <div class="flex justify-between">
                                 <dt class="text-xs text-gray-500 dark:text-gray-400">Expiry Date</dt>
-                                <dd class="text-xs text-gray-900 dark:text-white"><?php echo date('M j, Y', strtotime($document['expiry_date'])); ?></dd>
+                                <dd class="text-xs text-gray-900 dark:text-white">No expiry</dd>
                             </div>
                         </dl>
                     </div>

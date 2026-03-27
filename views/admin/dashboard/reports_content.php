@@ -81,8 +81,8 @@ function calculateTrend($current, $previous) {
 <!-- Reports Overview Cards -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
     <?php 
-    // Get real trend calculations from DataProvider (anti-scattering compliant)
-    $trends = DataProvider::get('dashboard_trends', [
+    // Get real trend calculations from ViewManager (anti-scattering compliant)
+    $trends = ViewManager::get('dashboard_trends', [
         'property_trend' => 0,
         'units_trend' => 0, 
         'tenants_trend' => 0,
@@ -324,6 +324,20 @@ function calculateTrend($current, $previous) {
 
 <!-- JavaScript for Charts and Interactions -->
 <script>
+// Safe showToast fallback if not defined by layout
+if (typeof showToast !== 'function') {
+    window.showToast = function(toast) {
+        console.log('[Toast] ' + toast.type + ': ' + toast.message);
+        // Simple fallback notification
+        const toastEl = document.createElement('div');
+        toastEl.className = 'fixed bottom-4 right-4 z-50 px-4 py-2 rounded-lg text-white text-sm shadow-lg transition-opacity duration-300 ' +
+            (toast.type === 'success' ? 'bg-green-600' : toast.type === 'error' ? 'bg-red-600' : 'bg-blue-600');
+        toastEl.textContent = toast.message;
+        document.body.appendChild(toastEl);
+        setTimeout(() => { toastEl.style.opacity = '0'; setTimeout(() => toastEl.remove(), 300); }, toast.duration || 3000);
+    };
+}
+
 // Revenue Chart
 const revenueCtx = document.getElementById('revenueChart').getContext('2d');
 const revenueData = <?php echo json_encode($revenueData ?? []); ?>;

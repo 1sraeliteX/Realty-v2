@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use App\Models\DocumentModel;
+
 class ApiDocumentController extends BaseController {
     public function index() {
         $admin = $this->requireApiAuth();
@@ -19,33 +21,33 @@ class ApiDocumentController extends BaseController {
         $tenantId = $_GET['tenant_id'] ?? '';
         
         // Build query
-        $where = ["d.uploaded_by = ?", "d.deleted_at IS NULL"];
+        $where = ["uploaded_by = ?", "deleted_at IS NULL"];
         $params = [$admin['id']];
         
         if (!empty($search)) {
-            $where[] = "(d.title LIKE ? OR d.description LIKE ? OR d.file_name LIKE ?)";
+            $where[] = "(title LIKE ? OR description LIKE ? OR file_name LIKE ?)";
             $params[] = "%$search%";
             $params[] = "%$search%";
             $params[] = "%$search%";
         }
         
         if (!empty($type)) {
-            $where[] = "d.type = ?";
+            $where[] = "type = ?";
             $params[] = $type;
         }
         
         if (!empty($category)) {
-            $where[] = "d.category = ?";
+            $where[] = "category = ?";
             $params[] = $category;
         }
         
         if (!empty($propertyId)) {
-            $where[] = "d.property_id = ?";
+            $where[] = "property_id = ?";
             $params[] = $propertyId;
         }
         
         if (!empty($tenantId)) {
-            $where[] = "d.tenant_id = ?";
+            $where[] = "tenant_id = ?";
             $params[] = $tenantId;
         }
         
@@ -58,18 +60,64 @@ class ApiDocumentController extends BaseController {
                  LEFT JOIN tenants t ON d.tenant_id = t.id
                  LEFT JOIN properties pr ON d.property_id = pr.id
                  LEFT JOIN units u ON d.unit_id = u.id
-                 WHERE " . implode(' AND ', $where) . "
-                 ORDER BY d.created_at DESC
-                 LIMIT ? OFFSET ?";
+                 WHERE d.uploaded_by = ? AND d.deleted_at IS NULL";
         
+        // Add additional filters
+        if (!empty($search)) {
+            $sql .= " AND (d.title LIKE ? OR d.description LIKE ? OR d.file_name LIKE ?)";
+            $params[] = "%$search%";
+            $params[] = "%$search%";
+            $params[] = "%$search%";
+        }
+        
+        if (!empty($type)) {
+            $sql .= " AND d.type = ?";
+            $params[] = $type;
+        }
+        
+        if (!empty($category)) {
+            $sql .= " AND d.category = ?";
+            $params[] = $category;
+        }
+        
+        if (!empty($propertyId)) {
+            $sql .= " AND d.property_id = ?";
+            $params[] = $propertyId;
+        }
+        
+        if (!empty($tenantId)) {
+            $sql .= " AND d.tenant_id = ?";
+            $params[] = $tenantId;
+        }
+        
+        $sql .= " ORDER BY d.created_at DESC LIMIT ? OFFSET ?";
         $params[] = $limit;
         $params[] = ($page - 1) * $limit;
         
         $documents = $this->db->query($sql, $params)->fetchAll();
         
         // Get total count for pagination
-        $countSql = "SELECT COUNT(*) FROM documents d WHERE " . implode(' AND ', $where);
-        $total = $this->db->query($countSql, $params)->fetchColumn();
+        $countParams = array_slice($params, 0, -2); // Remove LIMIT and OFFSET parameters
+        $countSql = "SELECT COUNT(*) FROM documents d WHERE d.uploaded_by = ? AND d.deleted_at IS NULL";
+        
+        // Add the same filters to count query
+        if (!empty($search)) {
+            $countSql .= " AND (d.title LIKE ? OR d.description LIKE ? OR d.file_name LIKE ?)";
+        }
+        if (!empty($type)) {
+            $countSql .= " AND d.type = ?";
+        }
+        if (!empty($category)) {
+            $countSql .= " AND d.category = ?";
+        }
+        if (!empty($propertyId)) {
+            $countSql .= " AND d.property_id = ?";
+        }
+        if (!empty($tenantId)) {
+            $countSql .= " AND d.tenant_id = ?";
+        }
+        
+        $total = $this->db->query($countSql, $countParams)->fetchColumn();
         
         $this->json([
             'success' => true,
@@ -366,6 +414,35 @@ class ApiDocumentController extends BaseController {
         $stats = $this->db->query($sql, [$admin['id']])->fetch();
         
         $this->json(['success' => true, 'data' => $stats]);
+    }
+    
+    public function getRelatedEntities() {
+        $admin = $this->requireAuth();
+        
+        // Initialize framework (anti-scattering compliant)
+        require_once __DIR__ . '/../../config/bootstrap.php';
+        
+        // Initialize DocumentModel
+        $documentModel = new DocumentModel();
+        
+        $type = $_GET['type'] ?? '';
+        
+        if (empty($type)) {
+            $this->json(['success' => false, 'message' => 'Type is required'], 400);
+            return;
+        }
+        
+        try {
+            $entities = $documentModel->getRelatedEntities($type, $admin['id']);
+            
+            $this->json([
+                'success' => true,
+                'data' => $entities
+            ]);
+            
+        } catch (Exception $e) {
+            $this->json(['success' => false, 'message' => 'Failed to load entities: ' . $e->getMessage()], 500);
+        }
     }
     
     private function getDocumentType($extension) {
