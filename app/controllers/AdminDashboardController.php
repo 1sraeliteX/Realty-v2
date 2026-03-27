@@ -44,6 +44,9 @@ class AdminDashboardController extends BaseController {
         $newApplications = $this->getNewApplications($admin['id'], 5);
         $upcomingTasks = $this->getUpcomingTasks($admin['id'], 5);
         
+        // Get tenants for quick access widget
+        $tenantsForQuickAccess = $this->getTenantsForQuickAccess($admin['id']);
+        
         // Set data through ViewManager (anti-scattering compliant)
         \ViewManager::set('title', 'Admin Dashboard');
         \ViewManager::set('stats', $stats);
@@ -54,6 +57,7 @@ class AdminDashboardController extends BaseController {
         \ViewManager::set('maintenanceRequests', $maintenanceRequests);
         \ViewManager::set('newApplications', $newApplications);
         \ViewManager::set('upcomingTasks', $upcomingTasks);
+        \ViewManager::set('tenantsForQuickAccess', $tenantsForQuickAccess);
         
         // Capture dashboard content (anti-scattering compliant)
         ob_start();
@@ -504,5 +508,33 @@ class AdminDashboardController extends BaseController {
         ];
         
         return $icons[$action] ?? 'circle';
+    }
+    
+    /**
+     * Get tenants for quick access widget
+     */
+    private function getTenantsForQuickAccess($adminId) {
+        try {
+            $sql = "SELECT t.id, t.name, t.email, t.phone, t.unit_id, 
+                           p.name as property_name, p.address as property_address,
+                           u.unit_number,
+                           CASE 
+                               WHEN t.phone IS NOT NULL AND t.email IS NOT NULL THEN 'both'
+                               WHEN t.phone IS NOT NULL THEN 'phone'
+                               WHEN t.email IS NOT NULL THEN 'email'
+                               ELSE 'none'
+                           END as contact_methods
+                    FROM tenants t
+                    LEFT JOIN properties p ON t.property_id = p.id
+                    LEFT JOIN units u ON t.unit_id = u.id
+                    WHERE p.admin_id = ? AND t.deleted_at IS NULL
+                    ORDER BY t.name ASC
+                    LIMIT 50";
+            
+            return $this->db->fetchAll($sql, [$adminId]);
+        } catch (Exception $e) {
+            error_log("Error fetching tenants for quick access: " . $e->getMessage());
+            return [];
+        }
     }
 }

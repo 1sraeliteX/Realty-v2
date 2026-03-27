@@ -26,6 +26,7 @@ $isCommunications = strpos($currentPath, '/admin/communications') === 0;
 $isDocuments = strpos($currentPath, '/admin/documents') === 0;
 $isSettings = strpos($currentPath, '/admin/settings') === 0;
 $isProfile = strpos($currentPath, '/admin/profile') === 0;
+$isCalculator = strpos($currentPath, '/admin/calculator') === 0;
 ?>
 
 <!DOCTYPE html>
@@ -185,10 +186,10 @@ $isProfile = strpos($currentPath, '/admin/profile') === 0;
                             <i class="fas fa-user mr-3"></i>
                             Profile
                         </a>
-                        <button onclick="openCalculator()" class="w-full text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <a href="/admin/calculator" class="<?php echo $isCalculator ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <i class="fas fa-calculator mr-3"></i>
                             Calculator
-                        </button>
+                        </a>
 
                         <!-- Dashboard Reports -->
                         <div class="pt-4 pb-2">
@@ -445,6 +446,9 @@ $isProfile = strpos($currentPath, '/admin/profile') === 0;
         document.addEventListener('DOMContentLoaded', function() {
             // Notification system
             let notificationsOpen = false;
+            
+            // Initialize tenant quick access
+            initializeTenantQuickAccess();
             
             // Load notification count
             async function loadNotificationCount() {
@@ -838,6 +842,162 @@ $isProfile = strpos($currentPath, '/admin/profile') === 0;
                 <?php unset($_SESSION['errors']); ?>
             <?php endif; ?>
         });
+
+        // Tenant Quick Access Functions
+        function initializeTenantQuickAccess() {
+            const searchInput = document.getElementById('tenantSearchInput');
+            const searchResults = document.getElementById('tenantSearchResults');
+            
+            if (!searchInput || !searchResults) return;
+            
+            let searchTimeout;
+            
+            searchInput.addEventListener('input', function(e) {
+                clearTimeout(searchTimeout);
+                const query = e.target.value.trim();
+                
+                if (query.length < 2) {
+                    searchResults.classList.add('hidden');
+                    return;
+                }
+                
+                searchTimeout = setTimeout(() => {
+                    performTenantSearch(query);
+                }, 300);
+            });
+            
+            searchInput.addEventListener('focus', function() {
+                if (this.value.trim().length >= 2) {
+                    performTenantSearch(this.value.trim());
+                }
+            });
+            
+            // Close search when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                    searchResults.classList.add('hidden');
+                }
+            });
+        }
+        
+        function performTenantSearch(query) {
+            const searchResults = document.getElementById('tenantSearchResults');
+            const tenants = window.tenantsData || [];
+            
+            const filtered = tenants.filter(tenant => 
+                tenant.name.toLowerCase().includes(query.toLowerCase()) ||
+                tenant.email?.toLowerCase().includes(query.toLowerCase()) ||
+                tenant.property_name?.toLowerCase().includes(query.toLowerCase())
+            );
+            
+            if (filtered.length === 0) {
+                searchResults.innerHTML = `
+                    <div class="p-3 text-center text-gray-500 dark:text-gray-400 text-sm">
+                        No tenants found
+                    </div>
+                `;
+            } else {
+                searchResults.innerHTML = filtered.map(tenant => `
+                    <div class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-100 dark:border-gray-600 last:border-b-0"
+                         onclick="selectTenant(${tenant.id})">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1 min-w-0">
+                                <div class="font-medium text-gray-900 dark:text-white truncate">${tenant.name}</div>
+                                <div class="text-sm text-gray-500 dark:text-gray-400 truncate">${tenant.property_name || 'No Property'}</div>
+                            </div>
+                            <div class="flex items-center space-x-2 ml-2">
+                                ${tenant.email ? '<i class="fas fa-envelope text-gray-400 text-xs"></i>' : ''}
+                                ${tenant.phone ? '<i class="fas fa-phone text-gray-400 text-xs"></i>' : ''}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            searchResults.classList.remove('hidden');
+        }
+        
+        let selectedTenantData = null;
+        
+        function selectTenant(tenantId) {
+            const tenants = window.tenantsData || [];
+            const tenant = tenants.find(t => t.id === tenantId);
+            
+            if (!tenant) return;
+            
+            selectedTenantData = tenant;
+            
+            // Update UI
+            document.getElementById('selectedTenantInfo').classList.remove('hidden');
+            document.getElementById('noTenantSelected').classList.add('hidden');
+            
+            // Update tenant info
+            document.getElementById('selectedTenantName').textContent = tenant.name;
+            document.getElementById('selectedTenantProperty').textContent = 
+                tenant.property_name + (tenant.unit_number ? ' - Unit ' + tenant.unit_number : '');
+            
+            // Update email
+            const emailDiv = document.getElementById('selectedTenantEmail');
+            if (tenant.email) {
+                emailDiv.classList.remove('hidden');
+                emailDiv.querySelector('span').textContent = tenant.email;
+            } else {
+                emailDiv.classList.add('hidden');
+            }
+            
+            // Update phone
+            const phoneDiv = document.getElementById('selectedTenantPhone');
+            if (tenant.phone) {
+                phoneDiv.classList.remove('hidden');
+                phoneDiv.querySelector('span').textContent = tenant.phone;
+            } else {
+                phoneDiv.classList.add('hidden');
+            }
+            
+            // Update global template variables
+            updateGlobalTemplateVariables(tenant);
+            
+            // Clear search
+            document.getElementById('tenantSearchInput').value = '';
+            document.getElementById('tenantSearchResults').classList.add('hidden');
+            
+            showToast(`Selected tenant: ${tenant.name}`, 'success');
+        }
+        
+        function updateGlobalTemplateVariables(tenant) {
+            // Store tenant data globally for template auto-fill
+            window.currentTenantData = {
+                tenant_name: tenant.name,
+                tenant_email: tenant.email || '',
+                tenant_phone: tenant.phone || '',
+                property_name: tenant.property_name || '',
+                unit_number: tenant.unit_number || '',
+                property_address: tenant.property_address || '',
+                contact_number: tenant.phone || ''
+            };
+            
+            // Dispatch event for other components
+            window.dispatchEvent(new CustomEvent('tenantSelected', {
+                detail: window.currentTenantData
+            }));
+        }
+        
+        function communicateWithTenant() {
+            if (!selectedTenantData) return;
+            
+            // Store selected tenant for communications modal
+            window.selectedCommunicationsTenant = selectedTenantData;
+            
+            // Navigate to communications
+            window.location.href = '/admin/communications';
+        }
+        
+        function viewTenantProfile() {
+            if (!selectedTenantData) return;
+            
+            // Navigate to tenant profile (would need to implement tenant detail page)
+            showToast('Tenant profile view coming soon!', 'info');
+        }
     </script>
     
     <!-- Include Calculator Component -->

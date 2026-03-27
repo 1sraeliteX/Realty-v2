@@ -1,13 +1,6 @@
 <?php
-// Include UI Components
-require_once __DIR__ . '/../../../components/UIComponents.php';
-?>
-
-<!-- Include All Calculator Components -->
-<?php 
-\ComponentRegistry::load('calculator-component');
-\ComponentRegistry::load('mortgage-calculator-component');
-\ComponentRegistry::load('roi-calculator-component');
+// Initialize framework (anti-scattering compliant)
+require_once __DIR__ . '/../../../config/bootstrap.php';
 ?>
 
 <div class="min-h-screen flex flex-col">

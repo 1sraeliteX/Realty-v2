@@ -202,9 +202,12 @@ class BaseController {
     }
 
     protected function requireAuth(): array {
+        error_log("requireAuth() called");
         $admin = $this->getCurrentAdmin();
+        error_log("getCurrentAdmin returned: " . ($admin ? "found" : "null"));
 
         if (!$admin) {
+            error_log("No admin found, redirecting to login");
             if ($this->isApiRequest()) {
                 $this->json(['success' => false, 'error' => 'Session expired. Please log in again.'], 401);
                 exit;
@@ -214,6 +217,7 @@ class BaseController {
             }
         }
 
+        error_log("requireAuth() returning admin data");
         return is_array($admin) ? $admin : (array) $admin;
     }
 

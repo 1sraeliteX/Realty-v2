@@ -53,6 +53,8 @@ class ComponentRegistry {
         self::register('ui-components', __DIR__ . '/../components/UIComponents.php');
         self::register('theme-toggle', __DIR__ . '/../components/ThemeToggleComponent.php');
         self::register('calculator-component', __DIR__ . '/../components/CalculatorComponent.php');
+        self::register('mortgage-calculator-component', __DIR__ . '/../components/MortgageCalculatorComponent.php', ['ui-components']);
+        self::register('roi-calculator-component', __DIR__ . '/../components/ROICalculatorComponent.php', ['ui-components']);
         self::register('notes-component', __DIR__ . '/../components/NotesComponent.php', ['ui-components']);
         self::register('attachment-component', __DIR__ . '/../components/AttachmentComponent.php', ['ui-components']);
         self::register('searchable-dropdown', __DIR__ . '/../components/SearchableDropdown.php', ['ui-components']);

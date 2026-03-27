@@ -150,6 +150,176 @@ ob_start();
                                 document.getElementById('symbolPreview').textContent = sym;
                                 document.getElementById('codePreview').textContent = code;
                             }
+
+                            // Two-Factor Authentication Toggle
+                            document.addEventListener('DOMContentLoaded', function() {
+                                // Two-Factor Authentication
+                                const twoFactorToggle = document.getElementById('twoFactorToggle');
+                                const twoFactorToggleSpan = document.getElementById('twoFactorToggleSpan');
+                                let isTwoFactorEnabled = false;
+
+                                if (twoFactorToggle && twoFactorToggleSpan) {
+                                    twoFactorToggle.addEventListener('click', function() {
+                                        isTwoFactorEnabled = !isTwoFactorEnabled;
+                                        
+                                        // Update button state
+                                        if (isTwoFactorEnabled) {
+                                            twoFactorToggle.classList.add('bg-primary-600');
+                                            twoFactorToggle.classList.remove('bg-gray-200', 'dark:bg-gray-700');
+                                            twoFactorToggleSpan.classList.add('translate-x-5');
+                                            twoFactorToggleSpan.classList.remove('translate-x-0');
+                                            twoFactorToggle.setAttribute('aria-checked', 'true');
+                                            
+                                            // Show success message
+                                            showNotification('Two-Factor Authentication enabled', 'success');
+                                        } else {
+                                            twoFactorToggle.classList.remove('bg-primary-600');
+                                            twoFactorToggle.classList.add('bg-gray-200', 'dark:bg-gray-700');
+                                            twoFactorToggleSpan.classList.remove('translate-x-5');
+                                            twoFactorToggleSpan.classList.add('translate-x-0');
+                                            twoFactorToggle.setAttribute('aria-checked', 'false');
+                                            
+                                            // Show info message
+                                            showNotification('Two-Factor Authentication disabled', 'info');
+                                        }
+                                    });
+                                }
+
+                                // Email Notifications Toggle
+                                const emailToggle = document.getElementById('emailToggle');
+                                const emailToggleSpan = document.getElementById('emailToggleSpan');
+                                let isEmailEnabled = true; // Start enabled
+
+                                if (emailToggle && emailToggleSpan) {
+                                    emailToggle.addEventListener('click', function() {
+                                        isEmailEnabled = !isEmailEnabled;
+                                        
+                                        if (isEmailEnabled) {
+                                            emailToggle.classList.add('bg-primary-600');
+                                            emailToggle.classList.remove('bg-gray-200', 'dark:bg-gray-700');
+                                            emailToggleSpan.classList.add('translate-x-5');
+                                            emailToggleSpan.classList.remove('translate-x-0');
+                                            emailToggle.setAttribute('aria-checked', 'true');
+                                            showNotification('Email notifications enabled', 'success');
+                                        } else {
+                                            emailToggle.classList.remove('bg-primary-600');
+                                            emailToggle.classList.add('bg-gray-200', 'dark:bg-gray-700');
+                                            emailToggleSpan.classList.remove('translate-x-5');
+                                            emailToggleSpan.classList.add('translate-x-0');
+                                            emailToggle.setAttribute('aria-checked', 'false');
+                                            showNotification('Email notifications disabled', 'info');
+                                        }
+                                    });
+                                }
+
+                                // SMS Notifications Toggle
+                                const smsToggle = document.getElementById('smsToggle');
+                                const smsToggleSpan = document.getElementById('smsToggleSpan');
+                                let isSmsEnabled = false;
+
+                                if (smsToggle && smsToggleSpan) {
+                                    smsToggle.addEventListener('click', function() {
+                                        isSmsEnabled = !isSmsEnabled;
+                                        
+                                        if (isSmsEnabled) {
+                                            smsToggle.classList.add('bg-primary-600');
+                                            smsToggle.classList.remove('bg-gray-200', 'dark:bg-gray-700');
+                                            smsToggleSpan.classList.add('translate-x-5');
+                                            smsToggleSpan.classList.remove('translate-x-0');
+                                            smsToggle.setAttribute('aria-checked', 'true');
+                                            showNotification('SMS notifications enabled', 'success');
+                                        } else {
+                                            smsToggle.classList.remove('bg-primary-600');
+                                            smsToggle.classList.add('bg-gray-200', 'dark:bg-gray-700');
+                                            smsToggleSpan.classList.remove('translate-x-5');
+                                            smsToggleSpan.classList.add('translate-x-0');
+                                            smsToggle.setAttribute('aria-checked', 'false');
+                                            showNotification('SMS notifications disabled', 'info');
+                                        }
+                                    });
+                                }
+
+                                // Push Notifications Toggle
+                                const pushToggle = document.getElementById('pushToggle');
+                                const pushToggleSpan = document.getElementById('pushToggleSpan');
+                                let isPushEnabled = false;
+
+                                if (pushToggle && pushToggleSpan) {
+                                    pushToggle.addEventListener('click', function() {
+                                        isPushEnabled = !isPushEnabled;
+                                        
+                                        if (isPushEnabled) {
+                                            pushToggle.classList.add('bg-primary-600');
+                                            pushToggle.classList.remove('bg-gray-200', 'dark:bg-gray-700');
+                                            pushToggleSpan.classList.add('translate-x-5');
+                                            pushToggleSpan.classList.remove('translate-x-0');
+                                            pushToggle.setAttribute('aria-checked', 'true');
+                                            showNotification('Push notifications enabled', 'success');
+                                        } else {
+                                            pushToggle.classList.remove('bg-primary-600');
+                                            pushToggle.classList.add('bg-gray-200', 'dark:bg-gray-700');
+                                            pushToggleSpan.classList.remove('translate-x-5');
+                                            pushToggleSpan.classList.add('translate-x-0');
+                                            pushToggle.setAttribute('aria-checked', 'false');
+                                            showNotification('Push notifications disabled', 'info');
+                                        }
+                                    });
+                                }
+                            });
+
+                            // Notification function
+                            function showNotification(message, type = 'info') {
+                                // Create notification element
+                                const notification = document.createElement('div');
+                                notification.className = `fixed top-4 right-4 z-50 p-4 rounded-md shadow-lg transform transition-all duration-300 translate-x-full`;
+                                
+                                // Set color based on type
+                                if (type === 'success') {
+                                    notification.classList.add('bg-green-500', 'text-white');
+                                } else if (type === 'error') {
+                                    notification.classList.add('bg-red-500', 'text-white');
+                                } else {
+                                    notification.classList.add('bg-blue-500', 'text-white');
+                                }
+                                
+                                notification.innerHTML = `
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0">
+                                            ${type === 'success' ? '<i class="fas fa-check-circle"></i>' : 
+                                              type === 'error' ? '<i class="fas fa-exclamation-circle"></i>' : 
+                                              '<i class="fas fa-info-circle"></i>'}
+                                        </div>
+                                        <div class="ml-3">
+                                            <p class="text-sm font-medium">${message}</p>
+                                        </div>
+                                        <div class="ml-auto pl-3">
+                                            <button onclick="this.parentElement.parentElement.remove()" class="inline-flex text-white hover:text-gray-200">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                `;
+                                
+                                // Add to page
+                                document.body.appendChild(notification);
+                                
+                                // Animate in
+                                setTimeout(() => {
+                                    notification.classList.remove('translate-x-full');
+                                    notification.classList.add('translate-x-0');
+                                }, 100);
+                                
+                                // Auto remove after 3 seconds
+                                setTimeout(() => {
+                                    notification.classList.remove('translate-x-0');
+                                    notification.classList.add('translate-x-full');
+                                    setTimeout(() => {
+                                        if (notification.parentElement) {
+                                            notification.remove();
+                                        }
+                                    }, 300);
+                                }, 3000);
+                            }
                             </script>
                         </div>
 
@@ -165,9 +335,9 @@ ob_start();
                                             <label for="email_notifications" class="text-sm font-medium text-gray-700 dark:text-gray-300">Email Notifications</label>
                                             <p class="text-xs text-gray-500 dark:text-gray-400">Receive email updates for important activities</p>
                                         </div>
-                                        <button class="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500" type="button">
+                                        <button id="emailToggle" class="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200 ease-in-out bg-primary-600" type="button" role="switch" aria-checked="true">
                                             <span class="sr-only">Toggle email notifications</span>
-                                            <span class="translate-x-0 inline-flex h-6 w-11 rounded-full bg-gray-200 dark:bg-gray-700"></span>
+                                            <span id="emailToggleSpan" class="translate-x-5 inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition-transform duration-200 ease-in-out"></span>
                                         </button>
                                     </div>
                                     
@@ -177,9 +347,9 @@ ob_start();
                                             <label for="sms_notifications" class="text-sm font-medium text-gray-700 dark:text-gray-300">SMS Notifications</label>
                                             <p class="text-xs text-gray-500 dark:text-gray-400">Get SMS alerts for urgent matters</p>
                                         </div>
-                                        <button class="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500" type="button">
+                                        <button id="smsToggle" class="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200 ease-in-out bg-gray-200 dark:bg-gray-700" type="button" role="switch" aria-checked="false">
                                             <span class="sr-only">Toggle SMS notifications</span>
-                                            <span class="translate-x-0 inline-flex h-6 w-11 rounded-full bg-gray-200 dark:bg-gray-700"></span>
+                                            <span id="smsToggleSpan" class="translate-x-0 inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition-transform duration-200 ease-in-out"></span>
                                         </button>
                                     </div>
                                     
@@ -189,9 +359,9 @@ ob_start();
                                             <label for="push_notifications" class="text-sm font-medium text-gray-700 dark:text-gray-300">Push Notifications</label>
                                             <p class="text-xs text-gray-500 dark:text-gray-400">Browser push notifications for real-time updates</p>
                                         </div>
-                                        <button class="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500" type="button">
+                                        <button id="pushToggle" class="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200 ease-in-out bg-gray-200 dark:bg-gray-700" type="button" role="switch" aria-checked="false">
                                             <span class="sr-only">Toggle push notifications</span>
-                                            <span class="translate-x-0 inline-flex h-6 w-11 rounded-full bg-gray-200 dark:bg-gray-700"></span>
+                                            <span id="pushToggleSpan" class="translate-x-0 inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition-transform duration-200 ease-in-out"></span>
                                         </button>
                                     </div>
                                 </div>
@@ -262,7 +432,7 @@ ob_start();
                                                 <input type="password" id="confirm_password" name="confirm_password" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
                                             </div>
                                         </div>
-                                        <div class="flex justify-end">
+                                        <div class="flex justify-end mt-4">
                                             <button type="button" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
                                                 Update Password
                                             </button>
@@ -275,9 +445,9 @@ ob_start();
                                             <h3 class="text-md font-medium text-gray-900 dark:text-white">Two-Factor Authentication</h3>
                                             <p class="text-xs text-gray-500 dark:text-gray-400">Add an extra layer of security to your account</p>
                                         </div>
-                                        <button class="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500" type="button">
+                                        <button id="twoFactorToggle" class="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200 ease-in-out" type="button" role="switch" aria-checked="false">
                                             <span class="sr-only">Toggle two-factor authentication</span>
-                                            <span class="translate-x-0 inline-flex h-6 w-11 rounded-full bg-gray-200 dark:bg-gray-700"></span>
+                                            <span id="twoFactorToggleSpan" class="translate-x-0 inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition-transform duration-200 ease-in-out"></span>
                                         </button>
                                     </div>
                                 </div>

@@ -7,34 +7,23 @@ class CalculatorController extends BaseController {
      * Show the calculator page
      */
     public function index() {
-        // Temporarily bypass all authentication for testing
-        // TODO: Re-enable authentication after testing
-        /*
-        if (!headers_sent()) {
-            if (!isset($_SESSION['admin_id']) && !isset($_SESSION['superadmin_id'])) {
-                header('Location: /admin/login');
-                exit;
-            }
-        }
-        */
-
         // Initialize framework (anti-scattering compliant)
-        require_once __DIR__ . '/../../config/init_framework.php';
+        require_once __DIR__ . '/../../config/bootstrap.php';
         
-        // Load calculator component
+        // Load calculator components through ComponentRegistry
         \ComponentRegistry::load('calculator-component');
+        \ComponentRegistry::load('mortgage-calculator-component');
+        \ComponentRegistry::load('roi-calculator-component');
         
-        // Set page data
-        $data = [
-            'title' => 'Calculator',
-            'page_title' => 'Calculator',
-            'breadcrumb' => [
-                ['name' => 'Dashboard', 'url' => '/admin/dashboard'],
-                ['name' => 'Calculator', 'url' => '/admin/calculator']
-            ]
-        ];
+        // Set page data through ViewManager
+        \ViewManager::set('title', 'Calculator');
+        \ViewManager::set('page_title', 'Calculator');
+        \ViewManager::set('breadcrumb', [
+            ['name' => 'Dashboard', 'url' => '/admin/dashboard'],
+            ['name' => 'Calculator', 'url' => '/admin/calculator']
+        ]);
         
         // Render the calculator page
-        return $this->view('admin.calculator.index', $data);
+        return $this->view('admin.calculator.index');
     }
 }

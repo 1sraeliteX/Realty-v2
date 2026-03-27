@@ -104,6 +104,13 @@ return [
     'GET /admin/communications/{id}/edit' => 'CommunicationController@edit',
     'POST /admin/communications/{id}' => 'CommunicationController@update',
     'POST /admin/communications/{id}/delete' => 'CommunicationController@delete',
+    
+    // Communications API routes
+    'GET /admin/communications/templates' => 'CommunicationController@getTemplates',
+    'GET /admin/communications/template/{id}' => 'CommunicationController@getTemplate',
+    'GET /admin/communications/whatsapp-templates' => 'CommunicationController@getWhatsAppTemplates',
+    'GET /admin/communications/tenants-for-template' => 'CommunicationController@getTenantsForTemplate',
+    'POST /admin/communications/replicate-templates' => 'CommunicationController@replicateTemplates',
 
     // Admin Documents routes
     'GET /admin/documents' => 'DocumentController@index',
@@ -130,6 +137,9 @@ return [
     'POST /admin/settings/currency' => 'SettingsController@updateCurrency',
     'GET /admin/profile' => 'ProfileController@index',
     'POST /admin/profile' => 'ProfileController@update',
+
+    // Admin Calculator routes
+    'GET /admin/calculator' => 'CalculatorController@index',
 
     // Admin Search routes
     'GET /admin/search' => 'SearchController@search',
