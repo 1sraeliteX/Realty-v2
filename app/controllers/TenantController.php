@@ -112,11 +112,22 @@ class TenantController extends BaseController {
             ]
         ];
         
-        $this->view('admin/tenants/list', [
-            'admin' => $admin,
-            'tenants' => $tenants,
-            'title' => 'Tenants Management'
+        // Initialize framework (anti-scattering compliant)
+        require_once __DIR__ . '/../../config/bootstrap.php';
+        
+        // Set data through ViewManager (anti-scattering compliant)
+        \ViewManager::set('title', 'Tenants Management');
+        \ViewManager::set('user', $admin);
+        \ViewManager::set('tenants', $tenants);
+        \ViewManager::set('stats', [
+            'total_tenants' => count($tenants),
+            'active_tenants' => count(array_filter($tenants, fn($t) => $t['lease_status'] === 'active')),
+            'expiring_leases' => count(array_filter($tenants, fn($t) => $t['lease_status'] === 'expiring')),
+            'overdue_payments' => count(array_filter($tenants, fn($t) => $t['payment_status'] === 'overdue'))
         ]);
+        
+        // Render using ViewManager with admin dashboard layout (anti-scattering compliant)
+        echo \ViewManager::render('admin.tenants.list', [], 'admin.dashboard_layout');
     }
     
     public function create() {

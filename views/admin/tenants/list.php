@@ -1,13 +1,13 @@
 <?php
 // Initialize framework (anti-scattering compliant)
-require_once __DIR__ . '/../../../config/init_framework.php';
+require_once __DIR__ . '/../../../config/bootstrap.php';
 
-// Load components through registry (anti-scattering compliant)
+// Load UI components through ComponentRegistry (anti-scattering compliant)
 ComponentRegistry::load('ui-components');
 
-// Get data from centralized provider (anti-scattering compliant)
-$tenants = ViewManager::get('tenants') ?? DataProvider::get('tenants');
-$stats = ViewManager::get('stats') ?? DataProvider::get('tenant_stats');
+// Get data from ViewManager (anti-scattering compliant)
+$tenants = ViewManager::get('tenants', DataProvider::get('tenants', []));
+$stats = ViewManager::get('stats', DataProvider::get('tenant_stats', []));
 
 // Set data through ViewManager (anti-scattering compliant)
 ViewManager::set('title', 'Tenants Management');

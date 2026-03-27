@@ -22,6 +22,7 @@ class DataProvider {
             'notifications' => self::getNotificationData(),
             'properties' => self::getPropertyData(),
             'tenants' => self::getTenantData(),
+            'tenant_stats' => self::getTenantStats(),
             'payments' => self::getPaymentData(),
             'invoices' => self::getInvoiceData(),
             'invoice_stats' => self::getInvoiceStats(),
@@ -218,6 +219,21 @@ class DataProvider {
                 'lease_end' => '2024-10-31',
                 'payment_status' => 'current'
             ]
+        ];
+    }
+    
+    /**
+     * Tenant statistics
+     */
+    private static function getTenantStats() {
+        $tenants = self::getTenantData();
+        
+        return [
+            'total_tenants' => count($tenants),
+            'active_tenants' => count(array_filter($tenants, fn($t) => $t['lease_status'] === 'active')),
+            'expiring_leases' => count(array_filter($tenants, fn($t) => $t['lease_status'] === 'expiring')),
+            'overdue_payments' => count(array_filter($tenants, fn($t) => $t['payment_status'] === 'overdue')),
+            'monthly_revenue' => array_sum(array_column($tenants, 'rent_amount'))
         ];
     }
     

@@ -7,16 +7,32 @@ require_once __DIR__ . '/BaseController.php';
 class TenantOccupantController extends BaseController {
     
     public function index() {
-        // Initialize anti-scattering system
+        $admin = $this->requireAuth();
+        
+        // Initialize framework (anti-scattering compliant)
         require_once __DIR__ . '/../../config/bootstrap.php';
         
-        // Set data through DataProvider (anti-scattering compliant)
-        \DataProvider::set('tenants', []);
-        \DataProvider::set('occupants', []);
+        // Get real data from DataProvider
+        $tenants = \DataProvider::get('tenants', []);
+        $occupants = \DataProvider::get('occupants', []);
         
-        // Set page metadata
+        // Calculate stats
+        $totalOccupants = count($occupants);
+        $activeOccupants = count(array_filter($occupants, fn($o) => $o['status'] === 'active'));
+        $availableRooms = 12; // Mock data - should come from database
+        $totalProperties = count(array_unique(array_column($tenants, 'property_id')));
+        
+        // Set data through ViewManager (anti-scattering compliant)
         \ViewManager::set('title', 'Tenants & Occupants');
-        \ViewManager::set('user', ['name' => 'Admin User', 'email' => 'admin@example.com']);
+        \ViewManager::set('user', $admin);
+        \ViewManager::set('tenants', $tenants);
+        \ViewManager::set('occupants', $occupants);
+        \ViewManager::set('stats', [
+            'totalOccupants' => $totalOccupants,
+            'activeOccupants' => $activeOccupants,
+            'availableRooms' => $availableRooms,
+            'totalProperties' => $totalProperties
+        ]);
         
         // Render using ViewManager with dashboard layout
         echo \ViewManager::render('admin.tenants_occupants.index', [], 'admin.dashboard_layout');

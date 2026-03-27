@@ -12,7 +12,7 @@ class DocumentController extends BaseController {
         require_once __DIR__ . '/../../config/bootstrap.php';
         
         // Initialize DocumentModel
-        $documentModel = new DocumentModel();
+        $documentModel = new \App\Models\DocumentModel();
         
         // Get pagination and filter parameters
         $page = $_GET['page'] ?? 1;

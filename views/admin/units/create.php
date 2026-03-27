@@ -1,5 +1,9 @@
 <?php
-// Framework components are auto-loaded by ViewManager (anti-scattering compliant)
+// Initialize framework (anti-scattering compliant)
+require_once __DIR__ . '/../../../config/bootstrap.php';
+
+// Load UI components through ComponentRegistry (anti-scattering compliant)
+ComponentRegistry::load('ui-components');
 
 // Get data from ViewManager (anti-scattering compliant)
 $properties = ViewManager::get('properties', []);
