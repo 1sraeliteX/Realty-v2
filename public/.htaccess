@@ -9,8 +9,14 @@ RewriteRule ^(.*)$ app.php [QSA,L]
 # Set default character encoding
 AddDefaultCharset UTF-8
 
-# PHP settings
+# Security - Deny access to .env files
+<Files ".env*">
+    Require all denied
+</Files>
+
+# PHP settings - Production
 <IfModule mod_php.c>
-    php_flag display_errors On
-    php_value error_reporting E_ALL
+    php_flag display_errors Off
+    php_value log_errors On
+    php_value error_log /Users/macbookair/Documents/Realty-v2/storage/logs/php_errors.log
 </IfModule>

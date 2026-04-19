@@ -12,10 +12,12 @@ class ConfigSimple {
         
         $this->data = [
             'database' => [
+                'driver' => $_ENV['DB_DRIVER'] ?? 'mysql',
                 'host' => $_ENV['DB_HOST'] ?? 'localhost',
                 'name' => $_ENV['DB_NAME'] ?? 'real_estate_db',
                 'user' => $_ENV['DB_USER'] ?? 'root',
-                'password' => $_ENV['DB_PASSWORD'] ?? ''
+                'password' => $_ENV['DB_PASSWORD'] ?? '',
+                'path' => $_ENV['DB_PATH'] ?? 'database/realty.sqlite'
             ],
             'jwt' => [
                 'secret' => $_ENV['JWT_SECRET'] ?? 'default-secret-key-change-in-production',

@@ -38,40 +38,47 @@ class PaymentModel {
     }
     
     /**
-     * Ensure payments table has required schema
+     * Ensure payments table has required schema (driver-agnostic)
      */
     private function ensurePaymentsSchema(): void {
         try {
             $pdo = $this->db;
+            $driver = $pdo->getAttribute(\PDO::ATTR_DRIVER_NAME);
 
-            // Add deleted_at for soft deletes
-            $stmt = $pdo->prepare("
-                SELECT COUNT(*) FROM information_schema.COLUMNS
-                WHERE TABLE_SCHEMA = DATABASE()
-                  AND TABLE_NAME   = 'payments'
-                  AND COLUMN_NAME  = 'deleted_at'
-            ");
-            $stmt->execute();
-            if ((int)$stmt->fetchColumn() === 0) {
-                $pdo->exec("ALTER TABLE payments
-                            ADD COLUMN deleted_at TIMESTAMP NULL
-                            DEFAULT NULL");
+            if ($driver === 'sqlite') {
+                $stmt = $pdo->query("PRAGMA table_info(payments)");
+                $columns = array_column($stmt->fetchAll(\PDO::FETCH_ASSOC), 'name');
+
+                if (!in_array('deleted_at', $columns)) {
+                    $pdo->exec("ALTER TABLE payments ADD COLUMN deleted_at DATETIME NULL DEFAULT NULL");
+                }
+                if (!in_array('unit_id', $columns)) {
+                    $pdo->exec("ALTER TABLE payments ADD COLUMN unit_id INTEGER NULL");
+                }
+            } else {
+                // MySQL / MariaDB
+                $stmt = $pdo->prepare("
+                    SELECT COUNT(*) FROM information_schema.COLUMNS
+                    WHERE TABLE_SCHEMA = DATABASE()
+                      AND TABLE_NAME   = 'payments'
+                      AND COLUMN_NAME  = 'deleted_at'
+                ");
+                $stmt->execute();
+                if ((int)$stmt->fetchColumn() === 0) {
+                    $pdo->exec("ALTER TABLE payments ADD COLUMN deleted_at TIMESTAMP NULL DEFAULT NULL");
+                }
+
+                $stmt = $pdo->prepare("
+                    SELECT COUNT(*) FROM information_schema.COLUMNS
+                    WHERE TABLE_SCHEMA = DATABASE()
+                      AND TABLE_NAME   = 'payments'
+                      AND COLUMN_NAME  = 'unit_id'
+                ");
+                $stmt->execute();
+                if ((int)$stmt->fetchColumn() === 0) {
+                    $pdo->exec("ALTER TABLE payments ADD COLUMN unit_id INT NULL AFTER property_id");
+                }
             }
-
-            // Add unit_id
-            $stmt = $pdo->prepare("
-                SELECT COUNT(*) FROM information_schema.COLUMNS
-                WHERE TABLE_SCHEMA = DATABASE()
-                  AND TABLE_NAME   = 'payments'
-                  AND COLUMN_NAME  = 'unit_id'
-            ");
-            $stmt->execute();
-            if ((int)$stmt->fetchColumn() === 0) {
-                $pdo->exec("ALTER TABLE payments
-                            ADD COLUMN unit_id INT NULL
-                            AFTER property_id");
-            }
-
         } catch (\Throwable $e) {
             error_log('ensurePaymentsSchema: ' . $e->getMessage());
         }

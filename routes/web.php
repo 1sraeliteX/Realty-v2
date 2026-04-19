@@ -144,6 +144,9 @@ return [
     // Admin Search routes
     'GET /admin/search' => 'SearchController@search',
 
+    // Notification routes
+    'GET /admin/notifications' => 'NotificationController@index',
+
     // Notification API routes
     'GET /api/notifications/count' => 'NotificationController@getUnreadCount',
     'GET /api/notifications/recent' => 'NotificationController@getRecent',

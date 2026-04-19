@@ -644,18 +644,14 @@ class CommunicationController extends BaseController {
                     t.name, 
                     t.email, 
                     t.phone,
-                    t.lease_start_date,
-                    t.lease_end_date,
+                    t.lease_start,
+                    t.lease_end,
                     t.rent_amount,
-                    t.rent_frequency,
                     p.name as property_name,
                     p.id as property_id,
                     u.unit_number,
                     u.id as unit_id,
-                    (SELECT MIN(next_payment_date) 
-                     FROM payment_schedules ps 
-                     WHERE ps.tenant_id = t.id AND ps.status = 'pending' 
-                     ORDER BY next_payment_date ASC LIMIT 1) as next_payment_due
+                    NULL as next_payment_due
                 FROM tenants t
                 LEFT JOIN properties p ON t.property_id = p.id
                 LEFT JOIN units u ON t.unit_id = u.id

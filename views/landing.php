@@ -22,12 +22,12 @@ ViewManager::set('title', 'Cornerstone Realty - Complete Property Management Sol
                 Streamline your real estate operations with our comprehensive property management platform. 
                 Manage properties, tenants, payments, and maintenance all in one place.
             </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="/admin/login" class="inline-flex items-center px-8 py-3 bg-white text-primary-600 font-semibold rounded-lg hover:bg-primary-50 transition-colors">
+            <div class="flex flex-row gap-4 justify-center items-center">
+                <a href="/admin/login" class="inline-flex items-center px-6 py-3 bg-white text-primary-600 font-semibold rounded-lg hover:bg-primary-50 transition-colors whitespace-nowrap">
                     <i class="fas fa-right-to-bracket mr-2"></i>
                     Admin Login
                 </a>
-                <a href="/admin/properties/create" class="inline-flex items-center px-8 py-3 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors">
+                <a href="/admin/properties/create" class="inline-flex items-center px-6 py-3 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors whitespace-nowrap">
                     <i class="fas fa-rocket mr-2"></i>
                     Get Started
                 </a>
@@ -205,12 +205,12 @@ ViewManager::set('title', 'Cornerstone Realty - Complete Property Management Sol
         <p class="text-xl text-gray-600 dark:text-gray-400 mb-8">
             Get started today and experience the difference of a truly comprehensive property management solution.
         </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/admin/login" class="inline-flex items-center px-8 py-3 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors">
+        <div class="flex flex-row gap-4 justify-center items-center">
+            <a href="/admin/login" class="inline-flex items-center px-6 py-3 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors whitespace-nowrap">
                 <i class="fas fa-rocket mr-2"></i>
                 Start Free Trial
             </a>
-            <a href="#demo" class="inline-flex items-center px-8 py-3 bg-white text-primary-600 font-semibold rounded-lg border border-primary-600 hover:bg-primary-50 transition-colors">
+            <a href="#demo" class="inline-flex items-center px-6 py-3 bg-white text-primary-600 font-semibold rounded-lg border border-primary-600 hover:bg-primary-50 transition-colors whitespace-nowrap">
                 <i class="fas fa-play mr-2"></i>
                 Request Demo
             </a>
@@ -585,55 +585,6 @@ ViewManager::set('title', 'Cornerstone Realty - Complete Property Management Sol
     </div>
 </section>
 
-<!-- Status Section -->
-<section id="status" class="py-20 bg-gray-50 dark:bg-gray-900">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                System Status
-            </h2>
-            <p class="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-                Real-time status of all Cornerstone Realty services
-            </p>
-        </div>
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="flex items-center justify-between p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                    <div class="flex items-center">
-                        <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
-                        <span class="font-medium text-gray-900 dark:text-white">API Services</span>
-                    </div>
-                    <span class="text-green-600 dark:text-green-400">Operational</span>
-                </div>
-                <div class="flex items-center justify-between p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                    <div class="flex items-center">
-                        <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
-                        <span class="font-medium text-gray-900 dark:text-white">Web Application</span>
-                    </div>
-                    <span class="text-green-600 dark:text-green-400">Operational</span>
-                </div>
-                <div class="flex items-center justify-between p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                    <div class="flex items-center">
-                        <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
-                        <span class="font-medium text-gray-900 dark:text-white">Database</span>
-                    </div>
-                    <span class="text-green-600 dark:text-green-400">Operational</span>
-                </div>
-                <div class="flex items-center justify-between p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
-                    <div class="flex items-center">
-                        <div class="w-3 h-3 bg-yellow-500 rounded-full mr-3"></div>
-                        <span class="font-medium text-gray-900 dark:text-white">Email Services</span>
-                    </div>
-                    <span class="text-yellow-600 dark:text-yellow-400">Degraded Performance</span>
-                </div>
-            </div>
-            <div class="mt-6 text-center">
-                <p class="text-sm text-gray-600 dark:text-gray-400">Last updated: <span id="status-time">Just now</span></p>
-            </div>
-        </div>
-    </div>
-</section>
-
 <!-- Company Section -->
 <section id="company" class="py-20 bg-white dark:bg-gray-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -673,85 +624,6 @@ ViewManager::set('title', 'Cornerstone Realty - Complete Property Management Sol
                 <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-2">Built for Property Managers</h3>
                 <p class="text-gray-600 dark:text-gray-400">By property management experts</p>
             </div>
-        </div>
-    </div>
-</section>
-
-<!-- Blog Section -->
-<section id="blog" class="py-20 bg-gray-50 dark:bg-gray-900">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                Latest from Our Blog
-            </h2>
-            <p class="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-                Tips, insights, and industry news for property managers
-            </p>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <article class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-                <div class="h-48 bg-gray-200 dark:bg-gray-700"></div>
-                <div class="p-6">
-                    <div class="text-sm text-primary-600 mb-2">March 15, 2024</div>
-                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">5 Ways to Increase Property Value</h3>
-                    <p class="text-gray-600 dark:text-gray-400 mb-4">Discover proven strategies to maximize your property's value and attract quality tenants.</p>
-                    <a href="#" class="text-primary-600 hover:text-primary-700 font-medium">Read More →</a>
-                </div>
-            </article>
-            <article class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-                <div class="h-48 bg-gray-200 dark:bg-gray-700"></div>
-                <div class="p-6">
-                    <div class="text-sm text-primary-600 mb-2">March 10, 2024</div>
-                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Tenant Retention Strategies</h3>
-                    <p class="text-gray-600 dark:text-gray-400 mb-4">Learn how to keep your best tenants longer and reduce turnover costs.</p>
-                    <a href="#" class="text-primary-600 hover:text-primary-700 font-medium">Read More →</a>
-                </div>
-            </article>
-            <article class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-                <div class="h-48 bg-gray-200 dark:bg-gray-700"></div>
-                <div class="p-6">
-                    <div class="text-sm text-primary-600 mb-2">March 5, 2024</div>
-                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Digital Marketing for Rentals</h3>
-                    <p class="text-gray-600 dark:text-gray-400 mb-4">Modern marketing techniques to fill vacancies faster and attract better tenants.</p>
-                    <a href="#" class="text-primary-600 hover:text-primary-700 font-medium">Read More →</a>
-                </div>
-            </article>
-        </div>
-    </div>
-</section>
-
-<!-- Careers Section -->
-<section id="careers" class="py-20 bg-white dark:bg-gray-800">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                Join Our Team
-            </h2>
-            <p class="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-                Help us build the future of property management
-            </p>
-        </div>
-        <div class="bg-primary-600 text-white rounded-lg p-8 text-center">
-            <h3 class="text-2xl font-semibold mb-4">We're Hiring!</h3>
-            <p class="text-primary-100 mb-6">We're always looking for talented people to join our growing team.</p>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div class="bg-white/10 rounded-lg p-4">
-                    <h4 class="font-semibold mb-2">Engineering</h4>
-                    <p class="text-primary-200 text-sm">Frontend, Backend, DevOps</p>
-                </div>
-                <div class="bg-white/10 rounded-lg p-4">
-                    <h4 class="font-semibold mb-2">Customer Success</h4>
-                    <p class="text-primary-200 text-sm">Support, Onboarding, Training</p>
-                </div>
-                <div class="bg-white/10 rounded-lg p-4">
-                    <h4 class="font-semibold mb-2">Business</h4>
-                    <p class="text-primary-200 text-sm">Sales, Marketing, Operations</p>
-                </div>
-            </div>
-            <button class="inline-flex items-center px-6 py-3 bg-white text-primary-600 font-semibold rounded-lg hover:bg-primary-50">
-                <i class="fas fa-briefcase mr-2"></i>
-                View Open Positions
-            </button>
         </div>
     </div>
 </section>
@@ -831,15 +703,12 @@ ViewManager::set('title', 'Cornerstone Realty - Complete Property Management Sol
                     <li><a href="#help" class="hover:text-white">Help Center</a></li>
                     <li><a href="#contact" class="hover:text-white">Contact</a></li>
                     <li><a href="#api" class="hover:text-white">API Docs</a></li>
-                    <li><a href="#status" class="hover:text-white">Status</a></li>
                 </ul>
             </div>
             <div>
                 <h4 class="text-lg font-semibold mb-4">Company</h4>
                 <ul class="space-y-2 text-gray-400">
-                    <li><a href="#about" class="hover:text-white">About</a></li>
-                    <li><a href="#blog" class="hover:text-white">Blog</a></li>
-                    <li><a href="#careers" class="hover:text-white">Careers</a></li>
+                    <li><a href="#company" class="hover:text-white">About</a></li>
                     <li><a href="#privacy" class="hover:text-white">Privacy</a></li>
                 </ul>
             </div>

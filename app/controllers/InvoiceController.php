@@ -173,48 +173,40 @@ class InvoiceController extends BaseController {
             $totalAmount += floatval($item['amount']);
         }
         
+        $isAjax = !empty($_POST['_ajax']) || ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'XMLHttpRequest';
+
         try {
-            $this->db->beginTransaction();
-            
+            $pdo = $this->db->getConnection();
+
             // Generate invoice number
-            $invoiceNumber = 'INV-' . date('Y') . '-' . str_pad($this->getNextInvoiceNumber($admin['id']), 4, '0', STR_PAD_LEFT);
-            
-            // Insert invoice
-            $sql = "INSERT INTO invoices (admin_id, tenant_id, invoice_number, amount, due_date, 
-                      status, notes, created_at, updated_at) 
-                      VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
-            
-            $params = [
+            $stmt = $pdo->prepare("SELECT COUNT(*) FROM invoices WHERE admin_id = ?");
+            $stmt->execute([$admin['id']]);
+            $seq = (int)$stmt->fetchColumn() + 1;
+            $invoiceNumber = 'INV-' . date('Y') . '-' . str_pad($seq, 4, '0', STR_PAD_LEFT);
+
+            $stmt = $pdo->prepare("
+                INSERT INTO invoices (admin_id, tenant_id, invoice_number, amount, due_date,
+                                      status, items, notes, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+            ");
+            $stmt->execute([
                 $admin['id'],
-                $_POST['tenant_id'],
+                (int)$_POST['tenant_id'],
                 $invoiceNumber,
                 $totalAmount,
                 $_POST['due_date'] ?? date('Y-m-d', strtotime('+30 days')),
                 $_POST['status'] ?? 'draft',
-                $_POST['notes'] ?? null
-            ];
-            
-            $this->db->query($sql, $params);
-            $invoiceId = $this->db->lastInsertId();
-            
-            // Insert invoice items
-            $itemSql = "INSERT INTO invoice_items (invoice_id, description, amount, quantity, created_at) VALUES (?, ?, ?, ?, NOW())";
-            foreach ($items as $item) {
-                $this->db->query($itemSql, [
-                    $invoiceId,
-                    $item['description'],
-                    $item['amount'],
-                    $item['quantity'] ?? 1
-                ]);
-            }
-            
-            $this->db->commit();
-            
-            $_SESSION['success'] = 'Invoice created successfully';
+                json_encode($items),
+                $_POST['notes'] ?? null,
+            ]);
+
+            if ($isAjax) { $this->json(['success' => true, 'message' => "Invoice $invoiceNumber created successfully."]); return; }
+            $_SESSION['success'] = "Invoice $invoiceNumber created successfully.";
             $this->redirect('/admin/invoices');
-            
-        } catch (Exception $e) {
-            $this->db->rollBack();
+
+        } catch (\Throwable $e) {
+            error_log('InvoiceController::store error: ' . $e->getMessage());
+            if ($isAjax) { $this->json(['success' => false, 'error' => 'Database error. Please try again.'], 500); return; }
             $_SESSION['error'] = 'Failed to create invoice: ' . $e->getMessage();
             $this->redirect('/admin/invoices/create');
         }

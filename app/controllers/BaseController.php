@@ -364,14 +364,32 @@ class BaseController {
             throw new \Exception('File size exceeds maximum allowed size');
         }
 
-        // Check file type
+        // Check file extension
         $fileExt = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
         if (!in_array($fileExt, $allowedTypes)) {
             throw new \Exception('File type not allowed');
         }
 
-        // Generate unique filename
-        $filename = uniqid() . '.' . $fileExt;
+        // Validate actual MIME type (prevents extension spoofing)
+        $allowedMimes = [
+            'jpg'  => 'image/jpeg', 'jpeg' => 'image/jpeg',
+            'png'  => 'image/png',
+            'pdf'  => 'application/pdf',
+            'gif'  => 'image/gif',
+            'webp' => 'image/webp',
+        ];
+        if (function_exists('finfo_open')) {
+            $finfo    = finfo_open(FILEINFO_MIME_TYPE);
+            $mimeType = finfo_file($finfo, $file['tmp_name']);
+            finfo_close($finfo);
+            $expectedMime = $allowedMimes[$fileExt] ?? null;
+            if ($expectedMime && $mimeType !== $expectedMime) {
+                throw new \Exception('File content does not match its extension');
+            }
+        }
+
+        // Generate unique filename with cryptographic randomness
+        $filename = bin2hex(random_bytes(16)) . '.' . $fileExt;
         $uploadPath = $destination . '/' . $filename;
 
         // Create directory if it doesn't exist

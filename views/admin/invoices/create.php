@@ -349,26 +349,48 @@ function submitInvoiceForm(event) {
         return;
     }
     
+    // Serialize line items as JSON for the server
+    const lineItemsData = [];
+    document.querySelectorAll('.line-item').forEach(item => {
+        const description = item.querySelector('input[name*="[description]"]')?.value?.trim();
+        const quantity = item.querySelector('input[name*="[quantity]"]')?.value;
+        const unitPrice = item.querySelector('input[name*="[unit_price]"]')?.value;
+        if (description && unitPrice) {
+            lineItemsData.push({
+                description,
+                quantity: parseFloat(quantity) || 1,
+                amount: (parseFloat(quantity) || 1) * parseFloat(unitPrice)
+            });
+        }
+    });
+    formData.set('items', JSON.stringify(lineItemsData));
+    formData.append('_ajax', '1');
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+    if (csrfToken) formData.append('_token', csrfToken);
+
     // Show loading state
     const submitBtn = form.querySelector('button[type="submit"]');
     const originalText = submitBtn.innerHTML;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Creating...';
     submitBtn.disabled = true;
-    
-    // Simulate API call
-    setTimeout(() => {
-        // Reset button
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
-        
-        // Show success message
-        showToast('Invoice created successfully!', 'success');
-        
-        // Redirect after a short delay
-        setTimeout(() => {
-            window.location.href = '/admin/invoices';
-        }, 1500);
-    }, 1500);
+
+    fetch('/admin/invoices', { method: 'POST', body: formData })
+        .then(r => r.json())
+        .then(data => {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+            if (data.success) {
+                showToast(data.message || 'Invoice created successfully!', 'success');
+                setTimeout(() => { window.location.href = '/admin/invoices'; }, 1200);
+            } else {
+                showToast(data.error || 'Failed to create invoice. Please try again.', 'error');
+            }
+        })
+        .catch(() => {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+            showToast('Network error. Please try again.', 'error');
+        });
 }
 
 function saveAsDraft() {

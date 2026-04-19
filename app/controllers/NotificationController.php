@@ -11,6 +11,36 @@ class NotificationController extends BaseController {
     }
     
     /**
+     * Display notifications list page
+     */
+    public function index() {
+        $admin = $this->requireAuth();
+
+        require_once __DIR__ . '/../../config/bootstrap.php';
+
+        try {
+            $notifications = $this->notificationModel->getRecent($admin['id'], 50);
+
+            foreach ($notifications as &$n) {
+                $n['time_ago'] = $this->timeAgo($n['created_at']);
+            }
+
+            \ViewManager::set('title', 'Notifications');
+            \ViewManager::set('admin', $admin);
+            \ViewManager::set('notifications_list', $notifications);
+
+            ob_start();
+            include __DIR__ . '/../../views/admin/notifications/index.php';
+            $content = ob_get_clean();
+
+            \ViewManager::set('content', $content);
+            include __DIR__ . '/../../views/admin/dashboard_layout.php';
+        } catch (\Throwable $e) {
+            $this->showErrorPage('Unable to load notifications.', $e->getMessage());
+        }
+    }
+
+    /**
      * Get unread notifications count for current admin
      */
     public function getUnreadCount() {

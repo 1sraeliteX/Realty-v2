@@ -96,6 +96,111 @@ class PaymentsController extends BaseController {
     }
     
     /**
+     * Show create payment form
+     */
+    public function create() {
+        $admin = $this->requireAuth();
+
+        require_once __DIR__ . '/../../config/init_framework.php';
+
+        $pdo = $this->db->getConnection();
+        $scope = $admin['role'] === 'super_admin' ? [] : [$admin['id']];
+        $cond  = $admin['role'] === 'super_admin' ? '' : 'WHERE t.admin_id = ?';
+
+        $stmt = $pdo->prepare("
+            SELECT t.id, t.name, p.name AS property_name, u.unit_number
+            FROM tenants t
+            LEFT JOIN properties p ON p.id = t.property_id
+            LEFT JOIN units u ON u.id = t.unit_id
+            WHERE t.deleted_at IS NULL
+              " . ($admin['role'] === 'super_admin' ? '' : 'AND t.admin_id = ?') . "
+            ORDER BY t.name ASC
+        ");
+        $stmt->execute($scope);
+        $tenants = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        \ViewManager::set('title', 'Record Payment');
+        \ViewManager::set('admin', $admin);
+        \ViewManager::set('tenants', $tenants);
+
+        ob_start();
+        include __DIR__ . '/../../views/admin/payments/create.php';
+        $content = ob_get_clean();
+
+        \ViewManager::set('content', $content);
+        include __DIR__ . '/../../views/admin/dashboard_layout.php';
+    }
+
+    /**
+     * Store new payment
+     */
+    public function store() {
+        $admin = $this->requireAuth();
+        $isAjax = !empty($_POST['_ajax']) || ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'XMLHttpRequest';
+
+        // CSRF check
+        $token = $_POST['_token'] ?? '';
+        if (!empty($_SESSION['csrf_token']) && !hash_equals($_SESSION['csrf_token'], $token)) {
+            if ($isAjax) { $this->json(['success' => false, 'error' => 'Invalid security token.'], 403); return; }
+            $_SESSION['error'] = 'Security token expired. Please try again.';
+            $this->redirect('/admin/payments/create');
+            return;
+        }
+
+        $tenantId     = (int)($_POST['tenant_id'] ?? 0);
+        $amount       = (float)($_POST['amount'] ?? 0);
+        $paymentType  = $_POST['payment_type'] ?? 'rent';
+        $paymentMethod= $_POST['payment_method'] ?? 'cash';
+        $status       = $_POST['status'] ?? 'pending';
+        $paymentDate  = $_POST['payment_date'] ?? null;
+        $dueDate      = $_POST['due_date'] ?? $paymentDate;
+        $notes        = $_POST['notes'] ?? '';
+
+        $errors = [];
+        if (!$tenantId) $errors[] = 'Tenant is required.';
+        if ($amount <= 0) $errors[] = 'Amount must be greater than 0.';
+        if (!$paymentDate) $errors[] = 'Payment date is required.';
+
+        if ($errors) {
+            if ($isAjax) { $this->json(['success' => false, 'error' => implode(' ', $errors)], 422); return; }
+            $_SESSION['error'] = implode(' ', $errors);
+            $this->redirect('/admin/payments/create');
+            return;
+        }
+
+        try {
+            $pdo = $this->db->getConnection();
+
+            // Get property_id from the tenant
+            $tenantRow = $pdo->prepare("SELECT property_id FROM tenants WHERE id = ? LIMIT 1");
+            $tenantRow->execute([$tenantId]);
+            $tenant = $tenantRow->fetch(\PDO::FETCH_ASSOC);
+            $propertyId = $tenant['property_id'] ?? null;
+
+            $stmt = $pdo->prepare("
+                INSERT INTO payments (admin_id, tenant_id, property_id, amount, payment_type,
+                                      payment_method, status, payment_date, due_date, notes,
+                                      created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+            ");
+            $stmt->execute([
+                $admin['id'], $tenantId, $propertyId, $amount,
+                $paymentType, $paymentMethod, $status,
+                $paymentDate, $dueDate ?: $paymentDate, $notes,
+            ]);
+
+            if ($isAjax) { $this->json(['success' => true, 'message' => 'Payment recorded successfully.']); return; }
+            $_SESSION['success'] = 'Payment recorded successfully.';
+            $this->redirect('/admin/payments');
+        } catch (\Throwable $e) {
+            error_log('PaymentsController::store error: ' . $e->getMessage());
+            if ($isAjax) { $this->json(['success' => false, 'error' => 'Database error. Please try again.'], 500); return; }
+            $_SESSION['error'] = 'An error occurred. Please try again.';
+            $this->redirect('/admin/payments/create');
+        }
+    }
+
+    /**
      * Show payment details
      */
     public function show($id) {

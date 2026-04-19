@@ -508,21 +508,28 @@ function submitTenantForm(event) {
     const originalText = submitBtn.innerHTML;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Creating...';
     submitBtn.disabled = true;
-    
-    // Simulate API call
-    setTimeout(() => {
-        // Reset button
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
-        
-        // Show success message
-        showToast('Tenant created successfully!', 'success');
-        
-        // Redirect after a short delay
-        setTimeout(() => {
-            window.location.href = '/admin/tenants-occupants';
-        }, 1500);
-    }, 1500);
+
+    formData.append('_ajax', '1');
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+    if (csrfToken) formData.append('_token', csrfToken);
+
+    fetch('/admin/tenants', { method: 'POST', body: formData })
+        .then(r => r.json())
+        .then(data => {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+            if (data.success) {
+                showToast(data.message || 'Tenant created successfully!', 'success');
+                setTimeout(() => { window.location.href = '/admin/tenants-occupants'; }, 1200);
+            } else {
+                showToast(data.error || 'Failed to create tenant. Please try again.', 'error');
+            }
+        })
+        .catch(() => {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+            showToast('Network error. Please try again.', 'error');
+        });
 }
 
 // ── Tenant upload tab switching ───────────────────────────────────

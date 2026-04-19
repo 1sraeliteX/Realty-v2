@@ -21,8 +21,7 @@ class ApiUnitController extends BaseController {
         $params = [$admin['id']];
         
         if (!empty($search)) {
-            $where[] = "(u.unit_number LIKE ? OR u.description LIKE ?)";
-            $params[] = "%$search%";
+            $where[] = "u.unit_number LIKE ?";
             $params[] = "%$search%";
         }
         

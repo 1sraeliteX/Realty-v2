@@ -11,18 +11,22 @@ require_once __DIR__ . '/config_simple.php';
 class Database {
     private static $instance = null;
     private $pdo;
+    private $driver;
     private $host;
     private $dbname;
     private $user;
     private $password;
+    private $path;
 
     private function __construct() {
         $config = ConfigSimple::getInstance();
-        
+
+        $this->driver = $config->get('database.driver', 'mysql');
         $this->host = $config->get('database.host');
         $this->dbname = $config->get('database.name');
         $this->user = $config->get('database.user');
         $this->password = $config->get('database.password');
+        $this->path = $config->get('database.path');
 
         $this->connect();
     }
@@ -36,15 +40,29 @@ class Database {
 
     private function connect() {
         try {
-            $dsn = "mysql:host={$this->host};dbname={$this->dbname};charset=utf8mb4";
-            $options = [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                PDO::ATTR_EMULATE_PREPARES => false,
-                PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci"
-            ];
-
-            $this->pdo = new PDO($dsn, $this->user, $this->password, $options);
+            if ($this->driver === 'sqlite') {
+                // Ensure directory exists
+                $dir = dirname($this->path);
+                if (!is_dir($dir)) {
+                    mkdir($dir, 0755, true);
+                }
+                $dsn = "sqlite:" . $this->path;
+                $options = [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+                ];
+                $this->pdo = new PDO($dsn, null, null, $options);
+            } else {
+                // MySQL connection
+                $dsn = "mysql:host={$this->host};dbname={$this->dbname};charset=utf8mb4";
+                $options = [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::ATTR_EMULATE_PREPARES => false
+                ];
+                $this->pdo = new PDO($dsn, $this->user, $this->password, $options);
+                $this->pdo->exec("SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci");
+            }
         } catch (PDOException $e) {
             if (ConfigSimple::getInstance()->get('app.debug')) {
                 die("Database connection failed: " . $e->getMessage());
@@ -130,7 +148,11 @@ class Database {
     }
 
     public function tableExists($table) {
-        $sql = "SHOW TABLES LIKE ?";
+        if ($this->driver === 'sqlite') {
+            $sql = "SELECT name FROM sqlite_master WHERE type='table' AND name=?";
+        } else {
+            $sql = "SHOW TABLES LIKE ?";
+        }
         $result = $this->fetch($sql, [$table]);
         return !empty($result);
     }

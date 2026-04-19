@@ -1,0 +1,23 @@
+# Environment & credentials
+.env
+*.env
+
+# Database files
+database/realty.sqlite
+database/*.sqlite
+
+# Uploaded files
+public/uploads/
+storage/
+
+# Logs
+*.log
+debug_errors.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# PHP/vendor
+vendor/
+composer.lock

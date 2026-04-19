@@ -7,39 +7,47 @@ class Config {
     private $data = [];
 
     private function __construct() {
-        // $dotenv = Dotenv::createImmutable(__DIR__ . '/..');
-        // $dotenv->load();
-        
+        // Load .env file if it exists
+        $envFile = __DIR__ . '/../.env';
+        if (file_exists($envFile)) {
+            foreach (file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+                if (strpos(trim($line), '#') === 0) continue;
+                if (strpos($line, '=') === false) continue;
+                [$key, $value] = explode('=', $line, 2);
+                $_ENV[trim($key)] = trim($value);
+            }
+        }
+
         $this->data = [
             'database' => [
-                'host' => 'localhost',
-                'name' => 'real_estate_db',
-                'user' => 'root',
-                'password' => '',
-                'use_supabase' => true, // Enable Supabase for production
-                'supabase_url' => 'https://ducwcodegciekralkrqd.supabase.co',
-                'supabase_key' => 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR1Y3djb2RlZ2NpZWtyYWxrcnFkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MjgzNjczNiwiZXhwIjoyMDg4NDEyNzM2fQ.VKZUKgEtkrJWhE1UlHzHNm_fIZe4gdrOGYfFyHlQ22Y'
+                'host'        => $_ENV['DB_HOST'] ?? 'localhost',
+                'name'        => $_ENV['DB_NAME'] ?? 'real_estate_db',
+                'user'        => $_ENV['DB_USER'] ?? 'real_estate_db_user',
+                'password'    => $_ENV['DB_PASSWORD'] ?? '',
+                'use_supabase'=> false,
+                'supabase_url'=> '',
+                'supabase_key'=> '',
             ],
             'jwt' => [
-                'secret' => 'your-secret-key-change-in-production',
-                'expire' => 86400
+                'secret' => $_ENV['JWT_SECRET'] ?? '',
+                'expire' => (int)($_ENV['JWT_EXPIRE'] ?? 86400),
             ],
             'app' => [
-                'url' => 'http://localhost',
-                'env' => 'development',
-                'debug' => true
+                'url'   => $_ENV['APP_URL'] ?? 'http://localhost:8080',
+                'env'   => $_ENV['APP_ENV'] ?? 'production',
+                'debug' => ($_ENV['APP_DEBUG'] ?? 'false') === 'true',
             ],
             'mail' => [
-                'host' => '',
-                'port' => 587,
-                'username' => '',
-                'password' => '',
-                'encryption' => 'tls'
+                'host'       => $_ENV['MAIL_HOST'] ?? 'smtp.gmail.com',
+                'port'       => (int)($_ENV['MAIL_PORT'] ?? 587),
+                'username'   => $_ENV['MAIL_USERNAME'] ?? '',
+                'password'   => $_ENV['MAIL_PASSWORD'] ?? '',
+                'encryption' => $_ENV['MAIL_ENCRYPTION'] ?? 'tls',
             ],
             'upload' => [
-                'max_size' => 5242880,
-                'allowed_types' => ['jpg', 'jpeg', 'png', 'pdf']
-            ]
+                'max_size'     => 5242880,
+                'allowed_types'=> ['jpg', 'jpeg', 'png', 'pdf'],
+            ],
         ];
     }
 

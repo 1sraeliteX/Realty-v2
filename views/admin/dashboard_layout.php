@@ -34,6 +34,7 @@ $isCalculator = strpos($currentPath, '/admin/calculator') === 0;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? (function(){ if(!isset($_SESSION['csrf_token'])){$_SESSION['csrf_token']=bin2hex(random_bytes(32));$_SESSION['csrf_token_time']=time();}return $_SESSION['csrf_token']; })()); ?>">
     <title><?php echo $title ?? 'Real Estate Management'; ?></title>
     
     <!-- Blocking theme script - MUST be first to prevent FOIT -->

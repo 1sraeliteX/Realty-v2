@@ -11,18 +11,18 @@ $title = ViewManager::get('title', 'Super Admin Dashboard');
 $currentPath = $_SERVER['REQUEST_URI'] ?? '';
 $isDashboard = strpos($currentPath, '/superadmin/dashboard') === 0 && strpos($currentPath, '/superadmin/dashboard/') === false;
 $isAdmins = strpos($currentPath, '/superadmin/admins') === 0;
-$isProperties = strpos($currentPath, '/properties') === 0;
-$isUnits = strpos($currentPath, '/units') === 0;
-$isTenants = strpos($currentPath, '/tenants') === 0 || strpos($currentPath, '/tenants-occupants') === 0;
-$isPayments = strpos($currentPath, '/payments') === 0;
-$isInvoices = strpos($currentPath, '/invoices') === 0;
-$isFinances = strpos($currentPath, '/finances') === 0;
-$isMaintenance = strpos($currentPath, '/maintenance') === 0;
-$isCommunications = strpos($currentPath, '/communications') === 0;
-$isDocuments = strpos($currentPath, '/documents') === 0;
-$isReports = strpos($currentPath, '/reports') === 0;
-$isSettings = strpos($currentPath, '/settings') === 0;
-$isProfile = strpos($currentPath, '/profile') === 0;
+$isProperties = strpos($currentPath, '/admin/properties') === 0;
+$isUnits = strpos($currentPath, '/admin/units') === 0;
+$isTenants = strpos($currentPath, '/admin/tenants') === 0 || strpos($currentPath, '/admin/tenants-occupants') === 0;
+$isPayments = strpos($currentPath, '/admin/payments') === 0;
+$isInvoices = strpos($currentPath, '/admin/invoices') === 0;
+$isFinances = strpos($currentPath, '/admin/finances') === 0;
+$isMaintenance = strpos($currentPath, '/admin/maintenance') === 0;
+$isCommunications = strpos($currentPath, '/admin/communications') === 0;
+$isDocuments = strpos($currentPath, '/admin/documents') === 0;
+$isReports = strpos($currentPath, '/admin/reports') === 0;
+$isSettings = strpos($currentPath, '/admin/settings') === 0;
+$isProfile = strpos($currentPath, '/admin/profile') === 0;
 ?>
 
 <!DOCTYPE html>
@@ -117,15 +117,15 @@ $isProfile = strpos($currentPath, '/profile') === 0;
                         <div class="pt-4 pb-2">
                             <span class="px-3 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400">Platform Overview</span>
                         </div>
-                        <a href="/properties" class="<?php echo $isProperties ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <a href="/admin/properties" class="<?php echo $isProperties ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <i class="fas fa-building mr-3"></i>
                             All Properties
                         </a>
-                        <a href="/tenants" class="<?php echo $isTenants ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <a href="/admin/tenants-occupants" class="<?php echo $isTenants ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <i class="fas fa-users mr-3"></i>
                             All Tenants
                         </a>
-                        <a href="/units" class="<?php echo $isUnits ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <a href="/admin/units" class="<?php echo $isUnits ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <i class="fas fa-door-open mr-3"></i>
                             All Units
                         </a>
@@ -134,11 +134,11 @@ $isProfile = strpos($currentPath, '/profile') === 0;
                         <div class="pt-4 pb-2">
                             <span class="px-3 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400">Financial Overview</span>
                         </div>
-                        <a href="/payments" class="<?php echo $isPayments ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <a href="/admin/payments" class="<?php echo $isPayments ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <i class="fas fa-chart-line mr-3"></i>
                             Platform Finances
                         </a>
-                        <a href="/invoices" class="<?php echo $isInvoices ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <a href="/admin/invoices" class="<?php echo $isInvoices ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <i class="fas fa-file-invoice-dollar mr-3"></i>
                             All Invoices
                         </a>
@@ -147,19 +147,19 @@ $isProfile = strpos($currentPath, '/profile') === 0;
                         <div class="pt-4 pb-2">
                             <span class="px-3 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400">Operations</span>
                         </div>
-                        <a href="/maintenance" class="<?php echo $isMaintenance ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <a href="/admin/maintenance" class="<?php echo $isMaintenance ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <i class="fas fa-tools mr-3"></i>
                             Maintenance Requests
                         </a>
-                        <a href="/communications" class="<?php echo $isCommunications ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <a href="/admin/communications" class="<?php echo $isCommunications ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <i class="fas fa-envelope mr-3"></i>
                             Communications
                         </a>
-                        <a href="/documents" class="<?php echo $isDocuments ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <a href="/admin/documents" class="<?php echo $isDocuments ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <i class="fas fa-folder mr-3"></i>
                             Documents
                         </a>
-                        <a href="/reports" class="<?php echo $isReports ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <a href="/admin/reports" class="<?php echo $isReports ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <i class="fas fa-chart-bar mr-3"></i>
                             Platform Reports
                         </a>
@@ -168,11 +168,11 @@ $isProfile = strpos($currentPath, '/profile') === 0;
                         <div class="pt-4 pb-2">
                             <span class="px-3 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400">System</span>
                         </div>
-                        <a href="/settings" class="<?php echo $isSettings ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <a href="/admin/settings" class="<?php echo $isSettings ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <i class="fas fa-cog mr-3"></i>
                             System Settings
                         </a>
-                        <a href="/profile" class="<?php echo $isProfile ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <a href="/admin/profile" class="<?php echo $isProfile ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'; ?> group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <i class="fas fa-user mr-3"></i>
                             Profile
                         </a>
