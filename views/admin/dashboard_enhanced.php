@@ -368,284 +368,136 @@ function calculateTrend($current, $previous) {
     ?>
 
     <!-- Quick Calculator Widget -->
-    <?php 
-    echo UIComponents::card(
-        '<div class="space-y-3">
-            <!-- Calculator Display -->
-            <div id="qc-display" class="bg-gray-100 dark:bg-gray-800 rounded-lg p-3 text-right text-xl font-mono text-gray-800 dark:text-white min-h-[48px] break-all">0</div>
-            
-            <!-- Calculator Buttons -->
-            <div class="grid grid-cols-4 gap-1">
-                <!-- Row 1 -->
-                <button onclick="qcClear()" class="col-span-1 bg-red-100 hover:bg-red-200 text-red-700 font-bold py-2 rounded text-sm">C</button>
-                <button onclick="qcBackspace()" class="bg-orange-100 hover:bg-orange-200 text-orange-700 font-bold py-2 rounded text-sm">⌫</button>
-                <button onclick="qcOperator(\'%\')" class="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:text-white font-bold py-2 rounded text-sm">%</button>
-                <button onclick="qcOperator(\'÷\')" class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-2 rounded text-sm">÷</button>
-                
-                <!-- Row 2 -->
-                <button onclick="qcNumber(\'7\')" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-white font-semibold py-2 rounded text-sm">7</button>
-                <button onclick="qcNumber(\'8\')" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-white font-semibold py-2 rounded text-sm">8</button>
-                <button onclick="qcNumber(\'9\')" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-white font-semibold py-2 rounded text-sm">9</button>
-                <button onclick="qcOperator(\'×\')" class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-2 rounded text-sm">×</button>
-                
-                <!-- Row 3 -->
-                <button onclick="qcNumber(\'4\')" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-white font-semibold py-2 rounded text-sm">4</button>
-                <button onclick="qcNumber(\'5\')" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-white font-semibold py-2 rounded text-sm">5</button>
-                <button onclick="qcNumber(\'6\')" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-white font-semibold py-2 rounded text-sm">6</button>
-                <button onclick="qcOperator(\'−\')" class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-2 rounded text-sm">−</button>
-                
-                <!-- Row 4 -->
-                <button onclick="qcNumber(\'1\')" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-white font-semibold py-2 rounded text-sm">1</button>
-                <button onclick="qcNumber(\'2\')" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-white font-semibold py-2 rounded text-sm">2</button>
-                <button onclick="qcNumber(\'3\')" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-white font-semibold py-2 rounded text-sm">3</button>
-                <button onclick="qcOperator(\'+\')" class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-2 rounded text-sm">+</button>
-                
-                <!-- Row 5 -->
-                <button onclick="qcNumber(\'0\')" class="col-span-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-white font-semibold py-2 rounded text-sm">0</button>
-                <button onclick="qcNumber(\'.\')" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-white font-semibold py-2 rounded text-sm">.</button>
-                <button onclick="qcCalculate()" class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-2 rounded text-sm">=</button>
-            </div>
+    <?php ob_start(); ?>
+    <div class="space-y-3">
+        <div id="qc-display" class="bg-gray-100 dark:bg-gray-800 rounded-lg p-3 text-right text-xl font-mono text-gray-800 dark:text-white min-h-[48px] break-all">0</div>
+        <div class="grid grid-cols-4 gap-1">
+            <button onclick="qcClear()" class="col-span-1 bg-red-100 hover:bg-red-200 text-red-700 font-bold py-2 rounded text-sm">C</button>
+            <button onclick="qcBackspace()" class="bg-orange-100 hover:bg-orange-200 text-orange-700 font-bold py-2 rounded text-sm">⌫</button>
+            <button onclick="qcOperator('%')" class="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:text-white font-bold py-2 rounded text-sm">%</button>
+            <button onclick="qcOperator('÷')" class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-2 rounded text-sm">÷</button>
+            <button onclick="qcNumber('7')" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-white font-semibold py-2 rounded text-sm">7</button>
+            <button onclick="qcNumber('8')" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-white font-semibold py-2 rounded text-sm">8</button>
+            <button onclick="qcNumber('9')" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-white font-semibold py-2 rounded text-sm">9</button>
+            <button onclick="qcOperator('×')" class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-2 rounded text-sm">×</button>
+            <button onclick="qcNumber('4')" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-white font-semibold py-2 rounded text-sm">4</button>
+            <button onclick="qcNumber('5')" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-white font-semibold py-2 rounded text-sm">5</button>
+            <button onclick="qcNumber('6')" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-white font-semibold py-2 rounded text-sm">6</button>
+            <button onclick="qcOperator('−')" class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-2 rounded text-sm">−</button>
+            <button onclick="qcNumber('1')" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-white font-semibold py-2 rounded text-sm">1</button>
+            <button onclick="qcNumber('2')" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-white font-semibold py-2 rounded text-sm">2</button>
+            <button onclick="qcNumber('3')" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-white font-semibold py-2 rounded text-sm">3</button>
+            <button onclick="qcOperator('+')" class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-2 rounded text-sm">+</button>
+            <button onclick="qcNumber('0')" class="col-span-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-white font-semibold py-2 rounded text-sm">0</button>
+            <button onclick="qcNumber('.')" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-white font-semibold py-2 rounded text-sm">.</button>
+            <button onclick="qcCalculate()" class="bg-amber-400 hover:bg-amber-500 text-white font-bold py-2 rounded text-sm">=</button>
         </div>
-        
-        <script>
-        // Quick Calculator JavaScript - Scoped with qc- prefix
-        (function() {
-            var qcDisplayValue = "0";
-            var qcExpression = "";
-            var qcIsErrorState = false;
-            
-            function qcGetDisplay() {
-                return document.getElementById("qc-display");
+    </div>
+    <script>
+    (function() {
+        var qcDisplayValue = '0';
+        var qcExpression = '';
+        var qcIsErrorState = false;
+        function qcGetDisplay() { return document.getElementById('qc-display'); }
+        function qcSafeEval(expression) {
+            if (!expression || expression.trim() === '') return '0';
+            expression = expression.trim();
+            if (!/^[0-9+\-*/.() ]+$/.test(expression)) return 'Error';
+            if (/\/\s*0(?!\d)/.test(expression)) return 'Error';
+            try { return qcSimpleEvaluate(expression); }
+            catch(e) { return 'Error'; }
+        }
+        function qcSimpleEvaluate(expression) {
+            expression = expression.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-');
+            return qcEvaluateExpression(expression);
+        }
+        function qcEvaluateExpression(expr) {
+            expr = expr.replace(/\s/g, '');
+            while (expr.includes('(')) {
+                let start = expr.lastIndexOf('(');
+                let end = expr.indexOf(')', start);
+                if (end === -1) return 'Error';
+                let inner = expr.substring(start + 1, end);
+                let result = qcEvaluateSimple(inner);
+                if (result === 'Error') return 'Error';
+                expr = expr.substring(0, start) + result + expr.substring(end + 1);
             }
-            
-            function qcSafeEval(expression) {
-                // Handle empty expression
-                if (!expression || expression.trim() === "") return "0";
-                
-                // Remove any whitespace and validate characters
-                expression = expression.trim();
-                if (!/^[0-9+\-*/.() ]+$/.test(expression)) return "Error";
-                
-                // Prevent division by zero
-                if (/\/\s*0(?!\d)/.test(expression)) return "Error";
-                
-                try {
-                    // Simple safe evaluation for basic math
-                    return qcSimpleEvaluate(expression);
-                } catch(e) {
-                    console.error(\'QC Calculation error:\', e.message, \'Expression:\', expression);
-                    return "Error";
-                }
-            }
-            
-            function qcSimpleEvaluate(expression) {
-                // Replace symbols with operators
-                expression = expression
-                    .replace(/×/g, '*')
-                    .replace(/÷/g, '/')
-                    .replace(/−/g, '-');
-                
-                // Use completely safe step-by-step evaluation
-                return qcEvaluateExpression(expression);
-            }
-            
-            function qcEvaluateExpression(expr) {
-                // Remove all spaces
-                expr = expr.replace(/\s/g, '');
-                
-                // Handle parentheses
-                while (expr.includes(\'(\')) {
-                    let start = expr.lastIndexOf(\'(\');
-                    let end = expr.indexOf(\')\', start);
-                    if (end === -1) return "Error";
-                    
-                    let inner = expr.substring(start + 1, end);
-                    let result = qcEvaluateSimple(inner);
-                    if (result === "Error") return "Error";
-                    
-                    expr = expr.substring(0, start) + result + expr.substring(end + 1);
-                }
-                
-                return qcEvaluateSimple(expr);
-            }
-            
-            function qcEvaluateSimple(expr) {
-                // Handle multiplication and division first (higher precedence)
-                let terms = expr.split(/[+-]/);
-                let factors = [];
-                
-                for (let term of terms) {
-                    if (term.includes(\'*\') || term.includes(\'/\')) {
-                        let factorParts = term.split(/[*\/]/);
-                        let result = parseFloat(factorParts[0]) || 0;
-                        
-                        for (let i = 1; i < factorParts.length; i++) {
-                            let operatorIdx = term.indexOf(factorParts[i]);
-                            let operator = operatorIdx > -1 ? term.charAt(operatorIdx - 1) : \'+\';
-                            let operand = parseFloat(factorParts[i]) || 0;
-                            
-                            if (operator === \'*\') {
-                                result *= operand;
-                            } else if (operator === \'/\') {
-                                if (operand === 0) return "Error";
-                                result /= operand;
-                            }
-                        }
-                        factors.push(result);
-                    } else {
-                        factors.push(parseFloat(term) || 0);
+            return qcEvaluateSimple(expr);
+        }
+        function qcEvaluateSimple(expr) {
+            let terms = expr.split(/[+-]/);
+            let factors = [];
+            for (let term of terms) {
+                if (term.includes('*') || term.includes('/')) {
+                    let factorParts = term.split(/[*\/]/);
+                    let result = parseFloat(factorParts[0]) || 0;
+                    for (let i = 1; i < factorParts.length; i++) {
+                        let operatorIdx = term.indexOf(factorParts[i]);
+                        let operator = operatorIdx > -1 ? term.charAt(operatorIdx - 1) : '+';
+                        let operand = parseFloat(factorParts[i]) || 0;
+                        if (operator === '*') result *= operand;
+                        else if (operator === '/') { if (operand === 0) return 'Error'; result /= operand; }
                     }
-                }
-                
-                // Handle addition and subtraction
-                let result = factors[0] || 0;
-                let exprIndex = 0;
-                
-                for (let i = 1; i < factors.length; i++) {
-                    // Find the operator between factors[i-1] and factors[i]
-                    let factorStr = factors[i].toString();
-                    let prevFactorStr = factors[i-1].toString();
-                    let operatorIdx = expr.indexOf(prevFactorStr + factorStr, exprIndex);
-                    let operator = operatorIdx > -1 ? expr.charAt(operatorIdx - 1) : \'+\';
-                    
-                    if (operator === \'+\') {
-                        result += factors[i];
-                    } else if (operator === \'-\') {
-                        result -= factors[i];
-                    }
-                    
-                    exprIndex = operatorIdx + factorStr.length;
-                }
-                
-                if (!isFinite(result) || isNaN(result)) return "Error";
-                return Math.round(result * 100000000) / 100000000; // Prevent floating point errors
+                    factors.push(result);
+                } else { factors.push(parseFloat(term) || 0); }
             }
-            
-            window.qcNumber = function(num) {
-                if (qcIsErrorState) {
-                    qcDisplayValue = "0";
-                    qcExpression = "";
-                    qcIsErrorState = false;
-                    qcGetDisplay().textContent = qcDisplayValue;
-                    return;
-                }
-                
-                if (num === ".") {
-                    var parts = qcExpression.split(/[+\-\*\/]/);
-                    var currentNumber = parts[parts.length - 1];
-                    if (currentNumber.includes(".")) return;
-                }
-                
-                if (qcDisplayValue === "0" && num !== ".") {
-                    qcDisplayValue = "";
-                    qcExpression = "";
-                }
-                qcDisplayValue += num;
-                qcExpression += num;
+            let result = factors[0] || 0;
+            let exprIndex = 0;
+            for (let i = 1; i < factors.length; i++) {
+                let factorStr = factors[i].toString();
+                let prevFactorStr = factors[i-1].toString();
+                let operatorIdx = expr.indexOf(prevFactorStr + factorStr, exprIndex);
+                let operator = operatorIdx > -1 ? expr.charAt(operatorIdx - 1) : '+';
+                if (operator === '+') result += factors[i];
+                else if (operator === '-') result -= factors[i];
+                exprIndex = operatorIdx + factorStr.length;
+            }
+            if (!isFinite(result) || isNaN(result)) return 'Error';
+            return Math.round(result * 100000000) / 100000000;
+        }
+        window.qcNumber = function(num) {
+            if (qcIsErrorState) { qcDisplayValue = '0'; qcExpression = ''; qcIsErrorState = false; qcGetDisplay().textContent = '0'; return; }
+            if (num === '.') { var parts = qcExpression.split(/[+\-\*\/]/); if (parts[parts.length-1].includes('.')) return; }
+            if (qcDisplayValue === '0' && num !== '.') { qcDisplayValue = ''; qcExpression = ''; }
+            qcDisplayValue += num; qcExpression += num; qcGetDisplay().textContent = qcDisplayValue;
+        };
+        window.qcOperator = function(op) {
+            if (qcIsErrorState) { qcDisplayValue = '0'; qcExpression = ''; qcIsErrorState = false; qcGetDisplay().textContent = '0'; return; }
+            if (op === '%') {
+                try { var r = parseFloat(qcExpression)/100; qcDisplayValue = String(r); qcExpression = String(r); qcGetDisplay().textContent = qcDisplayValue; }
+                catch(e) { qcDisplayValue = '0'; qcExpression = ''; qcGetDisplay().textContent = '0'; }
+            } else {
+                var opMap = {'÷':'/', '×':'*', '−':'-', '+':'+'};
+                var ao = opMap[op] || op;
+                var last = qcExpression.slice(-1);
+                if (['+','-','*','/'].includes(last)) { qcExpression = qcExpression.slice(0,-1); qcDisplayValue = qcDisplayValue.slice(0,-1); }
+                qcExpression += ao; qcDisplayValue += op; qcGetDisplay().textContent = qcDisplayValue;
+            }
+        };
+        window.qcCalculate = function() {
+            if (qcIsErrorState || qcExpression === '') return;
+            var result = qcSafeEval(qcExpression);
+            if (result === 'Error') { qcGetDisplay().textContent = 'Error'; qcDisplayValue = 'Error'; qcExpression = ''; qcIsErrorState = true; }
+            else { qcDisplayValue = String(result); qcExpression = String(result); qcGetDisplay().textContent = qcDisplayValue; }
+        };
+        window.qcClear = function() { qcDisplayValue = '0'; qcExpression = ''; qcIsErrorState = false; qcGetDisplay().textContent = '0'; };
+        window.qcBackspace = function() {
+            if (qcIsErrorState) { qcDisplayValue = '0'; qcExpression = ''; qcIsErrorState = false; qcGetDisplay().textContent = '0'; return; }
+            if (qcDisplayValue.length > 0) {
+                qcDisplayValue = qcDisplayValue.slice(0,-1); qcExpression = qcExpression.slice(0,-1);
+                if (qcDisplayValue === '') { qcDisplayValue = '0'; qcExpression = ''; }
                 qcGetDisplay().textContent = qcDisplayValue;
-            };
-            
-            window.qcOperator = function(op) {
-                if (qcIsErrorState) {
-                    qcDisplayValue = "0";
-                    qcExpression = "";
-                    qcIsErrorState = false;
-                    qcGetDisplay().textContent = qcDisplayValue;
-                    return;
-                }
-                
-                if (op === "%") {
-                    try { 
-                        var result = parseFloat(qcExpression) / 100;
-                        qcDisplayValue = String(result);
-                        qcExpression = String(result);
-                        qcGetDisplay().textContent = qcDisplayValue;
-                    }
-                    catch(e) { 
-                        qcDisplayValue = "0";
-                        qcExpression = "";
-                        qcGetDisplay().textContent = "0";
-                    }
-                } else {
-                    var operatorMap = {
-                        "÷": "/",
-                        "×": "*",
-                        "−": "-",
-                        "+": "+"
-                    };
-                    
-                    var actualOperator = operatorMap[op] || op;
-                    var last = qcExpression.slice(-1);
-                    if (["+","-","*","/"].includes(last)) {
-                        qcExpression = qcExpression.slice(0,-1);
-                        qcDisplayValue = qcDisplayValue.slice(0,-1);
-                    }
-                    qcExpression += actualOperator;
-                    qcDisplayValue += op;
-                    qcGetDisplay().textContent = qcDisplayValue;
-                }
-            };
-            
-            window.qcCalculate = function() {
-                if (qcIsErrorState) return;
-                
-                console.log(\'QC Calculating expression:\', qcExpression);
-                console.log(\'QC Current display value:\', qcDisplayValue);
-                
-                if (qcExpression === "" || qcExpression === undefined) {
-                    console.log(\'QC Empty expression, returning\');
-                    return;
-                }
-                
-                var result = qcSafeEval(qcExpression);
-                console.log(\'QC Calculation result:\', result);
-                
-                if (result === "Error") {
-                    qcGetDisplay().textContent = "Error";
-                    qcDisplayValue = "Error";
-                    qcExpression = "";
-                    qcIsErrorState = true;
-                } else {
-                    qcDisplayValue = String(result);
-                    qcExpression = String(result);
-                    qcGetDisplay().textContent = qcDisplayValue;
-                }
-            };
-            
-            window.qcClear = function() {
-                qcDisplayValue = "0";
-                qcExpression = "";
-                qcIsErrorState = false;
-                qcGetDisplay().textContent = qcDisplayValue;
-            };
-            
-            window.qcBackspace = function() {
-                if (qcIsErrorState) {
-                    qcDisplayValue = "0";
-                    qcExpression = "";
-                    qcIsErrorState = false;
-                    qcGetDisplay().textContent = qcDisplayValue;
-                    return;
-                }
-                
-                if (qcDisplayValue.length > 0) {
-                    qcDisplayValue = qcDisplayValue.slice(0, -1);
-                    qcExpression = qcExpression.slice(0, -1);
-                    if (qcDisplayValue === "") {
-                        qcDisplayValue = "0";
-                        qcExpression = "";
-                    }
-                    qcGetDisplay().textContent = qcDisplayValue;
-                }
-            };
-        })();
-        </script>
-        '<h3 class="text-lg font-medium text-gray-900 dark:text-white flex items-center">
-            <i class="fas fa-calculator mr-2 text-amber-500"></i>
-            Quick Calculator
-        </h3>',
+            }
+        };
+    })();
+    </script>
+    <?php
+    $calculatorContent = ob_get_clean();
+    echo UIComponents::card(
+        $calculatorContent,
+        '<h3 class="text-lg font-medium text-gray-900 dark:text-white flex items-center"><i class="fas fa-calculator mr-2 text-amber-500"></i>Quick Calculator</h3>',
         null,
-        'bg-cream-50 dark:bg-gray-800 rounded-lg shadow'
+        'bg-white dark:bg-gray-800 rounded-lg shadow'
     ); ?>
 </div>
 
