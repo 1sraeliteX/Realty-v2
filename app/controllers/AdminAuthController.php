@@ -46,36 +46,55 @@ class AdminAuthController extends BaseController {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $data = $this->getPostData();
             
-            $name = $data['name'] ?? '';
-            $email = $data['email'] ?? '';
-            $password = $data['password'] ?? '';
-            $business_name = $data['business_name'] ?? '';
-            $phone = $data['phone'] ?? '';
-            
+            $name          = trim($data['name'] ?? '');
+            $email         = trim($data['email'] ?? '');
+            $password      = $data['password'] ?? '';
+            $password_conf = $data['password_confirmation'] ?? '';
+            $business_name = trim($data['business_name'] ?? '');
+            $phone         = trim($data['phone'] ?? '');
+
             if (empty($name) || empty($email) || empty($password)) {
                 $_SESSION['error'] = 'Name, email, and password are required';
                 header('Location: /admin/register');
                 exit;
             }
-            
+
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $_SESSION['error'] = 'Please enter a valid email address';
+                header('Location: /admin/register');
+                exit;
+            }
+
+            if (strlen($password) < 8) {
+                $_SESSION['error'] = 'Password must be at least 8 characters';
+                header('Location: /admin/register');
+                exit;
+            }
+
+            if ($password !== $password_conf) {
+                $_SESSION['error'] = 'Passwords do not match';
+                header('Location: /admin/register');
+                exit;
+            }
+
             // Check if email already exists
             $stmt = $this->db->getConnection()->prepare("SELECT id FROM admins WHERE email = ? AND deleted_at IS NULL");
             $stmt->execute([$email]);
             if ($stmt->fetch()) {
-                $_SESSION['error'] = 'Email already exists';
+                $_SESSION['error'] = 'An account with that email already exists';
                 header('Location: /admin/register');
                 exit;
             }
-            
-            // Create new admin
+
+            // Always register as 'admin' — super_admin accounts are created by platform admins only
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
             $stmt = $this->db->getConnection()->prepare("
-                INSERT INTO admins (name, email, password, business_name, phone, role, created_at, updated_at) 
-                VALUES (?, ?, ?, ?, ?, 'admin', NOW(), NOW())
+                INSERT INTO admins (name, email, password, business_name, phone, role, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, 'admin', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
             ");
-            
+
             if ($stmt->execute([$name, $email, $hashedPassword, $business_name, $phone])) {
-                $_SESSION['success'] = 'Registration successful! Please login.';
+                $_SESSION['success'] = 'Account created! Please log in.';
                 header('Location: /admin/login');
                 exit;
             } else {

@@ -81,28 +81,8 @@
                     >
                 </div>
 
-                <div>
-                    <label for="role" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Account Type <span class="text-red-500">*</span>
-                    </label>
-                    <select 
-                        id="role" 
-                        name="role" 
-                        required 
-                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent sm:text-sm"
-                    >
-                        <option value="">Select account type</option>
-                        <option value="admin" <?php echo (($_SESSION['old']['role'] ?? '') === 'admin') ? 'selected' : ''; ?>>
-                            Property Admin - Manage my properties
-                        </option>
-                        <option value="super_admin" <?php echo (($_SESSION['old']['role'] ?? '') === 'super_admin') ? 'selected' : ''; ?>>
-                            Super Admin - Manage entire platform
-                        </option>
-                    </select>
-                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                        Property admins manage their own properties. Super admins can manage all admins and platform settings.
-                    </p>
-                </div>
+                <!-- Role is always 'admin' on public registration; super_admin accounts are created by the platform only -->
+                <input type="hidden" name="role" value="admin">
 
                 <div>
                     <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -193,7 +173,7 @@
                 <span class="text-sm text-gray-600 dark:text-gray-400">
                     Already have an account? 
                 </span>
-                <a href="/login" class="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 text-sm">
+                <a href="/admin/login" class="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 text-sm">
                     Sign in
                 </a>
             </div>
@@ -204,7 +184,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Handle form submission with loading state
-    const registerForm = document.querySelector('form[action="/register"]');
+    const registerForm = document.querySelector('form[action="/admin/register"]');
     const registerBtn = document.getElementById('register-btn');
     const registerText = registerBtn.querySelector('.register-text');
     const loadingText = registerBtn.querySelector('.loading-text');
